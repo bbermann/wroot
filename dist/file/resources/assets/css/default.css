@@ -1,0 +1,7 @@
+h1     { color:#333 } 
+h2     { color:#666 } 
+h3     { color:red  } 
+ul, li { clear:both; float:left; margin-left:1px; padding:5px; display:block; } 
+a      { text-decoration:none; color:#333; } 
+body   { margin: 30px auto; width:80%; min-height:400px; background-color:#EEE; color:#AAA; }
+.chart { width: 100%; margin: 0 auto; }
