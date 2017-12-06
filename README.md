@@ -1,4 +1,4 @@
-# wroot
+# wRoot
 wRoot HTTP Server is a simple HTTP server developed using c++.
 
 Currently only Linux servers are supported.
