@@ -1,0 +1,17 @@
+// wRoot v0.1.0
+{
+    "Servers": [
+        {
+            "Name": "wroot.dev",
+            "Listen": "*:8000",
+            "DocumentRoot": "/wroot/bin/public"
+        }
+    ],
+    "UrlRewrites": [
+        {
+            "Condition": "",
+            "Filter": "^(.+)$",
+            "Output": "index.php/$1"
+        }
+    ]
+}
