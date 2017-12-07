@@ -3,3 +3,4 @@ TODO:
 - Rewrite URLs like apache mod_rewrite.
 - Better support for HTTP requests and responses.
 - Fill empty environment variables in PhpLibrary ($_SERVER).
+- Read configs from wroot.cfg
