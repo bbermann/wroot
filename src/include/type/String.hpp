@@ -34,6 +34,15 @@ public:
     static std::string toUpper(std::string str);
     static std::string trim(std::string str);
     static StringList regex_search(std::string text, std::string regexp);
+    
+    // trim from start (in place)
+    String ltrim();
+
+    // trim from end (in place)
+    String rtrim();
+
+    // trim from both ends (in place)
+    String trim();
 };
 
 #endif // STRING_HPP

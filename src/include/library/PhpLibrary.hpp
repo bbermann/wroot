@@ -14,6 +14,7 @@ public:
 
 protected:
 	String getFullPath();
+    String getEnvironment();
 };
 
 #endif // PHPLIBRARY_H

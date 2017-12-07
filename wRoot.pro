@@ -510,6 +510,7 @@ HEADERS += \
     src/3rdParty/zlib/ZLib.hpp \
     src/include/helper/LuaHelper.hpp \
     src/include/helper/ConsoleLineHelper.hpp \
+    src/include/helper/EnvironmentBuilder.hpp \
     src/include/core/Core.hpp \
     src/include/core/HttpRequest.hpp \
     src/include/core/HttpResponse.hpp \
@@ -973,6 +974,7 @@ SOURCES += \
     src/3rdParty/zlib/ZLib.cpp \
     src/include/helper/LuaHelper.cpp \
     src/include/helper/ConsoleLineHelper.cpp \
+    src/include/helper/EnvironmentBuilder.cpp \
     src/include/core/Core.cpp \
     src/include/core/HttpRequest.cpp \
     src/include/core/HttpResponse.cpp \

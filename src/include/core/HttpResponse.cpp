@@ -28,16 +28,15 @@ String HttpResponse::toString()
 {
     string returnString;
 
-    returnString.append("HTTP/1.1 ");
-    returnString.append(getStatusString() + ENDL);
-    returnString.append("Host: 127.0.0.1:" + to_string(Core::HttpServerPortNumber) + ENDL);
-    returnString.append("Server: wRoot" + ENDL);
-    returnString.append("X-Powered-By: wRoot Web Library" + ENDL);
+    returnString.append(Core::ServerProtocol + " " + getStatusString() + ENDL);
+    returnString.append("Host: " + Core::ServerAddress + ":" + to_string(Core::ServerPort) + ENDL);
+    returnString.append("Server: " + Core::ServerName + ENDL);
+    returnString.append("X-Powered-By: " + Core::ServerName + ENDL);
     returnString.append("Connection: keep-alive" + ENDL);
     returnString.append("Content-Type: " + type + "; charset=UTF-8" + ENDL);
     returnString.append("Content-Length: " + to_string(content.size()) + ENDL);
 
-	//Para que não seja compactado o conteúdo de arquivos (previamente compactado pelo módulo FileLibrary).
+	//Para que nï¿½o seja compactado o conteï¿½do de arquivos (previamente compactado pelo mï¿½dulo FileLibrary).
 	if (compressOutput)
 	{
 		content = ZLib::compress_string(content);

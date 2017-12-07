@@ -12,6 +12,7 @@ public:
 
     String getHttpMethod();
     String getUrl();
+	String getQueryString();
 
 protected:
 	void setHttpMethod(String method);

@@ -54,3 +54,8 @@ void HttpRequest::setHttpMethod(String method)
 		http_method_ = "GET";
 	}
 }
+
+String HttpRequest::getQueryString()
+{
+	return "";
+}

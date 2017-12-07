@@ -1,7 +1,7 @@
 #ifndef CONSOLELINEHELPER_HPP
 #define CONSOLELINEHELPER_HPP
 
-#include "../core/Core.hpp"
+#include "../type/String.hpp"
 
 class ConsoleLineHelper
 {

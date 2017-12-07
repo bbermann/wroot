@@ -11,6 +11,9 @@ using namespace std;
 String Core::ApplicationPath;
 String Core::ExecutablePath;
 String Core::PathSeparator;
+String Core::ServerAddress;
+String Core::ServerName;
+String Core::ServerProtocol;
 StringList Core::Parameters;
 bool Core::IsDebugging;
 bool Core::SafeThreads;
@@ -19,7 +22,7 @@ bool Core::UseBrowserCache;
 bool Core::CallBrowserOnStart;
 bool Core::Running;
 int Core::ThreadCount;
-size_t Core::HttpServerPortNumber;
+int Core::ServerPort;
 mutex Core::ThreadMutex;
 shared_ptr<HttpServer> Core::Server;
 
@@ -27,7 +30,7 @@ int main(int argc, const char* argv[])
 {
 	Core::setEnvironment(argc, argv);
 
-    HttpServer server(Core::HttpServerPortNumber);
+    HttpServer server(Core::ServerPort);
     //Inicia o loop do servidor
     server.start();
 

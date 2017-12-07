@@ -1,5 +1,5 @@
 #include "Core.hpp"
-
+#include "../helper/ConsoleLineHelper.hpp"
 #include <mutex>
 
 using namespace std;
@@ -71,6 +71,9 @@ void Core::outLn(string text)
 
 void Core::setEnvironment(int argc, const char* argv[])
 {
+    Core::ServerName = "wRoot";
+    Core::ServerProtocol = "HTTP/1.1";
+
 #ifdef DEBUG
     Core::IsDebugging = true;
 #else
@@ -86,7 +89,7 @@ void Core::setEnvironment(int argc, const char* argv[])
     Core::ApplicationPath = String(argv[0]);
 
     //TODO: Read all user configurations from wroot.json
-    Core::HttpServerPortNumber = 8000;
+    Core::ServerPort = 8000;
 
     StringList arrPath = Core::ApplicationPath.explode(Core::PathSeparator);
     Core::ExecutablePath = arrPath.at(arrPath.size() - 1);
@@ -121,6 +124,11 @@ void Core::setEnvironment(int argc, const char* argv[])
     Core::out("- Counting hardware threads: ");
     Core::ThreadCount = thread::hardware_concurrency();
     Core::outLn("[" + to_string(Core::ThreadCount) + "]");
+
+    ConsoleLineHelper server_address_resolver("curl --silent ipinfo.io/ip");
+    Core::out("- Getting external IP Address: ");
+    Core::ServerAddress = server_address_resolver.executeStdOut().trim();
+    Core::outLn("[" + Core::ServerAddress + "]");
 }
 
 void Core::getStackTrace(int trace_count_max)

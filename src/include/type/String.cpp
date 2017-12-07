@@ -147,3 +147,26 @@ StringList String::regex_search(string text, string regexp)
 
     return strret;
 }
+
+// trim from start (in place)
+String String::ltrim() {
+    this->erase(this->begin(), std::find_if(this->begin(), this->end(), [](int ch) {
+        return !std::isspace(ch);
+    }));
+    return *this;
+}
+
+// trim from end (in place)
+String String::rtrim() {
+    this->erase(std::find_if(this->rbegin(), this->rend(), [](int ch) {
+        return !std::isspace(ch);
+    }).base(), this->end());
+    return *this;
+}
+
+// trim from both ends (in place)
+String String::trim() {
+    ltrim();
+    rtrim();
+    return *this;
+}

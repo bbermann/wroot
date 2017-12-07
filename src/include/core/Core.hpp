@@ -40,6 +40,9 @@ public:
     static String ApplicationPath;
     static String ExecutablePath;
     static String PathSeparator;
+    static String ServerAddress;
+    static String ServerName;
+    static String ServerProtocol;
     static StringList Parameters;
     static bool IsDebugging;
     static bool SafeThreads;
@@ -48,7 +51,7 @@ public:
     static bool CallBrowserOnStart;
     static bool Running;
     static int ThreadCount;
-    static size_t HttpServerPortNumber;
+    static int ServerPort;
     static std::mutex ThreadMutex;
     static std::shared_ptr<HttpServer> Server;
 };
