@@ -84,7 +84,11 @@ String FileLibrary::getFileName()
 String FileLibrary::getFullPath()
 {
 	String fileName = this->getFileName();
-	String fullPath = Core::ApplicationPath + Core::PathSeparator + fileName;
+	String fullPath = Core::DocumentRoot;
+	if (fullPath.endsWith("/")) {
+		fullPath.append(Core::PathSeparator);
+	}
+	fullPath.append(fileName);
 	return fullPath;
 }
 

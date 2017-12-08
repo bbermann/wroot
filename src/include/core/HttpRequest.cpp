@@ -2,8 +2,8 @@
 
 HttpRequest::HttpRequest()
 {
-	setHttpMethod("GET");
-	setUrl("");
+	request_ = "";
+	process();
 }
 
 HttpRequest::~HttpRequest()
@@ -12,7 +12,13 @@ HttpRequest::~HttpRequest()
 
 HttpRequest::HttpRequest(String request)
 {
-	StringList explodedRequest = request.explode(" ");
+	request_ = request;
+	process();
+}
+
+void HttpRequest::process()
+{
+	StringList explodedRequest = request_.explode(" ");
 
     int explodedSize = explodedRequest.size();
 
@@ -24,7 +30,10 @@ HttpRequest::HttpRequest(String request)
         {
             setUrl(explodedRequest.at(1));
         }
-    }
+    } else {
+		setHttpMethod("GET");
+		setUrl("");
+	}
 }
 
 String HttpRequest::getHttpMethod()

@@ -37,7 +37,7 @@ String PhpLibrary::toString()
 
 String PhpLibrary::getFullPath()
 {
-    return Core::ApplicationPath + getHttpRequest().getUrl();
+    return Core::DocumentRoot + getHttpRequest().getUrl();
 }
 
 String PhpLibrary::getEnvironment()

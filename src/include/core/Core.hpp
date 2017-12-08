@@ -37,6 +37,7 @@ public:
     
     static const int kWSockVersion = 2;
     static const unsigned int kMaxConnections = 10000, kBufferSize = 8192;
+    static constexpr const char* kApplicationName = "wRoot";
 
     static String ApplicationPath;
     static String ExecutablePath;
@@ -56,6 +57,9 @@ public:
     static int ServerPort;
     static std::mutex ThreadMutex;
     static std::shared_ptr<HttpServer> Server;
+
+private:
+    static void checkPrint(String check, String value);
 };
 
 #endif //CORE_HPP

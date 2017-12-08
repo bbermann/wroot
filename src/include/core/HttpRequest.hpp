@@ -17,8 +17,10 @@ public:
 protected:
 	void setHttpMethod(String method);
 	void setUrl(String url);
+	void process();
 
 private:
+	String request_;
 	String url_;
 	String http_method_;
 };
