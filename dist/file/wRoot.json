@@ -3,7 +3,7 @@
         "name": "192.168.33.10",
         "listen": "*",
         "port": 8000,
-        "document_root": "/wroot/bin"
+        "document_root": "/wroot/bin/public"
     },
     "url_rewrite": [
         {

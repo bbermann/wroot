@@ -25,7 +25,7 @@ public:
             return url;
         }
 
-        String rewrittenUrl("index.php/" + matches.str(0));
+        String rewrittenUrl("index.php " + matches.str(0));
         return rewrittenUrl;
     }
 };

@@ -374,25 +374,20 @@ String HttpServer::process(String request)
     Timer timer;
     timer.start();
 
-    HttpRequest http_request(request);
+    HttpRequest httpRequest(request);
     
-    FileHelper file_helper;
-    String fileName = Core::ApplicationPath + http_request.getUrl();
+    FileHelper fileHelper;
+    String fileName = Core::ApplicationPath + httpRequest.getUrl();
 
     //Custom library initializer
 	unique_ptr<CustomLibrary> app(new FileLibrary());
 
-    if (fileName.endsWith("/")) 
-    {
-        fileName.append("index.html");
-    }
-
-    if (!file_helper.Exists(fileName) || file_helper.CheckExtension(fileName, "php"))
+    if (!fileHelper.Exists(Core::DocumentRoot + fileName) || fileHelper.CheckExtension(fileName, "php"))
     {
         app.reset(new PhpLibrary());
     }
 
-    app->setHttpRequest(http_request);
+    app->setHttpRequest(httpRequest);
 	
     HttpResponse response = app->getResponse();
 

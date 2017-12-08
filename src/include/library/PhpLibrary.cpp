@@ -2,6 +2,7 @@
 #include "../helper/ConsoleLineHelper.hpp"
 #include "../helper/FileHelper.hpp"
 #include "../helper/EnvironmentBuilder.hpp"
+#include "../helper/UrlRewriter.hpp"
 
 PhpLibrary::PhpLibrary() : CustomLibrary()
 {
@@ -17,18 +18,6 @@ PhpLibrary::~PhpLibrary()
 String PhpLibrary::toString()
 {
     String path = getFullPath();
-    if (!path.endsWith(".php")) {
-        String tempPath = "public/index.php";
-
-        FileHelper file_helper;
-        if (!file_helper.Exists(path + tempPath))
-        {
-            tempPath = "index.php";
-        }
-
-        path.append(tempPath);
-    }
-
     String environment = getEnvironment();
     ConsoleLineHelper cli(environment + " php " + path);
     String response = cli.executeStdOut();
@@ -37,7 +26,8 @@ String PhpLibrary::toString()
 
 String PhpLibrary::getFullPath()
 {
-    return Core::DocumentRoot + getHttpRequest().getUrl();
+    UrlRewriter url_rw;
+    return Core::DocumentRoot + url_rw.rewrite(getHttpRequest().getUrl());
 }
 
 String PhpLibrary::getEnvironment()

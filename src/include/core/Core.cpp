@@ -92,6 +92,10 @@ void Core::readConfiguration()
     Core::ServerPort = server["port"];
     Core::DocumentRoot = server["document_root"];
 
+    if (!Core::DocumentRoot.endsWith("/")) {
+        Core::DocumentRoot.append("/");
+    }
+
     auto urlRewrite = parser["url_rewrite"];
     //TODO...
 }
