@@ -3,6 +3,7 @@ CONFIG -= console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
+CONFIG += -v
 
 QT += serialport
 QT += websockets
@@ -21,7 +22,7 @@ else {
     DEFINES += RELEASE
 }
 
-LIBS += -L"$$PWD/lib/x86" -lmysqlcppconn
+LIBS += -lpthread
 LIBS += -L"$$PWD/lib/x86" -lz
 win32 {
     LIBS += -L"$$PWD/lib/x86" -lzlibwapi
@@ -483,25 +484,6 @@ HEADERS += \
     src/3rdParty/lua/src/lundump.h \
     src/3rdParty/lua/src/lvm.h \
     src/3rdParty/lua/src/lzio.h \
-    src/3rdParty/mysql/include/cppconn/build_config.h \
-    src/3rdParty/mysql/include/cppconn/config.h \
-    src/3rdParty/mysql/include/cppconn/connection.h \
-    src/3rdParty/mysql/include/cppconn/datatype.h \
-    src/3rdParty/mysql/include/cppconn/driver.h \
-    src/3rdParty/mysql/include/cppconn/exception.h \
-    src/3rdParty/mysql/include/cppconn/metadata.h \
-    src/3rdParty/mysql/include/cppconn/parameter_metadata.h \
-    src/3rdParty/mysql/include/cppconn/prepared_statement.h \
-    src/3rdParty/mysql/include/cppconn/resultset.h \
-    src/3rdParty/mysql/include/cppconn/resultset_metadata.h \
-    src/3rdParty/mysql/include/cppconn/sqlstring.h \
-    src/3rdParty/mysql/include/cppconn/statement.h \
-    src/3rdParty/mysql/include/cppconn/variant.h \
-    src/3rdParty/mysql/include/cppconn/version_info.h \
-    src/3rdParty/mysql/include/cppconn/warning.h \
-    src/3rdParty/mysql/include/mysql_connection.h \
-    src/3rdParty/mysql/include/mysql_driver.h \
-    src/3rdParty/mysql/include/mysql_error.h \
     src/3rdParty/pthreads/pthread.h \
     src/3rdParty/pthreads/sched.h \
     src/3rdParty/pthreads/semaphore.h \
@@ -516,10 +498,6 @@ HEADERS += \
     src/include/core/HttpResponse.hpp \
     src/include/core/HttpServer.hpp \
     src/include/database/CustomDatabase.hpp \
-    src/include/database/DAO.hpp \
-    src/include/database/DTO.hpp \
-    src/include/database/InformationSchema.hpp \
-    src/include/database/MysqlDatabase.hpp \
     src/include/helper/ArduinoHelper.hpp \
     src/include/helper/Crypto.hpp \
     src/include/helper/ExampleHelper.hpp \
@@ -980,10 +958,6 @@ SOURCES += \
     src/include/core/HttpResponse.cpp \
     src/include/core/HttpServer.cpp \
     src/include/database/CustomDatabase.cpp \
-    src/include/database/DAO.cpp \
-    src/include/database/DTO.cpp \
-    src/include/database/InformationSchema.cpp \
-    src/include/database/MysqlDatabase.cpp \
     src/include/helper/Crypto.cpp \
     src/include/helper/FileHelper.cpp \
     src/include/helper/FunctionMap.cpp \

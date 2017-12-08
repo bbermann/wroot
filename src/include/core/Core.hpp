@@ -30,6 +30,7 @@ public:
     static void getStackTrace(int trace_count_max = 32);
     static void out(std::string text);
     static void outLn(std::string text);
+    static void readConfiguration();
     static void setEnvironment(int argc, const char* argv[]);
     static void stopServers();
     static void warning(std::string text, std::string function);
@@ -43,6 +44,7 @@ public:
     static String ServerAddress;
     static String ServerName;
     static String ServerProtocol;
+    static String DocumentRoot;
     static StringList Parameters;
     static bool IsDebugging;
     static bool SafeThreads;

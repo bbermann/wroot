@@ -1,7 +1,10 @@
 #include "Core.hpp"
 #include "../helper/ConsoleLineHelper.hpp"
+#include "../../3rdParty/git/nlohmann/json/src/json.hpp"
 #include <mutex>
+#include <fstream>
 
+using json = nlohmann::json;
 using namespace std;
 
 Core::Core()
@@ -69,10 +72,24 @@ void Core::outLn(string text)
     out(text + ENDL);
 }
 
+void Core::readConfiguration()
+{   
+    ifstream reader("wRoot.json");
+    json parser;
+    reader >> parser;
+
+    auto server = parser["Server"];
+    Core::ServerName = server["Name"];
+    Core::ServerPort = server["Port"];
+    Core::DocumentRoot = server["DocumentRoot"];
+
+    auto urlRewrite = parser["UrlRewrite"];
+    //TODO...
+}
+
 void Core::setEnvironment(int argc, const char* argv[])
 {
-    Core::ServerName = "wRoot";
-    Core::ServerProtocol = "HTTP/1.1";
+    Core::readConfiguration();
 
 #ifdef DEBUG
     Core::IsDebugging = true;
@@ -87,9 +104,7 @@ void Core::setEnvironment(int argc, const char* argv[])
 #endif
 
     Core::ApplicationPath = String(argv[0]);
-
-    //TODO: Read all user configurations from wroot.json
-    Core::ServerPort = 8000;
+    Core::ServerProtocol = "HTTP/1.1";
 
     StringList arrPath = Core::ApplicationPath.explode(Core::PathSeparator);
     Core::ExecutablePath = arrPath.at(arrPath.size() - 1);

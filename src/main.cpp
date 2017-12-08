@@ -14,6 +14,7 @@ String Core::PathSeparator;
 String Core::ServerAddress;
 String Core::ServerName;
 String Core::ServerProtocol;
+String Core::DocumentRoot;
 StringList Core::Parameters;
 bool Core::IsDebugging;
 bool Core::SafeThreads;
