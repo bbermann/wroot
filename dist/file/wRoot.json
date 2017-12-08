@@ -1,0 +1,15 @@
+{
+    "server": {
+        "name": "192.168.33.10",
+        "listen": "*",
+        "port": 8000,
+        "document_root": "/wroot/bin"
+    },
+    "url_rewrite": [
+        {
+            "condition": "",
+            "input": "^(.+)$",
+            "output": "index.php/$1"
+        }
+    ]
+}

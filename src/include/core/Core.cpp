@@ -1,7 +1,10 @@
 #include "Core.hpp"
 #include "../helper/ConsoleLineHelper.hpp"
+#include "../../3rdParty/git/nlohmann/json/src/json.hpp"
 #include <mutex>
+#include <fstream>
 
+using json = nlohmann::json;
 using namespace std;
 
 Core::Core()
@@ -69,10 +72,33 @@ void Core::outLn(string text)
     out(text + ENDL);
 }
 
+void Core::readConfiguration()
+{
+    String configFile(Core::ApplicationPath + String(Core::kApplicationName) + ".json");
+
+    Core::outLn("Reading configuration file " + configFile + "...");
+
+    ifstream reader(configFile.c_str());
+    json parser;
+
+    if (reader.is_open() && reader.good()) {
+        reader >> parser;
+    } else {
+        Core::error("Can't open file " + configFile + "!");
+    }
+
+    auto server = parser["server"];
+    Core::ServerName = server["name"];
+    Core::ServerPort = server["port"];
+    Core::DocumentRoot = server["document_root"];
+
+    auto urlRewrite = parser["url_rewrite"];
+    //TODO...
+}
+
 void Core::setEnvironment(int argc, const char* argv[])
 {
-    Core::ServerName = "wRoot";
-    Core::ServerProtocol = "HTTP/1.1";
+    Core::outLn("Loading wRoot, please wait a second...");
 
 #ifdef DEBUG
     Core::IsDebugging = true;
@@ -87,9 +113,7 @@ void Core::setEnvironment(int argc, const char* argv[])
 #endif
 
     Core::ApplicationPath = String(argv[0]);
-
-    //TODO: Read all user configurations from wroot.json
-    Core::ServerPort = 8000;
+    Core::ServerProtocol = "HTTP/1.1";
 
     StringList arrPath = Core::ApplicationPath.explode(Core::PathSeparator);
     Core::ExecutablePath = arrPath.at(arrPath.size() - 1);
@@ -103,32 +127,30 @@ void Core::setEnvironment(int argc, const char* argv[])
     }
 
     //Desabilitar quando for necessário atender mais do que o limite de conexões, colocando em uma fila de espera
-    Core::out("- Using thread safety code: ");
     Core::SafeThreads = true;
-    Core::outLn((string) "[" + (Core::SafeThreads ? "Yes" : "No") + "]");
+    checkPrint("Using thread safety code", (Core::SafeThreads ? "Yes" : "No"));
 
-    Core::out("- Using compressed output: ");
     Core::UseCompressedOutput = true;
-    Core::outLn((string) "[" + (Core::UseCompressedOutput ? "Yes" : "No") + "]");
+    checkPrint("Using compressed output", (Core::UseCompressedOutput ? "Yes" : "No"));
 
     //TODO: Implementar
-    Core::out("- Using browser cache: ");
     Core::UseBrowserCache = false;
-    Core::outLn((string) "[" + (Core::UseBrowserCache ? "Yes" : "No") + "]");
+    checkPrint("Using browser cache", (Core::UseBrowserCache ? "Yes" : "No"));
 
     //Iniciar o Google Chrome ao chamar HttpServer::start();
-    Core::out("- Call browser on start: ");
     Core::CallBrowserOnStart = false;
-    Core::outLn((string) "[" + (Core::CallBrowserOnStart ? "Yes" : "No") + "]");
+    checkPrint("Call browser on start", (Core::CallBrowserOnStart ? "Yes" : "No"));
 
-    Core::out("- Counting hardware threads: ");
     Core::ThreadCount = thread::hardware_concurrency();
-    Core::outLn("[" + to_string(Core::ThreadCount) + "]");
+    checkPrint("Checking CPU cores", to_string(Core::ThreadCount));
 
     ConsoleLineHelper server_address_resolver("curl --silent ipinfo.io/ip");
-    Core::out("- Getting external IP Address: ");
     Core::ServerAddress = server_address_resolver.executeStdOut().trim();
-    Core::outLn("[" + Core::ServerAddress + "]");
+    checkPrint("Retrieving remote IP address", Core::ServerAddress);
+
+    Core::readConfiguration();
+
+    Core::outLn("Done.");
 }
 
 void Core::getStackTrace(int trace_count_max)
@@ -156,4 +178,9 @@ void Core::warning(string text, string function)
     tmp.append(": ");
     tmp.append(text);
     outLn(tmp);
+}
+
+void Core::checkPrint(String check, String value)
+{
+    Core::outLn("- " + check + ": [" + value + "]");
 }

@@ -37,13 +37,13 @@ String PhpLibrary::toString()
 
 String PhpLibrary::getFullPath()
 {
-    return Core::ApplicationPath + getHttpRequest().getUrl();
+    return Core::DocumentRoot + getHttpRequest().getUrl();
 }
 
 String PhpLibrary::getEnvironment()
 {
     EnvironmentBuilder env;
-    env.setPair("DOCUMENT_ROOT", "/wroot/bin/");
+    env.setPair("DOCUMENT_ROOT", Core::DocumentRoot);
     env.setPair("HTTP_REFERER", ""); //Add to request
     env.setPair("REMOTE_ADDR", "127.0.0.1"); //Add to request
     env.setPair("REMOTE_PORT", std::to_string(Core::ServerPort));
@@ -51,7 +51,7 @@ String PhpLibrary::getEnvironment()
     env.setPair("REQUEST_URI", request_.getUrl());
     env.setPair("SERVER_ADDR", Core::ServerAddress);
     env.setPair("SERVER_PORT", std::to_string(Core::ServerPort));
-    env.setPair("SERVER_NAME", Core::ServerAddress); //Virtual host implementation needed
+    env.setPair("SERVER_NAME", Core::ServerName);
     env.setPair("SERVER_SOFTWARE", Core::ServerName);
     env.setPair("SERVER_PROTOCOL", Core::ServerProtocol);
     env.setPair("QUERY_STRING", request_.getQueryString());
