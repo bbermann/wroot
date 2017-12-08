@@ -4,3 +4,7 @@ TODO:
 - Better support for HTTP requests and responses.
 - Fill empty environment variables in PhpLibrary ($_SERVER).
 - Read configs from wroot.cfg
+
+FEATURE/URL-REWRITER:
+
+- Read and parse url_rewrite from wRoot.json
