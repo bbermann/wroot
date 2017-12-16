@@ -7,9 +7,8 @@
     },
     "url_rewrite": [
         {
-            "condition": "",
             "input": "^(.+)$",
-            "output": "index.php/$1"
+            "output": "index.php $1"
         }
     ]
 }

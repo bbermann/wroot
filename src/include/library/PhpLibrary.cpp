@@ -2,7 +2,6 @@
 #include "../helper/ConsoleLineHelper.hpp"
 #include "../helper/FileHelper.hpp"
 #include "../helper/EnvironmentBuilder.hpp"
-#include "../helper/UrlRewriter.hpp"
 
 PhpLibrary::PhpLibrary() : CustomLibrary()
 {
@@ -12,7 +11,6 @@ PhpLibrary::PhpLibrary() : CustomLibrary()
 
 PhpLibrary::~PhpLibrary()
 {
-
 }
 
 String PhpLibrary::toString()
@@ -26,15 +24,14 @@ String PhpLibrary::toString()
 
 String PhpLibrary::getFullPath()
 {
-    UrlRewriter url_rw;
-    return Core::DocumentRoot + url_rw.rewrite(getHttpRequest().getUrl());
+    return Core::DocumentRoot + urlRewriter.rewrite(getHttpRequest().getUrl());
 }
 
 String PhpLibrary::getEnvironment()
 {
     EnvironmentBuilder env;
     env.setPair("DOCUMENT_ROOT", Core::DocumentRoot);
-    env.setPair("HTTP_REFERER", ""); //Add to request
+    env.setPair("HTTP_REFERER", "");         //Add to request
     env.setPair("REMOTE_ADDR", "127.0.0.1"); //Add to request
     env.setPair("REMOTE_PORT", std::to_string(Core::ServerPort));
     env.setPair("REQUEST_METHOD", request_.getHttpMethod());

@@ -15,12 +15,13 @@
 #include <mutex>
 #include <thread>
 #include "../type/String.hpp"
+#include "../type/UrlRewriteRule.hpp"
 
 class HttpServer;
 
 class Core
 {
-public:
+  public:
     Core();
     ~Core();
     static void debug(std::string text);
@@ -31,13 +32,16 @@ public:
     static void out(std::string text);
     static void outLn(std::string text);
     static void readConfiguration();
-    static void setEnvironment(int argc, const char* argv[]);
+    static void setEnvironment(int argc, const char *argv[]);
     static void stopServers();
     static void warning(std::string text, std::string function);
-    
+
+#ifdef WINDOWS
     static const int kWSockVersion = 2;
-    static const unsigned int kMaxConnections = 10000, kBufferSize = 8192;
-    static constexpr const char* kApplicationName = "wRoot";
+#endif
+
+    static const unsigned int kMaxConnections = 10000, kBufferSize = 8192 * 10;
+    static constexpr const char *kApplicationName = "wRoot";
 
     static String ApplicationPath;
     static String ExecutablePath;
@@ -48,7 +52,6 @@ public:
     static String DocumentRoot;
     static StringList Parameters;
     static bool IsDebugging;
-    static bool SafeThreads;
     static bool UseCompressedOutput;
     static bool UseBrowserCache;
     static bool CallBrowserOnStart;
@@ -57,9 +60,12 @@ public:
     static int ServerPort;
     static std::mutex ThreadMutex;
     static std::shared_ptr<HttpServer> Server;
+    static std::vector<UrlRewriteRule> UrlRewriteRules;
 
-private:
+  private:
     static void checkPrint(String check, String value);
+
+    static std::mutex outMutex;
 };
 
 #endif //CORE_HPP

@@ -133,14 +133,14 @@ string String::trim(string str)
 
 StringList String::regex_search(string text, string regexp)
 {
-    std::smatch match;
+    std::smatch matches;
     std::regex exp(regexp);
     StringList strret;
 
-    std::regex_search(text, match, exp);
-    for (size_t i = 0; i < match.size(); ++i)
+    std::regex_search(text, matches, exp);
+    for (size_t i = 0; i < matches.size(); ++i)
     {
-        std::ssub_match sub_match = match[i];
+        std::ssub_match sub_match = matches[i];
         std::string sub_match_str = sub_match.str();
         strret.insert(strret.end(), sub_match.str());
     }

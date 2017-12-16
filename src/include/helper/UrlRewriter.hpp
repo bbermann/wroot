@@ -3,10 +3,11 @@
 
 #include <regex>
 #include "../type/String.hpp"
+#include "../type/UrlRewriteRule.hpp"
 
-class UrlRewriter 
+class UrlRewriter
 {
-public:
+  public:
     UrlRewriter()
     {
     }
@@ -17,16 +18,30 @@ public:
 
     String rewrite(String url)
     {
-        std::regex rule("^.+$");
-        std::smatch matches;
+        Core::ThreadMutex.lock();
+        std::vector<UrlRewriteRule> rewriteRules = Core::UrlRewriteRules;
+        Core::ThreadMutex.unlock();
 
-        if (!regex_match(url, matches, rule))
+        for (auto rule : rewriteRules)
         {
-            return url;
+            String rewrittenUrl = rule.output;
+            std::smatch matches;
+
+            if (regex_match(url, matches, rule.input))
+            {
+                int iterator = 0;
+                for (auto match : matches)
+                {
+                    ++iterator;
+                    String dolarVar = match.str();
+                    String dolarIterator = "$" + std::to_string(iterator);
+                    rewrittenUrl = String::replace(rewrittenUrl, dolarIterator, dolarVar);
+                }
+                return rewrittenUrl;
+            }
         }
 
-        String rewrittenUrl("index.php " + matches.str(0));
-        return rewrittenUrl;
+        return url;
     }
 };
 

@@ -42,7 +42,7 @@ void Timer::start() {
     start_ = Timer::now();
 }
 
-unsigned long Timer::finish() {
+unsigned long Timer::finish(bool microtime) {
 #ifdef WINDOWS
     finish_ = GetTickCount();
 #else
@@ -50,6 +50,12 @@ unsigned long Timer::finish() {
 #endif
 
     diference_ = difference(start_, finish_);
+
+    if (!microtime) 
+    {
+        diference_ /= 1000;
+    }
+
     return diference_;
 }
 
