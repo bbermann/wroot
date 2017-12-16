@@ -75,7 +75,7 @@ String FileLibrary::getFileName()
 	
 	if (fileName.empty() || fileName == "/") 
 	{
-		fileName = "index.html";
+		fileName = "/index.html";
 	}
 
 	return fileName;

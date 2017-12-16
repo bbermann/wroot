@@ -13,7 +13,7 @@ public:
     static unsigned long now();
     
     void start();
-    unsigned long finish();
+    unsigned long finish(bool microtime = false);
     unsigned long last();
 
 protected:

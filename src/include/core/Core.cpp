@@ -64,7 +64,9 @@ void Core::error(string text, string function)
 
 void Core::out(string text)
 {
+    Core::outMutex.lock();
     cout << text.c_str();
+    Core::outMutex.unlock();
 }
 
 void Core::outLn(string text)
@@ -81,9 +83,12 @@ void Core::readConfiguration()
     ifstream reader(configFile.c_str());
     json parser;
 
-    if (reader.is_open() && reader.good()) {
+    if (reader.is_open() && reader.good())
+    {
         reader >> parser;
-    } else {
+    }
+    else
+    {
         Core::error("Can't open file " + configFile + "!");
     }
 
@@ -92,11 +97,26 @@ void Core::readConfiguration()
     Core::ServerPort = server["port"];
     Core::DocumentRoot = server["document_root"];
 
-    auto urlRewrite = parser["url_rewrite"];
-    //TODO...
+    if (!Core::DocumentRoot.endsWith("/"))
+    {
+        Core::DocumentRoot.append("/");
+    }
+
+    auto urlRewriteRulesParser = parser["url_rewrite"];
+
+    for (auto ruleParser : urlRewriteRulesParser)
+    {
+        String input = ruleParser["input"];
+
+        UrlRewriteRule rule;
+        rule.input = std::regex(input.c_str());
+        rule.output = ruleParser["output"];
+        
+        Core::UrlRewriteRules.insert(Core::UrlRewriteRules.end(), rule);
+    }
 }
 
-void Core::setEnvironment(int argc, const char* argv[])
+void Core::setEnvironment(int argc, const char *argv[])
 {
     Core::outLn("Loading wRoot, please wait a second...");
 
@@ -126,10 +146,6 @@ void Core::setEnvironment(int argc, const char* argv[])
         Core::Parameters.insert(Core::Parameters.end(), argv[i]);
     }
 
-    //Desabilitar quando for necessário atender mais do que o limite de conexões, colocando em uma fila de espera
-    Core::SafeThreads = true;
-    checkPrint("Using thread safety code", (Core::SafeThreads ? "Yes" : "No"));
-
     Core::UseCompressedOutput = true;
     checkPrint("Using compressed output", (Core::UseCompressedOutput ? "Yes" : "No"));
 
@@ -141,11 +157,12 @@ void Core::setEnvironment(int argc, const char* argv[])
     Core::CallBrowserOnStart = false;
     checkPrint("Call browser on start", (Core::CallBrowserOnStart ? "Yes" : "No"));
 
-    Core::ThreadCount = thread::hardware_concurrency();
+    Core::ThreadCount = thread::hardware_concurrency() * 8;
     checkPrint("Checking CPU cores", to_string(Core::ThreadCount));
 
-    ConsoleLineHelper server_address_resolver("curl --silent ipinfo.io/ip");
-    Core::ServerAddress = server_address_resolver.executeStdOut().trim();
+    //ConsoleLineHelper server_address_resolver("curl --silent ipinfo.io/ip");
+    //Core::ServerAddress = server_address_resolver.executeStdOut().trim();
+    Core::ServerAddress = Core::ServerName;
     checkPrint("Retrieving remote IP address", Core::ServerAddress);
 
     Core::readConfiguration();

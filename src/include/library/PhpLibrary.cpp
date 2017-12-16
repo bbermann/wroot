@@ -11,24 +11,11 @@ PhpLibrary::PhpLibrary() : CustomLibrary()
 
 PhpLibrary::~PhpLibrary()
 {
-
 }
 
 String PhpLibrary::toString()
 {
     String path = getFullPath();
-    if (!path.endsWith(".php")) {
-        String tempPath = "public/index.php";
-
-        FileHelper file_helper;
-        if (!file_helper.Exists(path + tempPath))
-        {
-            tempPath = "index.php";
-        }
-
-        path.append(tempPath);
-    }
-
     String environment = getEnvironment();
     ConsoleLineHelper cli(environment + " php " + path);
     String response = cli.executeStdOut();
@@ -37,14 +24,14 @@ String PhpLibrary::toString()
 
 String PhpLibrary::getFullPath()
 {
-    return Core::DocumentRoot + getHttpRequest().getUrl();
+    return Core::DocumentRoot + urlRewriter.rewrite(getHttpRequest().getUrl());
 }
 
 String PhpLibrary::getEnvironment()
 {
     EnvironmentBuilder env;
     env.setPair("DOCUMENT_ROOT", Core::DocumentRoot);
-    env.setPair("HTTP_REFERER", ""); //Add to request
+    env.setPair("HTTP_REFERER", "");         //Add to request
     env.setPair("REMOTE_ADDR", "127.0.0.1"); //Add to request
     env.setPair("REMOTE_PORT", std::to_string(Core::ServerPort));
     env.setPair("REQUEST_METHOD", request_.getHttpMethod());

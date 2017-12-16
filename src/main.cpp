@@ -6,8 +6,6 @@ Desenvolvido por: Bruno dos Santos Bermann
 
 #include "include/core/HttpServer.hpp"
 
-using namespace std;
-
 String Core::ApplicationPath;
 String Core::ExecutablePath;
 String Core::PathSeparator;
@@ -17,15 +15,16 @@ String Core::ServerProtocol;
 String Core::DocumentRoot;
 StringList Core::Parameters;
 bool Core::IsDebugging;
-bool Core::SafeThreads;
 bool Core::UseCompressedOutput;
 bool Core::UseBrowserCache;
 bool Core::CallBrowserOnStart;
 bool Core::Running;
 int Core::ThreadCount;
 int Core::ServerPort;
-mutex Core::ThreadMutex;
-shared_ptr<HttpServer> Core::Server;
+std::mutex Core::ThreadMutex;
+std::shared_ptr<HttpServer> Core::Server;
+std::vector<UrlRewriteRule> Core::UrlRewriteRules;
+std::mutex Core::outMutex;
 
 int main(int argc, const char* argv[])
 {

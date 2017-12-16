@@ -114,7 +114,7 @@ void FileHelper::VerifyFile()
     }
 }
 
-bool FileHelper::Exists(String filename)
+bool FileHelper::Exists(String filename, bool canBeFolder)
 {
 	bool exists = false;
 
@@ -124,7 +124,25 @@ bool FileHelper::Exists(String filename)
 
         if (file.is_open())
         {
-			exists = true;
+            exists = true;
+
+            if (!canBeFolder) 
+            {
+                if (filename.endsWith("/")) 
+                {
+                    exists = false;
+                } 
+                else 
+                {
+                    //This will set the fail bit if filename is a directory
+                    file.seekg(0, ios::end);
+                    
+                    if (!file.good()) {
+                        exists = false;
+                    };
+                }
+            }
+
             file.close();
         }
 

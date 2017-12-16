@@ -32,7 +32,7 @@ public:
     
     String Read(String filename);
     void Write(String filename, String text);
-    bool Exists(String filename);
+    bool Exists(String filename, bool canBeFolder = false);
     bool CheckExtension(String filename, String extension);
     
 private:

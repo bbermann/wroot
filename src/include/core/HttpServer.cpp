@@ -139,7 +139,7 @@ void HttpServer::start()
 {
     if (listen(server_socket_, Core::kMaxConnections) == SOCKET_ERROR)
     {
-        Core::error("Error listening on socket at port " + to_string(port_) + ".");
+        Core::error("Unable to open socket on port " + to_string(port_) + ".");
         return;
     }
 
@@ -172,19 +172,19 @@ void HttpServer::start()
     }
     catch (exception e)
     {
-        string error_descriptor = "Falha na execução assíncrona de HttpServer::run.\nDetalhes: \"";
+        string error_descriptor = "Failed spawning worker threads on HttpServer::run.\nDetails: \"";
         error_descriptor.append(e.what());
         error_descriptor.append("\"\n");
 
         Core::warning(error_descriptor, "void HttpServer::start()");
     }
 
-    Core::outLn("wRoot started successfully.");
-    Core::outLn("Waiting for incoming connections at port " + to_string(port_) + "...");
+    Core::outLn("wRoot startup successfully.");
+    Core::outLn("Waiting for HTTP requests on port " + to_string(port_) + "...");
 
     if (Core::CallBrowserOnStart)
     {
-        Core::outLn("Spawning default browser...");
+        Core::outLn("Starting Google Chrome...");
 #ifdef WINDOWS
         Process browser("chrome", "http://localhost:8080/");
 #else
@@ -215,7 +215,7 @@ void HttpServer::start()
                 }
             }
 
-            ms_sleep = this->client_pending_.size() > 0 ? 0 : 10;
+            ms_sleep = this->client_pending_.size() > 0 ? 0 : 1;
             this_thread::sleep_for(chrono::milliseconds(ms_sleep));
         }
 
@@ -229,12 +229,6 @@ void HttpServer::start()
         }
         else
         {
-            Core::debugLn("Request count: " + to_string(request_count_));
-        }
-
-        if (Core::IsDebugging)
-        {
-            Core::debugLn("\n--------------------------------------------------------------------------------");
             Core::debugLn("Request count: " + to_string(request_count_));
         }
 
@@ -255,23 +249,23 @@ void HttpServer::run()
 
     while (Core::Running)
     {
-		//Invalidado o objeto que representa a conexão de entrada
+		//Set an INVALID_SOCKET value to the object which represents incomming connections
         conn.incomming_socket = INVALID_SOCKET;
 
-        if (Core::SafeThreads) Core::ThreadMutex.lock();
+        Core::ThreadMutex.lock();
 
-		//Se houver algum cliente na fila de espera
+		//If any client is waiting for processing
         if (this->client_pending_.size() > 0)
         {
-			//Atende a primeira conexão de entrada na fila
+            //Uses a FIFO approach, getting first element from the queue.
 			conn = this->client_pending_.front();
             
-			//Libera o slot de conexão reservado ao cliente atendido
+            //Free this connection slot
 			this->client_pending_.pop();
 			++free_connection_slots_;
         }
 
-        if (Core::SafeThreads) Core::ThreadMutex.unlock();
+        Core::ThreadMutex.unlock();
 
         if (conn.incomming_socket == INVALID_SOCKET)
         {
@@ -294,7 +288,7 @@ void HttpServer::run()
 
             if (Core::IsDebugging)
             {
-                Core::debugLn(to_string(timer.finish()) + " microsegundos se passaram desde o inicio de wRoot.response().\n");
+                Core::debugLn(to_string(timer.finish()) + " milliseconds has been passed since wRoot.response().\n");
             }
         }
         catch (exception e)
@@ -313,13 +307,12 @@ void HttpServer::response(IncommingConnection& conn)
 
     if (Core::IsDebugging)
     {
-        if (Core::SafeThreads) Core::ThreadMutex.lock();
+        Core::ThreadMutex.lock();
 
-        Core::debugLn("\n--------------------------------------------------------------------------------");
         Core::debugLn("Responding request from " + client_ipaddress + "...");
         Core::debugLn("Size of request queue is " + to_string(client_pending_.size()) + ".");
 
-        if (Core::SafeThreads) Core::ThreadMutex.unlock();
+        Core::ThreadMutex.unlock();
     }
 
 	bytesRecv = recv(conn.incomming_socket, recvBytes, Core::kBufferSize, 0);
@@ -334,7 +327,7 @@ void HttpServer::response(IncommingConnection& conn)
     //URL Explain
 	String request = recvBytes;
 
-	//Processa a resposta a ser enviada ao cliente
+	//Process request and get response
 	String response = process(request);
 
 	if (response.length() > 0)
@@ -348,12 +341,10 @@ void HttpServer::response(IncommingConnection& conn)
 
 		CLOSESOCKET(conn.incomming_socket);
 
-		/*Core::debugLn("Message Sent:" + tmpStr);
-		Core::debugLn("");*/
         Core::debugLn("Bytes Sent: " + to_string(bytesSent));
     }
 
-    if (Core::SafeThreads) Core::ThreadMutex.lock();
+    Core::ThreadMutex.lock();
 
     ++response_count_;
 
@@ -366,7 +357,7 @@ void HttpServer::response(IncommingConnection& conn)
         Core::debugLn("Response count: " + to_string(response_count_));
     }
 
-    if (Core::SafeThreads) Core::ThreadMutex.unlock();
+    Core::ThreadMutex.unlock();
 }
 
 String HttpServer::process(String request)
@@ -374,29 +365,24 @@ String HttpServer::process(String request)
     Timer timer;
     timer.start();
 
-    HttpRequest http_request(request);
+    HttpRequest httpRequest(request);
     
-    FileHelper file_helper;
-    String fileName = Core::ApplicationPath + http_request.getUrl();
+    FileHelper fileHelper;
+    String fileName = Core::ApplicationPath + httpRequest.getUrl();
 
     //Custom library initializer
 	unique_ptr<CustomLibrary> app(new FileLibrary());
 
-    if (fileName.endsWith("/")) 
-    {
-        fileName.append("index.html");
-    }
-
-    if (!file_helper.Exists(fileName) || file_helper.CheckExtension(fileName, "php"))
+    if (!fileHelper.Exists(Core::DocumentRoot + fileName) || fileHelper.CheckExtension(fileName, "php"))
     {
         app.reset(new PhpLibrary());
     }
 
-    app->setHttpRequest(http_request);
+    app->setHttpRequest(httpRequest);
 	
     HttpResponse response = app->getResponse();
 
-    Core::debugLn(to_string(timer.finish()) + " microsegundos se passaram desde o inicio de ExecAPI.");
+    Core::debugLn(to_string(timer.finish()) + " milliseconds has been passed since wRoot.process().");
 
     return response.toString();
 }

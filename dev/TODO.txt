@@ -1,6 +1,13 @@
-TODO:
+TODO MVP:
 
-- Rewrite URLs like apache mod_rewrite.
 - Better support for HTTP requests and responses.
 - Fill empty environment variables in PhpLibrary ($_SERVER).
-- Read configs from wroot.cfg
+- Improve HTTP response status
+- Improve Google Chrome TTFB (time to first byte) performance
+- Implement Keep-Alive (possibly related to the above TTFB issue)
+- Implement access control for files and directories
+
+
+FEATURE/URL-REWRITER:
+
+- Read and parse url_rewrite from wRoot.json
