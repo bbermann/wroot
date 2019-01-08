@@ -1,0 +1,16 @@
+{
+    "server": {
+        "name": "vagrant.io",
+        "listen": "*",
+        "port": 8000,
+        "document_root": "/wroot/dist/file",
+        "compressed_output": true,
+        "desktop_server": false
+    },
+    "url_rewrite": [
+        {
+            "input": "^(.+)$",
+            "output": "index.php $1"
+        }
+    ]
+}

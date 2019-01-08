@@ -44,12 +44,13 @@ static bool isValid(String value, ValidationCondition condition = NoCondition)
     {
     case NoCondition:
         return true;
+    
     case NotEmpty:
-    default:
-        break;
-    }
+        return !value.empty();
 
-    return false;
+    default:
+        return false;
+    }
 }
 
 template<class T>

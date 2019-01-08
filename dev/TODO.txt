@@ -1,3 +1,18 @@
+O que fazer com wroot:
+
+Problema: ecossistema do hadoop é muito complexo para começar.
+
+Objetivo: desenvolver solucao mais simples para clusterizacao de processamento de big data
+
+Passos:
+
+- buscar biblioteca para machine learning, big data ou similar
+- buscar biblioteca leve e dinamica para serializacao e deserializacao de classes
+- implementar auto-deteccao do servidor e ping-pong automatico entre cliente-servidor
+- implementar despache de pacotes de processamento para os clientes
+- implementar "join" de retorno dos processamentos
+- implementar interface de requisicoes e respostas utilizando o protocolo HTTP ja implementado
+
 TODO MVP:
 
 - Better support for HTTP requests and responses.
@@ -11,3 +26,8 @@ TODO MVP:
 FEATURE/URL-REWRITER:
 
 - Read and parse url_rewrite from wRoot.json
+
+
+Benchmark
+
+ab -n 1000 -c 10 127.0.0.1:8000/

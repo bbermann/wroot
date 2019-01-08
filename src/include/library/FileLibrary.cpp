@@ -9,7 +9,7 @@ using namespace std;
 FileLibrary::FileLibrary() : CustomLibrary()
 {
 	//This library implicitly compress the output
-	this->useCompressedOutput = false;
+	this->compressedOutput = false;
 }
 
 FileLibrary::~FileLibrary()
@@ -24,18 +24,16 @@ String FileLibrary::toString()
 	String returnString, currentLine;
 	String fullPath = this->getFullPath();
 	
-	Core::outLn("Reading file: " + fullPath);
+	Core::debugLn("[FileLibrary] Reading file: " + fullPath);
 
-    for (FileIndex index : file_list_)
+    for (FileIndex index : this->file_list_)
     {
         if (index.first == fullPath)
         {
-            Core::debugLn("FileLibrary: Recuperando cache do arquivo \"" + fullPath + "\"");
+            Core::debugLn("[FileLibrary] Retrieving file cache for \"" + fullPath + "\".");
             return index.second;
         }
     }
-
-    Core::debugLn("FileLibrary: Lendo arquivo \"" + fullPath + "\"");
 
     try
     {
@@ -60,11 +58,11 @@ String FileLibrary::toString()
         Core::error("Um erro foi disparado em FileLibrary::toString(): " + String(e.what()));
     }
 
-    FileIndex new_index;
-    new_index.first = fullPath;
-    new_index.second = returnString;
+    FileIndex newIndex;
+    newIndex.first = fullPath;
+    newIndex.second = returnString;
     
-    file_list_.insert(file_list_.end(), new_index);
+    this->file_list_.insert(this->file_list_.end(), newIndex);
 
     return returnString;
 }

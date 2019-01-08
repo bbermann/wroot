@@ -1,0 +1,10 @@
+command > custom taskbrocker script > parallel execution > join > response
+
+premissas:
+- se adicionar mais um pc na rede ele pinga o servidor e avisa que existe
+- cada grupo de clusters pode ser programado para uma tarefa especifica, permitindo assim controle individual para balanceamento de carga
+- codigo javascript permite a configuracao do paralelismo com metodos simples e uma interface amigavel para programadores acostumados a trabalhar com multithreading
+
+endpoints:
+- /cluster/{id}/{cmd}?token=<token>
+- /node/{id}/{cmd}?token=<token>

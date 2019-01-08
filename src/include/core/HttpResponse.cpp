@@ -28,35 +28,25 @@ String HttpResponse::toString()
 {
     string returnString;
 
-    returnString.append(Core::ServerProtocol + " " + getStatusString() + ENDL);
+    returnString.append(Core::ServerProtocol + " " + this->getStatusString() + ENDL);
     returnString.append("Host: " + Core::ServerAddress + ":" + to_string(Core::ServerPort) + ENDL);
     returnString.append("Server: " + Core::ServerName + ENDL);
     returnString.append("X-Powered-By: " + Core::ServerName + ENDL);
-    returnString.append("Connection: keep-alive" + ENDL);
-    returnString.append("Content-Type: " + type + "; charset=UTF-8" + ENDL);
-    returnString.append("Content-Length: " + to_string(content.size()) + ENDL);
+    returnString.append("Connection: close" + ENDL);
+    returnString.append("Content-Type: " + this->type + "; charset=UTF-8" + ENDL);
+    returnString.append("Content-Length: " + to_string(this->content.size()) + ENDL);
 
 	//Para que n�o seja compactado o conte�do de arquivos (previamente compactado pelo m�dulo FileLibrary).
-	if (compressOutput)
+	if (this->compressOutput)
 	{
-		content = ZLib::compress_string(content);
-
 		//returnString.append("Transfer-Encoding: gzip" + ENDL);
+
+		this->content = ZLib::compress_string(this->content);
 		returnString.append("Content-Encoding: deflate" + ENDL);
 	}
 
 	returnString.append(ENDL);
-	returnString.append(content);
-
-    //TODO Implementar
-    /*if(Core::UseBrowserCache)
-    {
-        returnString.append("Etag: \"pub1259380237;gz\"" + ENDL);
-    }
-    else
-    {
-        returnString.append("Cache-Control: no-cache" + ENDL);
-    }*/
+	returnString.append(this->content);
 
 	//returnString.append("Vary: Accept-Encoding, Cookie, User-Agent" + ENDL);
 	//returnString.append("Date: Thu, 08 Oct 2015 16:42:10 GMT" + ENDL);
@@ -70,12 +60,24 @@ String HttpResponse::toString()
 
 String HttpResponse::getStatusString()
 {
-    switch (status)
+    switch (this->status)
     {
     case 200:
         return "200 OK";
 
+	case 401: 
+		return "401 Forbidden";
+
+	case 404: 
+		return "404 Not Found";
+
+	case 500:
+		return "500 Internal Server Error";
+
+	case 503:
+		return "503 Service Unavailable";
+
     default:
-        return to_string(status);
+        return to_string(this->status);
     }
 }

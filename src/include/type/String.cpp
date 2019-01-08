@@ -3,12 +3,12 @@
 using namespace std;
 
 String::String(string val)
-: string(val)
+    : string(val)
 {
 }
 
-String::String(const char* cval)
-: string(cval)
+String::String(const char *cval)
+    : string(cval)
 {
 }
 
@@ -51,15 +51,24 @@ bool String::contains(string str)
 
 bool String::endsWith(string str)
 {
-	if (str.length() > this->length())
-	{
-		return false;
-	}
+    if (str.length() > this->length())
+    {
+        return false;
+    }
 
-	string this_end = this->substr(this->length() - str.length(), this->length());
-	string str_end = str;
+    string this_end = this->substr(this->length() - str.length(), this->length());
+    return (this_end == str);
+}
 
-	return (this_end == str_end);
+bool String::startsWith(string str)
+{
+    if (str.length() > this->length())
+    {
+        return false;
+    }
+
+    string this_begin = this->substr(0, str.length());
+    return (this_begin == str);
 }
 
 StringList String::explode(String separator)
@@ -69,7 +78,7 @@ StringList String::explode(String separator)
     return string_list;
 }
 
-void String::explode(string str, string separator, StringList* results)
+void String::explode(string str, string separator, StringList *results)
 {
     string work_copy = str;
     size_t found;
@@ -86,13 +95,13 @@ void String::explode(string str, string separator, StringList* results)
         found = work_copy.find_first_of(separator);
     }
 
-    if (work_copy.length() > 0)
+    if (work_copy.size() > 0)
     {
         results->push_back(work_copy);
     }
 }
 
-string String::replace(string& str, string from, string to)
+string String::replace(string &str, string from, string to)
 {
     size_t start_pos = 0;
     while ((start_pos = str.find(from, start_pos)) != std::string::npos)
@@ -120,15 +129,18 @@ string String::toUpper(string str)
 string String::trim(string str)
 {
     str.erase(str.begin(), find_if(str.begin(), str.end(),
-                                   [](char& ch)->bool
-                                   {
-                                       return !isspace(ch); }));
+                                   [](char &ch) -> bool { return !isspace(ch); }));
     str.erase(find_if(str.rbegin(), str.rend(),
-                      [](char& ch)->bool
-                      {
-                          return !isspace(ch); }).base(), str.end());
+                      [](char &ch) -> bool { return !isspace(ch); })
+                  .base(),
+              str.end());
 
     return str;
+}
+
+StringList String::regex_search(string regexp)
+{
+    return String::regex_search(*this, regexp);
 }
 
 StringList String::regex_search(string text, string regexp)
@@ -149,23 +161,28 @@ StringList String::regex_search(string text, string regexp)
 }
 
 // trim from start (in place)
-String String::ltrim() {
+String String::ltrim()
+{
     this->erase(this->begin(), std::find_if(this->begin(), this->end(), [](int ch) {
-        return !std::isspace(ch);
-    }));
+                    return !std::isspace(ch);
+                }));
     return *this;
 }
 
 // trim from end (in place)
-String String::rtrim() {
+String String::rtrim()
+{
     this->erase(std::find_if(this->rbegin(), this->rend(), [](int ch) {
-        return !std::isspace(ch);
-    }).base(), this->end());
+                    return !std::isspace(ch);
+                })
+                    .base(),
+                this->end());
     return *this;
 }
 
 // trim from both ends (in place)
-String String::trim() {
+String String::trim()
+{
     ltrim();
     rtrim();
     return *this;

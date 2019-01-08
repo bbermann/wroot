@@ -1,13 +1,16 @@
 #!/bin/sh
 
-mkdir bin > /dev/null 2>&1 && 
-cp -R dist/bin/* bin/ &&
-cp -R dist/file/* bin/;
+echo Creating wroot directory...
+mkdir bin > /dev/null 2>&1 && cp -R dist/cfg/* bin/
 
-mkdir bin/scripts > /dev/null 2>&1 &&
-cp -R dist/lua bin/scripts/lua;
+echo Copying wroot binaries...
+cp -R dist/bin/* bin/
+
+echo Moving Scripts...
+cp -R dist/scripts bin/;
+sudo chmod 777 bin/scripts -R;
 
 cd bin
 
-qmake ../wRoot.pro
+qmake ../wroot.pro
 make

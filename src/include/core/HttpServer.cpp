@@ -1,3 +1,5 @@
+#define WROOT_USE_CLUSTERLIBRARY
+
 #include "HttpServer.hpp"
 #include "HttpRequest.hpp"
 #include "../type/Html.hpp"
@@ -6,20 +8,29 @@
 #include "../type/Process.hpp"
 #include "../helper/FileHelper.hpp"
 #include "../library/FileLibrary.hpp"
+
+#if defined(WROOT_USE_PHPLIBRARY)
 #include "../library/PhpLibrary.hpp"
+#endif
+
+#if defined(WROOT_USE_CLUSTERLIBRARY)
+#include "../library/ClusterLibrary.hpp"
+#endif
 
 #include <mutex>
 #include <exception>
+#include <future>
+#include <thread>
 
 #ifdef WINDOWS
-    #undef errno
-    #define errno WSAGetLastError()
-    #ifndef EWOULDBLOCK
-        #define EWOULDBLOCK WSAEWOULDBLOCK
-    #endif
+#undef errno
+#define errno WSAGetLastError()
+#ifndef EWOULDBLOCK
+#define EWOULDBLOCK WSAEWOULDBLOCK
+#endif
 #else
-    #include <fcntl.h>    /* For O_RDWR */
-    #include <unistd.h>   /* For open(), creat() */
+#include <fcntl.h>  /* For O_RDWR */
+#include <unistd.h> /* For open(), creat() */
 #endif
 
 using namespace std;
@@ -28,12 +39,14 @@ vector<HtmlElement> HtmlElement::templates;
 
 HttpServer::HttpServer(size_t port)
 {
-    port_ = port;
-    server_socket_ = INVALID_SOCKET;
+    this->port_ = port;
+    this->server_socket_ = INVALID_SOCKET;
 
-    if (!this->createSocket()) exit(2);
+    if (!this->createSocket())
+        exit(2);
 
-    free_connection_slots_ = Core::kMaxConnections;
+    this->free_connection_slots_ = Core::kMaxConnections;
+    this->announce_rate_ = Core::IsDebugging ? 10 : 1000;
 
     HtmlElement::createTemplates();
 }
@@ -79,15 +92,15 @@ bool HttpServer::createSocket()
         server_address_.sin_addr.s_addr = INADDR_ANY;
         server_address_.sin_port = htons(port_);
 
-		const char* reuseSocket = "1";
-		setsockopt(server_socket_, SOL_SOCKET, SO_REUSEADDR, reuseSocket, sizeof(reuseSocket));
-		//setsockopt(server_socket_, SOL_SOCKET, SO_KEEPALIVE, reuseSocket, sizeof(reuseSocket));
+        const char *reuseSocket = "1";
+        setsockopt(server_socket_, SOL_SOCKET, SO_REUSEADDR, reuseSocket, sizeof(reuseSocket));
+        //setsockopt(server_socket_, SOL_SOCKET, SO_KEEPALIVE, reuseSocket, sizeof(reuseSocket));
 
-		// If iMode!=0, non-blocking mode is enabled.
-		u_long iMode = 1;
-		ioctlsocket(server_socket_, FIONBIO, &iMode);
+        // If iMode!=0, non-blocking mode is enabled.
+        u_long iMode = 1;
+        ioctlsocket(server_socket_, FIONBIO, &iMode);
 
-        if (::bind(server_socket_, (SOCKADDR*) & server_address_, sizeof (server_address_)) == SOCKET_ERROR)
+        if (::bind(server_socket_, (SOCKADDR *)&server_address_, sizeof(server_address_)) == SOCKET_ERROR)
         {
             Core::error("Socket binding has failed.");
             CLOSESOCKET(server_socket_);
@@ -108,9 +121,9 @@ bool HttpServer::createSocket()
         server_address_.sin_port = htons(port_);
 
         int reuseSocket = 1;
-        setsockopt(server_socket_, SOL_SOCKET, SO_REUSEPORT, &reuseSocket, sizeof (reuseSocket));
-        setsockopt(server_socket_, SOL_SOCKET, SO_REUSEADDR, &reuseSocket, sizeof (reuseSocket));
-        setsockopt(server_socket_, SOL_SOCKET, SO_KEEPALIVE, &reuseSocket, sizeof (reuseSocket));
+        setsockopt(server_socket_, SOL_SOCKET, SO_REUSEPORT, &reuseSocket, sizeof(reuseSocket));
+        setsockopt(server_socket_, SOL_SOCKET, SO_REUSEADDR, &reuseSocket, sizeof(reuseSocket));
+        setsockopt(server_socket_, SOL_SOCKET, SO_KEEPALIVE, &reuseSocket, sizeof(reuseSocket));
 
         int fcntl_status = fcntl(server_socket_, F_SETFL, fcntl(server_socket_, F_GETFL, 0) /*| O_NONBLOCK*/);
 
@@ -119,7 +132,7 @@ bool HttpServer::createSocket()
             Core::error("Failed to set non blocking option on the server socket.", "bool HttpServer::createSocket()");
         }
 
-        if (bind(server_socket_, (struct sockaddr*) &server_address_, sizeof (server_address_)) == SOCKET_ERROR)
+        if (bind(server_socket_, (struct sockaddr *)&server_address_, sizeof(server_address_)) == SOCKET_ERROR)
         {
             Core::error("Socket binding has failed.");
             CLOSESOCKET(server_socket_);
@@ -147,16 +160,16 @@ void HttpServer::start()
     response_count_ = 0;
 
     //Uma thread (this_thread) é reservada para escutar a porta de entrada.
-    const unsigned int listen_threads = 1;
+    const unsigned int listenThreads = 1;
     //Ao menos uma thread é necessária para processar as respostas...
-    int worker_threads = 1;
+    unsigned int workerThreads = 1;
     //Se for viável alocar mais de uma thread para processar as respostas, então calcule quantas...
     if (Core::ThreadCount > 1)
     {
-        worker_threads = Core::ThreadCount - listen_threads;
+        workerThreads = Core::ThreadCount - listenThreads;
     }
 
-    thread** serverThreads = new thread*[worker_threads]();
+    thread **serverThreads = new thread *[workerThreads]();
 
     Core::Running = true;
     Core::Server = shared_ptr<HttpServer>(this);
@@ -164,7 +177,7 @@ void HttpServer::start()
     //Um thread pool para aceitar conexões (this_thread) e as demais threads processam respostas.
     try
     {
-        for (int threadIterator = 0; threadIterator < worker_threads; threadIterator++)
+        for (int threadIterator = 0; threadIterator < workerThreads; threadIterator++)
         {
             serverThreads[threadIterator] = new thread(&HttpServer::run, this);
             serverThreads[threadIterator]->detach();
@@ -172,15 +185,14 @@ void HttpServer::start()
     }
     catch (exception e)
     {
-        string error_descriptor = "Failed spawning worker threads on HttpServer::run.\nDetails: \"";
-        error_descriptor.append(e.what());
-        error_descriptor.append("\"\n");
+        string description = "Failed spawning worker threads on HttpServer::run.\nDetails: \"";
+        description.append(e.what());
+        description.append("\"\n");
 
-        Core::warning(error_descriptor, "void HttpServer::start()");
+        Core::warning(description, "void HttpServer::start()");
     }
 
-    Core::outLn("wRoot startup successfully.");
-    Core::outLn("Waiting for HTTP requests on port " + to_string(port_) + "...");
+    Core::outLn("Waiting for HTTP requests on port " + to_string(port_) + "...\n");
 
     if (Core::CallBrowserOnStart)
     {
@@ -207,36 +219,32 @@ void HttpServer::start()
 
             if (free_slots > 0)
             {
-                conn.incomming_socket = accept(server_socket_, (struct sockaddr *) &conn.client_address, &conn.client_length);
+                conn.incomming_socket = accept(server_socket_, (struct sockaddr *)&conn.client_address, &conn.client_length);
 
-                if (errno == EWOULDBLOCK)
+                if (errno == EWOULDBLOCK || errno == EAGAIN || errno == ECONNABORTED)
                 {
                     conn.incomming_socket = INVALID_SOCKET;
                 }
             }
 
-            ms_sleep = this->client_pending_.size() > 0 ? 0 : 1;
+            ms_sleep = this->client_pending_.size() > 0 ? 0 : 5;
             this_thread::sleep_for(chrono::milliseconds(ms_sleep));
         }
 
         --free_connection_slots_;
         ++request_count_;
 
-        //O número de requisições é diferente do número de respostas quando conexões são canceladas.
-        if (request_count_ % 1000 == 0)
+        if (request_count_ % this->announce_rate_ == 0)
         {
             Core::outLn("Request count: " + to_string(request_count_));
         }
-        else
-        {
-            Core::debugLn("Request count: " + to_string(request_count_));
-        }
 
-		this->client_pending_.push(conn);
+        this->client_pending_.push(conn);
     }
 
-    //Desaloca a memória reservada para as threads do servidor.
-    for (int it = 0; it < worker_threads; ++it)
+    //Shutdown...
+    //Free the server threads memory
+    for (int it = 0; it < workerThreads; ++it)
     {
         delete serverThreads[it];
     }
@@ -249,20 +257,20 @@ void HttpServer::run()
 
     while (Core::Running)
     {
-		//Set an INVALID_SOCKET value to the object which represents incomming connections
+        //Set an INVALID_SOCKET value to the object which represents incomming connections
         conn.incomming_socket = INVALID_SOCKET;
 
         Core::ThreadMutex.lock();
 
-		//If any client is waiting for processing
+        //If any client is waiting for processing
         if (this->client_pending_.size() > 0)
         {
             //Uses a FIFO approach, getting first element from the queue.
-			conn = this->client_pending_.front();
-            
+            conn = this->client_pending_.front();
+
             //Free this connection slot
-			this->client_pending_.pop();
-			++free_connection_slots_;
+            this->client_pending_.pop();
+            ++free_connection_slots_;
         }
 
         Core::ThreadMutex.unlock();
@@ -276,20 +284,8 @@ void HttpServer::run()
 
         try
         {
-			Timer timer;
-
-            if (Core::IsDebugging)
-            {
-				timer.start();
-            }
-
-            //Processa requisição e envia a resposta ao cliente
-            response(conn);
-
-            if (Core::IsDebugging)
-            {
-                Core::debugLn(to_string(timer.finish()) + " milliseconds has been passed since wRoot.response().\n");
-            }
+            //Process the request and send the response to the client
+            this->response(conn);
         }
         catch (exception e)
         {
@@ -298,49 +294,78 @@ void HttpServer::run()
     }
 }
 
-void HttpServer::response(IncommingConnection& conn)
+void HttpServer::response(IncommingConnection &conn)
 {
-    char recvBytes[Core::kBufferSize];
-    string conn_url, conn_method;
-    string client_ipaddress = inet_ntoa(conn.client_address.sin_addr);
-    ssize_t bytesRecv = -1;
+    Timer timer;
 
-    if (Core::IsDebugging)
-    {
-        Core::ThreadMutex.lock();
+    std::future<HttpRequest> httpRequestFuture = std::async([conn, &timer] {
+        timer.start();
 
-        Core::debugLn("Responding request from " + client_ipaddress + "...");
-        Core::debugLn("Size of request queue is " + to_string(client_pending_.size()) + ".");
+        char recvBuffer[Core::kBufferSize];
 
-        Core::ThreadMutex.unlock();
-    }
+        //Retrieve the client ip address and announce it when debugging
+        string clientIpAddress = inet_ntoa(conn.client_address.sin_addr);
+        Core::debugLn("\nHandling request from " + clientIpAddress + "...");
+        
+        bool retry = false;
+        errno = 0;
+        String receivedData = "";
 
-	bytesRecv = recv(conn.incomming_socket, recvBytes, Core::kBufferSize, 0);
+        do {
+            ssize_t bytesReceived = recv(conn.incomming_socket, recvBuffer, Core::kBufferSize, 0);
 
-    if (bytesRecv <= 0)
-    {
+            // Client disconnect or error receiving request
+            if (bytesReceived <= 0 || errno != 0)
+            {
+                // TODO: Add error log
+                return HttpRequest();
+            }
+
+            // The request should not be fully received yet, let's read some more data
+            if (bytesReceived == Core::kBufferSize) {
+                retry = true;
+            }
+
+            // Store the current buffered data to join request parts 
+            receivedData.append(recvBuffer);
+        } while (retry);
+
+        Core::debugLn("Request received in " + to_string(timer.finish()) + "ms.");
+
+        HttpRequest httpRequest(receivedData, clientIpAddress);
+        return httpRequest;
+    });
+    auto httpRequest = httpRequestFuture.get();
+
+    if (!httpRequest.isValid()) {
         Core::debugLn("Socket closed.");
         CLOSESOCKET(conn.incomming_socket);
-        return;
     }
 
-    //URL Explain
-	String request = recvBytes;
+    //Process request and get response    
+    std::future<String> responseFuture = std::async([this, &httpRequest, &timer] { 
+        timer.start();
+        auto response = this->process(httpRequest);
+        Core::debugLn("Request processed in " + to_string(timer.finish()) + "ms.");
+        return response;
+    });
+    String response = responseFuture.get();
+    //String response = this->process(httpRequest);
 
-	//Process request and get response
-	String response = process(request);
-
-	if (response.length() > 0)
+    if (response.length() > 0)
     {
         ssize_t bytesSent = -1;
 
-		do
-		{
-			bytesSent = send(conn.incomming_socket, response.data(), response.length(), MSG_NOSIGNAL);
-		} while (errno == EWOULDBLOCK);
+        timer.start();
 
-		CLOSESOCKET(conn.incomming_socket);
+        do
+        {
+            bytesSent = send(conn.incomming_socket, response.data(), response.length(), MSG_NOSIGNAL);
+        } while (errno == EWOULDBLOCK);
 
+        CLOSESOCKET(conn.incomming_socket);
+
+        Core::debugLn("Response sent in " + to_string(timer.finish()) + "ms.");
         Core::debugLn("Bytes Sent: " + to_string(bytesSent));
     }
 
@@ -348,46 +373,54 @@ void HttpServer::response(IncommingConnection& conn)
 
     ++response_count_;
 
-    if (response_count_ % 1000 == 0)
+    if (response_count_ % this->announce_rate_ == 0)
     {
         Core::outLn("Response count: " + to_string(response_count_));
-    }
-    else
-    {
-        Core::debugLn("Response count: " + to_string(response_count_));
     }
 
     Core::ThreadMutex.unlock();
 }
 
-String HttpServer::process(String request)
+String HttpServer::process(HttpRequest httpRequest)
 {
-    Timer timer;
-    timer.start();
-
-    HttpRequest httpRequest(request);
-    
-    FileHelper fileHelper;
-    String fileName = Core::ApplicationPath + httpRequest.getUrl();
-
-    //Custom library initializer
-	unique_ptr<CustomLibrary> app(new FileLibrary());
-
-    if (!fileHelper.Exists(Core::DocumentRoot + fileName) || fileHelper.CheckExtension(fileName, "php"))
+    try
     {
-        app.reset(new PhpLibrary());
+        String url = httpRequest.getUrl();
+        Core::debugLn("Requested URL: " + url);
+
+        FileHelper fileHelper;
+        String fileName = Core::ApplicationPath + url;
+
+        //Custom library initializer
+        unique_ptr<CustomLibrary> app(new FileLibrary());
+
+#if defined(WROOT_USE_CLUSTERLIBRARY)
+        app.reset(new ClusterLibrary());
+#elif defined(WROOT_USE_PHPLIBRARY)
+        if (!fileHelper.Exists(Core::DocumentRoot + fileName) || fileHelper.CheckExtension(fileName, "php"))
+        {
+            app.reset(new PhpLibrary());
+        }
+#endif
+
+        app->setHttpRequest(httpRequest);
+
+        HttpResponse response = app->getResponse();
+        return response.toString();
+    }
+    catch (std::runtime_error ex)
+    {
+        Core::warning(String("Runtime error silenced by HttpServer: ") + ex.what(), "HttpServer::process");
+    }
+    catch (std::exception ex)
+    {
+        Core::warning(String("Exception silenced by HttpServer: ") + ex.what(), "HttpServer::process");
     }
 
-    app->setHttpRequest(httpRequest);
-	
-    HttpResponse response = app->getResponse();
-
-    Core::debugLn(to_string(timer.finish()) + " milliseconds has been passed since wRoot.process().");
-
-    return response.toString();
+    return Core::httpError((unsigned short)500).toString();
 }
 
-void HttpServer::getUrl(String& url, String& library, String& function, StringList& arguments)
+void HttpServer::getUrl(String &url, String &library, String &function, StringList &arguments)
 {
     //Conversão do url em array (variável expurl), cada elemento é separado por uma barra (/).
     StringList expurl = url.explode("/");
@@ -425,25 +458,25 @@ void HttpServer::destroySocket()
 
 String HttpServer::getHttpHeader(String request)
 {
-	StringList split = request.explode("\r\n\r\n");
+    StringList split = request.explode("\r\n\r\n");
 
-	if (split.size() > 0) return split.at(0);
+    if (split.size() > 0)
+        return split.at(0);
 
-	return "";
+    return "";
 }
 
 bool HttpServer::getHeaderParameter(String header, HeaderParameter parameter)
 {
-	switch (parameter)
-	{
-	case HeaderParameter::ConnectionKeepAlive:
-		return header.contains("Connection: keep-alive");
+    switch (parameter)
+    {
+    case HeaderParameter::ConnectionKeepAlive:
+        return header.contains("Connection: keep-alive");
 
-	case HeaderParameter::ConnectionClose:
-		return 
-			header.contains("Connection: close") ||
-			header.contains("Connection: keep-alive, close");
-	}
+    case HeaderParameter::ConnectionClose:
+        return header.contains("Connection: close") ||
+               header.contains("Connection: keep-alive, close");
+    }
 
-	return false;
+    return false;
 }

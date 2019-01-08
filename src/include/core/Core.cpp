@@ -1,11 +1,34 @@
 #include "Core.hpp"
 #include "../helper/ConsoleLineHelper.hpp"
-#include "../../3rdParty/git/nlohmann/json/src/json.hpp"
+#include "nlohmann/json/src/json.hpp"
+#include "include/core/HttpResponse.hpp"
+#include "include/database/SQLiteDatabase.hpp"
 #include <mutex>
 #include <fstream>
 
 using json = nlohmann::json;
 using namespace std;
+using namespace BBermann::WRoot::Database;
+
+String Core::ApplicationPath;
+String Core::ExecutablePath;
+String Core::PathSeparator;
+String Core::ServerAddress;
+String Core::ServerName;
+String Core::ServerProtocol;
+String Core::DocumentRoot;
+StringList Core::Parameters;
+bool Core::IsDebugging;
+bool Core::CompressedOutput;
+bool Core::CallBrowserOnStart;
+bool Core::Running;
+int Core::ThreadCount;
+int Core::ServerPort;
+std::mutex Core::ThreadMutex;
+std::shared_ptr<HttpServer> Core::Server;
+std::vector<UrlRewriteRule> Core::UrlRewriteRules;
+std::mutex Core::outMutex;
+CustomDatabase* Core::db_ = new SQLiteDatabase();
 
 Core::Core()
 {
@@ -30,16 +53,14 @@ void Core::debugLn(string text)
 
 void Core::error(string text, int code)
 {
-    String tmp = "ERROR";
+    String tmp = "## ERROR ##";
 
     if (code > 0)
     {
-        tmp.append(" ");
-        tmp.append(to_string(code));
+        tmp.append(" " + to_string(code));
     }
 
-    tmp.append(": ");
-    tmp.append(text);
+    tmp.append(ENDL + TAB + text);
 
     outLn(tmp);
     exit(code);
@@ -47,7 +68,7 @@ void Core::error(string text, int code)
 
 void Core::error(string text, string function)
 {
-    String tmp = "ERROR";
+    String tmp = "## ERROR ##";
 
     if (!function.empty())
     {
@@ -55,10 +76,9 @@ void Core::error(string text, string function)
         tmp.append(function);
     }
 
-    tmp.append(": ");
-    tmp.append(text);
+    tmp.append(ENDL + TAB + text);
+    
     outLn(tmp);
-
     exit(-1);
 }
 
@@ -76,34 +96,44 @@ void Core::outLn(string text)
 
 void Core::readConfiguration()
 {
-    String configFile(Core::ApplicationPath + String(Core::kApplicationName) + ".json");
-
-    Core::outLn("Reading configuration file " + configFile + "...");
+    String configFile(Core::ExecutablePath + ".json");
+    Core::checkPrint("Reading configuration file", configFile);
 
     ifstream reader(configFile.c_str());
-    json parser;
+    
+    //The JSON string parser which will interpret the config file
+    json config;
 
     if (reader.is_open() && reader.good())
     {
-        reader >> parser;
+        reader >> config;
     }
     else
     {
         Core::error("Can't open file " + configFile + "!");
     }
 
-    auto server = parser["server"];
+    auto server = config["server"];
+    
     Core::ServerName = server["name"];
     Core::ServerPort = server["port"];
-    Core::DocumentRoot = server["document_root"];
 
+    Core::DocumentRoot = server["document_root"];
     if (!Core::DocumentRoot.endsWith("/"))
     {
         Core::DocumentRoot.append("/");
     }
 
-    auto urlRewriteRulesParser = parser["url_rewrite"];
+    Core::CompressedOutput = server["compressed_output"];
+    Core::checkPrint("Using compressed output", (Core::CompressedOutput ? "Yes" : "No"));
 
+    Core::CallBrowserOnStart = server["desktop_server"];
+    Core::checkPrint("Call browser on start", (Core::CallBrowserOnStart ? "Yes" : "No"));
+
+    Core::ThreadCount = thread::hardware_concurrency();
+    Core::checkPrint("Checking CPU cores", to_string(Core::ThreadCount));
+
+    auto urlRewriteRulesParser = config["url_rewrite"];
     for (auto ruleParser : urlRewriteRulesParser)
     {
         String input = ruleParser["input"];
@@ -114,6 +144,9 @@ void Core::readConfiguration()
         
         Core::UrlRewriteRules.insert(Core::UrlRewriteRules.end(), rule);
     }
+
+    Core::ServerAddress = Core::ServerName;
+    Core::checkPrint("Retrieving remote IP address", Core::ServerAddress);
 }
 
 void Core::setEnvironment(int argc, const char *argv[])
@@ -146,33 +179,8 @@ void Core::setEnvironment(int argc, const char *argv[])
         Core::Parameters.insert(Core::Parameters.end(), argv[i]);
     }
 
-    Core::UseCompressedOutput = true;
-    checkPrint("Using compressed output", (Core::UseCompressedOutput ? "Yes" : "No"));
-
-    //TODO: Implementar
-    Core::UseBrowserCache = false;
-    checkPrint("Using browser cache", (Core::UseBrowserCache ? "Yes" : "No"));
-
-    //Iniciar o Google Chrome ao chamar HttpServer::start();
-    Core::CallBrowserOnStart = false;
-    checkPrint("Call browser on start", (Core::CallBrowserOnStart ? "Yes" : "No"));
-
-    Core::ThreadCount = thread::hardware_concurrency() * 8;
-    checkPrint("Checking CPU cores", to_string(Core::ThreadCount));
-
-    //ConsoleLineHelper server_address_resolver("curl --silent ipinfo.io/ip");
-    //Core::ServerAddress = server_address_resolver.executeStdOut().trim();
-    Core::ServerAddress = Core::ServerName;
-    checkPrint("Retrieving remote IP address", Core::ServerAddress);
-
     Core::readConfiguration();
-
     Core::outLn("Done.");
-}
-
-void Core::getStackTrace(int trace_count_max)
-{
-    Core::stopServers();
 }
 
 void Core::stopServers()
@@ -184,7 +192,7 @@ void Core::stopServers()
 
 void Core::warning(string text, string function)
 {
-    String tmp = "WARNING";
+    String tmp = "## WARNING ##";
 
     if (!function.empty())
     {
@@ -192,12 +200,24 @@ void Core::warning(string text, string function)
         tmp.append(function);
     }
 
-    tmp.append(": ");
-    tmp.append(text);
+    tmp.append(ENDL + TAB + text);
     outLn(tmp);
 }
 
 void Core::checkPrint(String check, String value)
 {
     Core::outLn("- " + check + ": [" + value + "]");
+}
+
+CustomDatabase* Core::db()
+{
+    return Core::db_;
+}
+
+HttpResponse Core::httpError(unsigned short statusCode)
+{
+    HttpResponse response;
+    response.status = statusCode;
+    response.compressOutput = true;
+    return response;
 }

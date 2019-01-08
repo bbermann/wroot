@@ -172,12 +172,6 @@ void HtmlElement::createTemplates()
 
 	HtmlElement footer("footer", "footer");
 	HtmlElement::addTemplate(footer);
-
-    HtmlElement chart("div", "chart");
-    FileHelper file;
-    String chartTemplate = file.Read(Core::ApplicationPath + "/resources/views/templates/line.html");
-    chart.setContent(chartTemplate);
-    HtmlElement::addTemplate(chart);
 }
 
 string HtmlElement::getId()

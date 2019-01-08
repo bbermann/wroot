@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <regex>
 #include <memory>
+#include <map>
 
 typedef std::vector<std::string> StringList;
+typedef std::map<std::string, std::string> StringMap;
 
 class String : public std::string {
 public:
@@ -25,6 +27,8 @@ public:
 
 	bool contains(std::string str); 
 	bool endsWith(std::string str);
+    bool startsWith(std::string str);
+    StringList regex_search(std::string regexp);
 
     StringList explode(String separator);
     

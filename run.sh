@@ -2,4 +2,4 @@
 
 ./build.sh && 
 cd bin && 
-./wRoot;
+./wroot;

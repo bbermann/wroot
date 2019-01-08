@@ -1,47 +1,42 @@
 #pragma once
-#include "../type/String.hpp"
+#include "include/core/Core.hpp"
 
-enum Database {
-    None = 0,
-    PostgreSQL = 1,
-    Access = 2,
-    MySQL = 3,
-    Oracle = 4,
+namespace BBermann::WRoot::Database
+{
+
+class ResultSet : public std::vector<std::vector<std::string>>
+{
+public:
+
+    StringList first()
+    {
+        if (this->size() > 0) {
+            return this->at(0);
+        }
+
+        throw std::runtime_error("Undefined index 0 in the ResultSet.");
+    }
+
+    StringList last()
+    {
+        return this->at(this->size() - 1);
+    }
 };
 
 class CustomDatabase
 {
-public:
-	CustomDatabase(Database database_type, String hostname, unsigned port, String username, String password, String database);
-	virtual ~CustomDatabase();
-	
-	//Virtual pure decl
-	virtual bool IsOpen() = 0;
-	virtual bool Open() = 0;
-	virtual void Close() = 0;
-        virtual bool Prepare(String query) = 0;
-        virtual void* ExecuteQuery(String query) = 0;
+  public:
+    CustomDatabase()
+    {
+    }
 
-	//Getter
-	unsigned GetPort();
-	String GetHost();
-	String GetUser();
-	String GetPassword();
-	String GetDatabase();
-        Database GetDatabaseType();
-
-	//Setter
-	void SetPort(unsigned port);
-	void SetHost(String hostname);
-	void SetUser(String username);
-	void SetPassword(String password);
-	void SetDatabase(String database);
-        void SetDatabaseType(Database database);
-
-protected:
-	unsigned connection_port_;
-	String connection_host_, connection_user_, connection_pass_, 
-		database_name_, database_schema_;
-        Database database_type_;
+    virtual ~CustomDatabase()
+    {
+    }
+    
+    // Pure virtuals
+    virtual void execute(std::string command) = 0;
+    virtual ResultSet query(std::string query) = 0;
 };
 
+} // namespace BBermann::WRoot::Database

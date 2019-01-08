@@ -11,13 +11,21 @@
 #endif
 
 #define END_CONNECTION String("\r\n\r\n")
+#define TAB String("\t")
 
 #include <mutex>
 #include <thread>
 #include "../type/String.hpp"
 #include "../type/UrlRewriteRule.hpp"
 
+namespace BBermann::WRoot::Database {
+    class CustomDatabase;
+}
+
 class HttpServer;
+class HttpResponse;
+
+using BBermann::WRoot::Database::CustomDatabase;
 
 class Core
 {
@@ -28,21 +36,20 @@ class Core
     static void debugLn(std::string text);
     static void error(std::string text, int code = 0);
     static void error(std::string text, std::string function);
-    static void getStackTrace(int trace_count_max = 32);
     static void out(std::string text);
     static void outLn(std::string text);
-    static void readConfiguration();
     static void setEnvironment(int argc, const char *argv[]);
     static void stopServers();
     static void warning(std::string text, std::string function);
+    static CustomDatabase* db();
+    static HttpResponse httpError(unsigned short statusCode);
 
 #ifdef WINDOWS
     static const int kWSockVersion = 2;
 #endif
 
     static const unsigned int kMaxConnections = 10000, kBufferSize = 8192 * 10;
-    static constexpr const char *kApplicationName = "wRoot";
-
+    
     static String ApplicationPath;
     static String ExecutablePath;
     static String PathSeparator;
@@ -52,8 +59,7 @@ class Core
     static String DocumentRoot;
     static StringList Parameters;
     static bool IsDebugging;
-    static bool UseCompressedOutput;
-    static bool UseBrowserCache;
+    static bool CompressedOutput;
     static bool CallBrowserOnStart;
     static bool Running;
     static int ThreadCount;
@@ -63,9 +69,10 @@ class Core
     static std::vector<UrlRewriteRule> UrlRewriteRules;
 
   private:
+    static void readConfiguration();
     static void checkPrint(String check, String value);
-
     static std::mutex outMutex;
+    static CustomDatabase* db_;
 };
 
 #endif //CORE_HPP

@@ -40,9 +40,9 @@ public:
 	virtual HttpResponse getResponse();
 
 protected:
-	bool useCompressedOutput = Core::UseCompressedOutput;
+	bool compressedOutput = Core::CompressedOutput;
 	unsigned short statusCode = 200;
-    HttpRequest request_;
+    HttpRequest request;
 	String responseType = "text/plain";
 };
 

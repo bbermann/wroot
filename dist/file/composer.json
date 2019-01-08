@@ -1,0 +1,11 @@
+{
+    "name": "bbermann/wroot",
+    "require": {
+    },
+    "authors": [
+        {
+            "name": "Bruno Bermann",
+            "email": "brunobermann@gmail.com"
+        }
+    ]
+}

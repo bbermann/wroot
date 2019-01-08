@@ -8,41 +8,11 @@
 class UrlRewriter
 {
   public:
-    UrlRewriter()
-    {
-    }
+    UrlRewriter();
+    virtual ~UrlRewriter();
 
-    virtual ~UrlRewriter()
-    {
-    }
-
-    String rewrite(String url)
-    {
-        Core::ThreadMutex.lock();
-        std::vector<UrlRewriteRule> rewriteRules = Core::UrlRewriteRules;
-        Core::ThreadMutex.unlock();
-
-        for (auto rule : rewriteRules)
-        {
-            String rewrittenUrl = rule.output;
-            std::smatch matches;
-
-            if (regex_match(url, matches, rule.input))
-            {
-                int iterator = 0;
-                for (auto match : matches)
-                {
-                    ++iterator;
-                    String dolarVar = match.str();
-                    String dolarIterator = "$" + std::to_string(iterator);
-                    rewrittenUrl = String::replace(rewrittenUrl, dolarIterator, dolarVar);
-                }
-                return rewrittenUrl;
-            }
-        }
-
-        return url;
-    }
+    String rewrite(String url);
+    String getScriptPath(String url);
 };
 
 #endif //URLREWRITER_HPP

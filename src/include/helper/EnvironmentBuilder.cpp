@@ -18,7 +18,7 @@ String EnvironmentBuilder::toString()
     String envString;
     for (auto pair : environment_)
     {
-        envString.append(pair.first + "=" + pair.second + " ");
+        envString.append(pair.first + "=\"" + pair.second + "\" ");
     }
     return envString;
 }

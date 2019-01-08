@@ -28,6 +28,7 @@ typedef int SOCKET;
 #include "../type/String.hpp"
 #include "../core/Core.hpp"
 #include "../core/HttpResponse.hpp"
+#include "../core/HttpRequest.hpp"
 
 #include <thread>
 #include <queue>
@@ -51,7 +52,7 @@ public:
     ///<example>
     ///ExecAPI("/estoque/produto/7893546218542/", "GET");
     ///</example>
-    String process(String request);
+    String process(HttpRequest request);
 
 protected:
 #ifdef WINDOWS
@@ -77,6 +78,9 @@ protected:
 	void response(IncommingConnection& conn);
 	String getHttpHeader(String request);
 	bool getHeaderParameter(String header, HeaderParameter parameter);
+
+private:
+    int announce_rate_;
 };
 
 #endif // HTTPSERVER_H

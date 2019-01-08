@@ -51,7 +51,7 @@ String FileHelper::GetOpenMode(File::OpenMode open_mode)
 		break;
 
     case File::OpenMode::WriteAppend:
-        if (ret.contains("w")) //TODO: endsWith
+        if (ret.endsWith("w"))
             ret.append("+");
         else
             ret.append("w+");
@@ -110,7 +110,7 @@ void FileHelper::VerifyFile()
 {
     if (file_ == nullptr)
     {
-        throw new std::logic_error("Não foi possível abrir o arquivo " + filename_ + "!");
+        throw std::logic_error("Não foi possível abrir o arquivo " + filename_ + "!");
     }
 }
 

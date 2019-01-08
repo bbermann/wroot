@@ -14,8 +14,11 @@ class PhpLibrary : public CustomLibrary
     virtual String toString() override;
 
   protected:
-    String getFullPath();
-    String getEnvironment();
+    String getScriptPath();
+    String getScriptPathWithUrl();
+    String getEnvironment(String scriptPath);
+    String getSessionScript();
+    String process(String file);
 
     UrlRewriter urlRewriter;
 };

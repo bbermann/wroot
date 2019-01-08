@@ -12,12 +12,12 @@ CustomLibrary::~CustomLibrary()
 
 void CustomLibrary::setHttpRequest(HttpRequest request)
 {
-	request_ = request;
+	this->request = request;
 }
 
 HttpRequest CustomLibrary::getHttpRequest()
 {
-	return request_;
+	return request;
 }
 
 HttpResponse CustomLibrary::getResponse() 
@@ -26,11 +26,11 @@ HttpResponse CustomLibrary::getResponse()
 	response.content = this->toString();
 	response.status = this->statusCode;
 	response.type = this->responseType;
-	response.compressOutput = this->useCompressedOutput;
+	response.compressOutput = this->compressedOutput;
 	return response;
 }
 
 String CustomLibrary::getRequestUrl()
 {
-	return request_.getUrl();
+	return request.getUrl();
 }
