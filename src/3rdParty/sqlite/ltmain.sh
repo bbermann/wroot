@@ -5406,7 +5406,7 @@ func_exec_program ()
     if test \"\$thisdir\" = \".\"; then
       thisdir=\`pwd\`
     fi
-    # remove .libs from thisdir
+    # remove _.libs from thisdir
     case \"\$thisdir\" in
     *[\\\\/]$objdir ) thisdir=\`\$ECHO \"\$thisdir\" | $SED 's%[\\\\/][^\\\\/]*$%%'\` ;;
     $objdir )   thisdir=. ;;

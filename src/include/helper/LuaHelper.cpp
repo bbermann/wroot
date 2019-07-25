@@ -12,7 +12,7 @@
  */
 
 #include "LuaHelper.hpp"
-#include "../include/core/Core.hpp"
+#include "../core/Core.hpp"
 
 LuaHelper::LuaHelper(String script_path)
 {

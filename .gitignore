@@ -31,9 +31,22 @@
 *.out
 *.app
 
-.vagrant
 .vscode
+.idea
 bin
+dist/bin
 lib
 releases
-src/3rdParty/git
+cmake-build-debug
+
+# git modules
+src/3rdParty/nlohmann/json
+src/3rdParty/sqlite-cpp
+src/3rdParty/lua
+
+# sqlite libraries and dependencies
+src/3rdParty/sqlite/.libs
+src/3rdParty/sqlite/.deps
+
+# zlib library
+src/3rdParty/zlib/lib

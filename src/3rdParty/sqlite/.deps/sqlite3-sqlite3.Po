@@ -1,6 +1,6 @@
 sqlite3-sqlite3.o: sqlite3.c /usr/include/stdc-predef.h \
- /usr/lib/gcc/x86_64-linux-gnu/7/include/stdarg.h \
- /usr/lib/gcc/x86_64-linux-gnu/7/include/stdint.h /usr/include/stdint.h \
+ /usr/lib/gcc/x86_64-linux-gnu/6/include/stdarg.h \
+ /usr/lib/gcc/x86_64-linux-gnu/6/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -13,7 +13,7 @@ sqlite3-sqlite3.o: sqlite3.c /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /usr/include/inttypes.h /usr/include/stdio.h \
- /usr/lib/gcc/x86_64-linux-gnu/7/include/stddef.h \
+ /usr/lib/gcc/x86_64-linux-gnu/6/include/stddef.h \
  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
  /usr/include/x86_64-linux-gnu/bits/libio.h \
@@ -107,9 +107,9 @@ sqlite3-sqlite3.o: sqlite3.c /usr/include/stdc-predef.h \
 
 /usr/include/stdc-predef.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/7/include/stdarg.h:
+/usr/lib/gcc/x86_64-linux-gnu/6/include/stdarg.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/7/include/stdint.h:
+/usr/lib/gcc/x86_64-linux-gnu/6/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -141,7 +141,7 @@ sqlite3-sqlite3.o: sqlite3.c /usr/include/stdc-predef.h \
 
 /usr/include/stdio.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/7/include/stddef.h:
+/usr/lib/gcc/x86_64-linux-gnu/6/include/stddef.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
 

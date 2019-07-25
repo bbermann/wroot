@@ -77,14 +77,14 @@ String ClusterLibrary::toString()
     auto url = request.getUrl();
     response["query"] = url;
 
-    // /cluster/{id}/command
+    // /cluster/{id}/{command}
     auto parts = url.explode("/");
     auto size = parts.size();
 
     if (size > 3 || size <= 1)
     {
         response["exception"] = json();
-        response["exception"]["message"] = "Disallowed usage.";
+        response["exception"]["message"] = "Disallowed usage! Use '/cluster/{id}/{command}'.";
         response["exception"]["code"] = 1;
     }
     else if (size > 1)

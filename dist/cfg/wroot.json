@@ -1,6 +1,6 @@
 {
     "server": {
-        "name": "vagrant.io",
+        "name": "localhost",
         "listen": "*",
         "port": 8000,
         "document_root": "/wroot/dist/file",
