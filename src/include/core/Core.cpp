@@ -28,7 +28,7 @@ std::mutex Core::ThreadMutex;
 std::shared_ptr<HttpServer> Core::Server;
 std::vector<UrlRewriteRule> Core::UrlRewriteRules;
 std::mutex Core::outMutex;
-CustomDatabase* Core::db_ = new SQLiteDatabase();
+const std::shared_ptr<CustomDatabase> Core::db = make_shared<SQLiteDatabase>();
 
 Core::Core()
 {
@@ -207,11 +207,6 @@ void Core::warning(string text, string function)
 void Core::checkPrint(String check, String value)
 {
     Core::outLn("- " + check + ": [" + value + "]");
-}
-
-CustomDatabase* Core::db()
-{
-    return Core::db_;
 }
 
 HttpResponse Core::httpError(unsigned short statusCode)

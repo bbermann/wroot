@@ -9,21 +9,27 @@ namespace BBermann::WRoot::Repository
 
 class BaseRepository
 {
-  public:
-    BaseRepository() : db(Core::db())
-    {
-    }
+public:
+  BaseRepository(std::string tableName) : db(Core::db)
+  {
+    this->tableName = tableName;
+  }
 
-    virtual ~BaseRepository();
+  virtual ~BaseRepository();
 
-    virtual bool insert(BaseModel model) = 0;
+  virtual bool insert(BaseModel model) = 0;
 
-    virtual bool update(BaseModel model) = 0;
+  virtual bool update(BaseModel model) = 0;
 
+<<<<<<< Updated upstream
     virtual std::experimental::optional<BaseModel> find(int id) = 0;
+=======
+  virtual std::optional<BaseModel> find(int id) = 0;
+>>>>>>> Stashed changes
 
-  protected:
-    const CustomDatabase *db;
+protected:
+  std::shared_ptr<CustomDatabase> const db;
+  std::string tableName;
 };
 
 } // namespace BBermann::WRoot::Repository

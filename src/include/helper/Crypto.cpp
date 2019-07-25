@@ -1,5 +1,5 @@
 #include "Crypto.hpp"
-#include "../../3rdParty/Base64/Base64.hpp"
+#include "include/helper/Base64.hpp"
 
 Crypto::Crypto(String value, CryptoEngine engine)
 {

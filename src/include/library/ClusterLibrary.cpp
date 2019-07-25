@@ -17,8 +17,7 @@ ClusterLibrary::~ClusterLibrary()
 {
     //TODO: Do something useful with the SQLiteDatabase driver (teoretically working now)
     //See: https://github.com/vincentlaucsb/sqlite-cpp
-    auto db = Core::db();
-
+    
     /*
     db->execute("CREATE TABLE IF NOT EXISTS users (" 
             "   id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -110,6 +109,7 @@ String ClusterLibrary::toString()
     }
 
     //TODO: Implement ClusterNodeLibrary, adding V8 JS Engine - https://v8.dev/docs/embed
+    auto result = Core::db->query("SELECT * FROM clusters");
 
     return response.dump() + END_CONNECTION;
 }

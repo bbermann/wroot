@@ -392,7 +392,7 @@ String HttpServer::process(HttpRequest httpRequest)
         String fileName = Core::ApplicationPath + url;
 
         //Custom library initializer
-        unique_ptr<CustomLibrary> app(new FileLibrary());
+        shared_ptr<CustomLibrary> app(new FileLibrary());
 
 #if defined(WROOT_USE_CLUSTERLIBRARY)
         app.reset(new ClusterLibrary());

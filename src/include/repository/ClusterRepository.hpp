@@ -1,6 +1,7 @@
 #pragma once
 #include "include/core/Core.hpp"
 #include "include/database/CustomDatabase.hpp"
+#include "include/model/Cluster.hpp"
 #include "include/repository/BaseRepository.hpp"
 #include <experimental/optional>
 
@@ -9,7 +10,7 @@ namespace BBermann::WRoot::Repository
 class ClusterRepository : public BaseRepository
 {
   public:
-    ClusterRepository()
+    ClusterRepository() : BaseRepository("clusters")
     {
     }
 
@@ -29,10 +30,9 @@ class ClusterRepository : public BaseRepository
 
     virtual std::experimental::optional<BaseModel> find(int id)
     {
-        //this->db->find(id);
-
-        return {};
+        auto result = this->db->query("SELECT * FROM " + this->tableName + " WHERE id = " + std::to_string(id) + " LIMIT 1");
+        return result.first();
     }
-};  
+};
 
 } // namespace BBermann::WRoot::Repository

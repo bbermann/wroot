@@ -41,7 +41,6 @@ class Core
     static void setEnvironment(int argc, const char *argv[]);
     static void stopServers();
     static void warning(std::string text, std::string function);
-    static CustomDatabase* db();
     static HttpResponse httpError(unsigned short statusCode);
 
 #ifdef WINDOWS
@@ -67,12 +66,12 @@ class Core
     static std::mutex ThreadMutex;
     static std::shared_ptr<HttpServer> Server;
     static std::vector<UrlRewriteRule> UrlRewriteRules;
+    static const std::shared_ptr<CustomDatabase> db;
 
   private:
     static void readConfiguration();
     static void checkPrint(String check, String value);
     static std::mutex outMutex;
-    static CustomDatabase* db_;
 };
 
 #endif //CORE_HPP
