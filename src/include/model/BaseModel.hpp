@@ -20,14 +20,14 @@ public:
     }
 
     template<typename T>
-    T get(std::string key)
+    T& get(std::string key)
     {
-        return static_cast<T>(attributes_.at(key));
+        return static_cast<T&>(attributes_.at(key));
     }
 
     // TODO: Remove template and insert in vector specialized, pointing the second value of  attributes_ to this specialized vector address
     template<typename T>
-    void set(std::string key, T value)
+    void set(std::string key, T& value)
     {
         attributes_[key] = static_cast<void*>(value);
     }

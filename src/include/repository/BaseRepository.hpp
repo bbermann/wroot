@@ -18,18 +18,8 @@ public:
   virtual ~BaseRepository();
 
   virtual bool insert(BaseModel model) = 0;
-
   virtual bool update(BaseModel model) = 0;
-
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    virtual std::experimental::optional<BaseModel> find(int id) = 0;
-=======
-  virtual std::optional<BaseModel> find(int id) = 0;
->>>>>>> Stashed changes
-=======
-  virtual std::optional<BaseModel> find(int id) = 0;
->>>>>>> Stashed changes
+  virtual std::experimental::optional<BaseModel> find(int id) = 0;
 
 protected:
   std::shared_ptr<CustomDatabase> const db;

@@ -18,7 +18,7 @@ link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/lua)
 
 set(SOURCES
         src/main.cpp
-        src/3rdParty/Base64/Base64.cpp
+        src/include/helper/Base64.cpp
         src/3rdParty/zlib/ZLib.cpp
         src/include/helper/LuaHelper.cpp
         src/include/helper/ConsoleLineHelper.cpp
@@ -59,7 +59,7 @@ set(HEADERS
         src/include/model/User.hpp
         src/include/model/Cluster.hpp
         src/include/model/ClusterNode.hpp
-        src/3rdParty/Base64/Base64.hpp
+        src/include/helper/Base64.hpp
         src/3rdParty/boost/config/abi/borland_prefix.hpp
         src/3rdParty/boost/config/abi/borland_suffix.hpp
         src/3rdParty/boost/config/abi/msvc_prefix.hpp

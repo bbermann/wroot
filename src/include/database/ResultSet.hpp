@@ -1,5 +1,6 @@
 #include "include/core/Core.hpp"
 #include "include/model/BaseModel.hpp"
+#include <experimental/optional>
 
 namespace BBermann::WRoot::Database
 {

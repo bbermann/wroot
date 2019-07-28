@@ -54,14 +54,14 @@ ResultSet SQLiteDatabase::query(std::string query)
 
                 case SQLITE_INTEGER:
                 {
-                    int intVal = column.get<int>();
+                    int* intVal = column.get<int*>();
                     model.set(columnName, intVal);
                     break;
                 }
 
                 case SQLITE_FLOAT:
                 {
-                    float floatVal = column.get<float>();
+                    float* floatVal = column.get<float*>();
                     model.set(columnName, floatVal);
                     break;
                 }
