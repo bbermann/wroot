@@ -19,5 +19,5 @@ make
 cd ${wroot_dir}
 cd bin
 
-cmake ../
+cmake -DCMAKE_BUILD_TYPE=Debug ../
 make

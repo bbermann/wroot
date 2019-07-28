@@ -1199,7 +1199,7 @@ enum ptw32_features {
 /*
  * Register a system time change with the library.
  * Causes the library to perform various functions
- * in response to the change. Should be called whenever
+ * in handle to the change. Should be called whenever
  * the application's top level window receives a
  * WM_TIMECHANGE message. It can be passed directly to
  * pthread_create() as a new thread if desired.

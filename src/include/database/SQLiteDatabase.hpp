@@ -1,77 +1,73 @@
 #pragma once
+
 #include "sqlite-cpp/src/sqlite_cpp.h"
 #include "CustomDatabase.hpp"
 
-namespace BBermann::WRoot::Database
-{
+namespace BBermann::WRoot::Database {
 
-class SQLiteDatabase : public CustomDatabase
-{
-public:
-  SQLiteDatabase();
-  virtual ~SQLiteDatabase();
+    class SQLiteDatabase : public CustomDatabase {
+    public:
+        SQLiteDatabase();
 
-  virtual void execute(std::string command) override;
-  virtual ResultSet query(std::string query) override;
+        virtual ~SQLiteDatabase();
 
-  //TODO: Move to CustomDatabase (templates methods can't be virtual)
-  template <typename T>
-  ResultSet query(std::string query)
-  {
-    ResultSet response;
-    std::vector<SQLite::SQLField> row;
+        virtual void execute(std::string command) override;
 
-    auto result = db.query(query);
+        virtual ResultSet query(std::string query) override;
 
-    if (result.num_cols() > 0)
-    {
-      StringList columnNames = result.get_col_names();
+        //TODO: Move to CustomDatabase (templates methods can't be virtual)
+        template<typename T>
+        ResultSet query(std::string query) {
+            ResultSet response;
+            std::vector <SQLite::SQLField> row;
 
-      // Iterate through rows
-      while (result.next(row))
-      {
-        T model;
+            auto result = db.query(query);
 
-        // Iterate through columns
-        for (int idx = 0; idx < row.size(); idx++)
-        {
-          auto column = row.at(idx);
-          auto columnName = columnNames[idx];
-          auto columnType = model.getColumnMappingType(columnName);
+            if (result.num_cols() > 0) {
+                StringList columnNames = result.get_col_names();
 
-          switch (columnType)
-          {
-          case TypeMapping::Text:
-            const char *strVal = column.get<const char *>();
-            model.set(columnName, strVal);
-            break;
+                // Iterate through rows
+                while (result.next(row)) {
+                    T model;
 
-          case TypeMapping::Integer:
-            int intVal = column.get<int>();
-            model.set(columnName, intVal);
-            break;
+                    // Iterate through columns
+                    for (int idx = 0; idx < row.size(); idx++) {
+                        auto column = row.at(idx);
+                        auto columnName = columnNames[idx];
+                        auto columnType = model.getColumnMappingType(columnName);
 
-          case TypeMapping::Double:
-            double doubleVal = column.get<double>();
-            model.set(columnName, doubleVal);
-            break;
+                        switch (columnType) {
+                            case TypeMapping::Text:
+                                const char *strVal = column.get<const char *>();
+                                model.set(columnName, strVal);
+                                break;
 
-          case TypeMapping::Unknown:
-          default:
-            const char *unknownVal = column.get<const char *>();
-            model.set(columnName, unknownVal);
-            break;
-          }
+                            case TypeMapping::Integer:
+                                int intVal = column.get<int>();
+                                model.set(columnName, intVal);
+                                break;
+
+                            case TypeMapping::Double:
+                                double doubleVal = column.get<double>();
+                                model.set(columnName, doubleVal);
+                                break;
+
+                            case TypeMapping::Unknown:
+                            default:
+                                const char *unknownVal = column.get<const char *>();
+                                model.set(columnName, unknownVal);
+                                break;
+                        }
+                    }
+
+                    response.push_back(model);
+                }
+            }
+
+            return response;
         }
 
-        response.push_back(model);
-      }
-    }
-
-    return response;
-  }
-
-  SQLite::Conn db;
-};
+        SQLite::Conn db;
+    };
 
 } // namespace BBermann::WRoot::Database

@@ -6,8 +6,7 @@
 
 namespace Test {
 
-    static int randomNumber(int min, int max) 
-    {
+    static int randomNumber(int min, int max) {
         return rand() % (max - min + 1) + min;
     }
 }

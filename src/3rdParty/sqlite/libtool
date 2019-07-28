@@ -7766,7 +7766,7 @@ func_mode_link ()
       # -F/path              path to uninstalled frameworks, gcc on darwin
       # -p, -pg, --coverage, -fprofile-*  profiling flags for GCC
       # -fstack-protector*   stack protector flags for GCC
-      # @file                GCC response files
+      # @file                GCC handle files
       # -tp=*                Portland pgcc target processor selection
       # --sysroot=*          for sysroot support
       # -O*, -g*, -flto*, -fwhopr*, -fuse-linker-plugin GCC link-time optimization

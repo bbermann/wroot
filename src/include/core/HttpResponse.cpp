@@ -16,16 +16,13 @@
 
 using namespace std;
 
-HttpResponse::HttpResponse()
-{
+HttpResponse::HttpResponse() {
 }
 
-HttpResponse::~HttpResponse()
-{
+HttpResponse::~HttpResponse() {
 }
 
-String HttpResponse::toString()
-{
+String HttpResponse::toString() {
     string returnString;
 
     returnString.append(Core::ServerProtocol + " " + this->getStatusString() + ENDL);
@@ -36,48 +33,45 @@ String HttpResponse::toString()
     returnString.append("Content-Type: " + this->type + "; charset=UTF-8" + ENDL);
     returnString.append("Content-Length: " + to_string(this->content.size()) + ENDL);
 
-	//Para que n�o seja compactado o conte�do de arquivos (previamente compactado pelo m�dulo FileLibrary).
-	if (this->compressOutput)
-	{
-		//returnString.append("Transfer-Encoding: gzip" + ENDL);
+    //Para que n�o seja compactado o conte�do de arquivos (previamente compactado pelo m�dulo FileLibrary).
+    if (this->compressOutput) {
+        //returnString.append("Transfer-Encoding: gzip" + ENDL);
 
-		this->content = ZLib::compress_string(this->content);
-		returnString.append("Content-Encoding: deflate" + ENDL);
-	}
+        this->content = ZLib::compress_string(this->content);
+        returnString.append("Content-Encoding: deflate" + ENDL);
+    }
 
-	returnString.append(ENDL);
-	returnString.append(this->content);
+    returnString.append(ENDL);
+    returnString.append(this->content);
 
-	//returnString.append("Vary: Accept-Encoding, Cookie, User-Agent" + ENDL);
-	//returnString.append("Date: Thu, 08 Oct 2015 16:42:10 GMT" + ENDL);
-	//returnString.append("Pragma: public" + ENDL);
-	//returnString.append("Expires: Sat, 28 Nov 2009 05:36:25 GMT" + ENDL);
-	//returnString.append("Last-Modified: Sat, 28 Nov 2009 03:50:37 GMT" + ENDL);
-	//returnString.append("X-Pingback: http://net.tutsplus.com/xmlrpc.php" + ENDL);
+    //returnString.append("Vary: Accept-Encoding, Cookie, User-Agent" + ENDL);
+    //returnString.append("Date: Thu, 08 Oct 2015 16:42:10 GMT" + ENDL);
+    //returnString.append("Pragma: public" + ENDL);
+    //returnString.append("Expires: Sat, 28 Nov 2009 05:36:25 GMT" + ENDL);
+    //returnString.append("Last-Modified: Sat, 28 Nov 2009 03:50:37 GMT" + ENDL);
+    //returnString.append("X-Pingback: http://net.tutsplus.com/xmlrpc.php" + ENDL);
 
-	return returnString;
+    return returnString;
 }
 
-String HttpResponse::getStatusString()
-{
-    switch (this->status)
-    {
-    case 200:
-        return "200 OK";
+String HttpResponse::getStatusString() {
+    switch (this->status) {
+        case 200:
+            return "200 OK";
 
-	case 401: 
-		return "401 Forbidden";
+        case 401:
+            return "401 Forbidden";
 
-	case 404: 
-		return "404 Not Found";
+        case 404:
+            return "404 Not Found";
 
-	case 500:
-		return "500 Internal Server Error";
+        case 500:
+            return "500 Internal Server Error";
 
-	case 503:
-		return "503 Service Unavailable";
+        case 503:
+            return "503 Service Unavailable";
 
-    default:
-        return to_string(this->status);
+        default:
+            return to_string(this->status);
     }
 }

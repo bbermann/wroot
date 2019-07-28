@@ -3,33 +3,44 @@
 
 #include "../type/String.hpp"
 
-class HttpRequest
-{
+class HttpRequest {
 public:
     HttpRequest();
-	HttpRequest(String request, String ipAddress);
-	virtual ~HttpRequest();
 
-	String get(String key);
+    HttpRequest(String request, String ipAddress);
+
+    virtual ~HttpRequest();
+
+    String get(String key);
+
     String getHttpMethod();
+
     String getUrl();
-	StringMap getQuery();
-	String toString();
-	bool isValid();
+
+    StringMap getQuery();
+
+    String toString();
+
+    bool isValid();
 
 protected:
-	void set(String key, String value);
-	void setHttpMethod(String method);
-	void setUrl(String url);
-	void setQueryParam(String key, String value);
-	void setQuery(String queryString);
-	void process();
+    void set(String key, String value);
+
+    void setHttpMethod(String method);
+
+    void setUrl(String url);
+
+    void setQueryParam(String key, String value);
+
+    void setQuery(String queryString);
+
+    void process();
 
 private:
-	String request_;
-	StringMap data_;
-	StringMap query_;
-	bool isValid_ = true;
+    String request_;
+    StringMap data_;
+    StringMap query_;
+    bool isValid_ = true;
 };
 
 #endif //HTTPREQUEST_HPP

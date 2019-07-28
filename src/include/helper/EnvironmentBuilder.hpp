@@ -4,17 +4,18 @@
 #include "../type/String.hpp"
 #include <map>
 
-class EnvironmentBuilder
-{
+class EnvironmentBuilder {
 public:
     EnvironmentBuilder();
+
     ~EnvironmentBuilder();
 
     void setPair(String key, String value);
+
     String toString();
 
 protected:
-    std::map<String, String> environment_;
+    std::map <String, String> environment_;
 };
 
 #endif //ENVIRONMENTBUILDER_HPP

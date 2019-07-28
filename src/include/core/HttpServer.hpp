@@ -35,15 +35,16 @@ typedef int SOCKET;
 
 struct IncommingConnection {
     struct sockaddr_in client_address;
-    socklen_t client_length = sizeof (client_address);
+    socklen_t client_length = sizeof(client_address);
     SOCKET incomming_socket = INVALID_SOCKET;
 };
 
-class HttpServer
-{
+class HttpServer {
 public:
     HttpServer(size_t port = 80);
+
     virtual ~HttpServer();
+
     void start();
 
     ///<summary>
@@ -59,25 +60,30 @@ protected:
     WSAData wsa_data_;
 #endif
 
-	enum HeaderParameter
-	{
-		ConnectionKeepAlive,
-		ConnectionClose,
-	};
+    enum HeaderParameter {
+        ConnectionKeepAlive,
+        ConnectionClose,
+    };
 
-	unsigned free_connection_slots_, request_count_, response_count_;
+    unsigned free_connection_slots_, request_count_, response_count_;
     size_t port_;
-    std::queue<IncommingConnection> client_pending_;
+    std::queue <IncommingConnection> client_pending_;
     SOCKET server_socket_;
     sockaddr_in server_address_;
 
     bool createSocket();
+
     void destroySocket();
-    void getUrl(String& url, String& library, String& function, StringList& arguments);
+
+    void getUrl(String &url, String &library, String &function, StringList &arguments);
+
     void run();
-	void response(IncommingConnection& conn);
-	String getHttpHeader(String request);
-	bool getHeaderParameter(String header, HeaderParameter parameter);
+
+    void handle(IncommingConnection &conn);
+
+    String getHttpHeader(String request);
+
+    bool getHeaderParameter(String header, HeaderParameter parameter);
 
 private:
     int announce_rate_;

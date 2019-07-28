@@ -4,8 +4,10 @@
 #include <Windows.h>
 #include <io.h>
 #else
+
 #include "unistd.h"
 #include "time.h"
+
 #endif
 
 Timer::Timer() {
@@ -24,6 +26,7 @@ unsigned long Timer::GetTickCountLinux() {
     theTick += ts.tv_sec * 1000;
     return theTick;
 }
+
 #endif
 
 unsigned long Timer::now() {
@@ -31,7 +34,7 @@ unsigned long Timer::now() {
     return GetTickCount();
 #else
     return GetTickCountLinux();
-#endif    
+#endif
 }
 
 unsigned long Timer::difference(unsigned long start_time, unsigned long end_time) {
@@ -51,8 +54,7 @@ unsigned long Timer::finish(bool microtime) {
 
     diference_ = difference(start_, finish_);
 
-    if (!microtime) 
-    {
+    if (!microtime) {
         diference_ /= 1000;
     }
 

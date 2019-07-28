@@ -2375,7 +2375,7 @@ SQLITE_API int sqlite3_total_changes(sqlite3*);
 **
 ** ^This function causes any pending database operation to abort and
 ** return at its earliest opportunity. This routine is typically
-** called in response to a user action such as pressing "Cancel"
+** called in handle to a user action such as pressing "Cancel"
 ** or Ctrl-C where the user wants a long query operation to halt
 ** immediately.
 **
@@ -6949,7 +6949,7 @@ SQLITE_API int sqlite3_vfs_unregister(sqlite3_vfs*);
 ** not want to.  SQLite will only request a recursive mutex in
 ** cases where it really needs one.  If a faster non-recursive mutex
 ** implementation is available on the host platform, the mutex subsystem
-** might return such a mutex in response to SQLITE_MUTEX_FAST.
+** might return such a mutex in handle to SQLITE_MUTEX_FAST.
 **
 ** ^The other allowed parameters to sqlite3_mutex_alloc() (anything other
 ** than SQLITE_MUTEX_FAST and SQLITE_MUTEX_RECURSIVE) each return

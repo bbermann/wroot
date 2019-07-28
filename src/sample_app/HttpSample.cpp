@@ -1,16 +1,13 @@
 #include "HttpSample.hpp"
 
-HttpSample::HttpSample() : HtmlLibrary()
-{
+HttpSample::HttpSample() : HtmlLibrary() {
 }
 
-HttpSample::~HttpSample()
-{
+HttpSample::~HttpSample() {
 }
 
-String HttpSample::toString()
-{
-	Html html;
+String HttpSample::toString() {
+    Html html;
 
     HtmlElement div_body("div", "body");
     html.body.addChild(div_body);
@@ -29,5 +26,5 @@ String HttpSample::toString()
     html.body.addChild(p);
     p.clear();
 
-	return html.toString();
+    return html.toString();
 }

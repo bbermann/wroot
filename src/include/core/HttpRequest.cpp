@@ -1,168 +1,139 @@
 #include "HttpRequest.hpp"
 #include "Core.hpp"
 
-HttpRequest::HttpRequest()
-{
-	this->request_ = "";
-	this->isValid_ = false;
+HttpRequest::HttpRequest() {
+    this->request_ = "";
+    this->isValid_ = false;
 }
 
-HttpRequest::HttpRequest(String request, String ipAddress)
-{
-	this->request_ = request;
-	this->set("REMOTE_ADDR", ipAddress);
+HttpRequest::HttpRequest(String request, String ipAddress) {
+    this->request_ = request;
+    this->set("REMOTE_ADDR", ipAddress);
 
-	process();
+    process();
 
-	//Core::debugLn(this->toString());
+    //Core::debugLn(this->toString());
 
-	this->isValid_ = true;
+    this->isValid_ = true;
 }
 
-HttpRequest::~HttpRequest()
-{
+HttpRequest::~HttpRequest() {
 }
 
-bool HttpRequest::isValid()
-{
-	return this->isValid_;
+bool HttpRequest::isValid() {
+    return this->isValid_;
 }
 
-void HttpRequest::process()
-{
-	bool firstRow = true;
+void HttpRequest::process() {
+    bool firstRow = true;
 
-	StringList rows = this->request_.explode(ENDL);
+    StringList rows = this->request_.explode(ENDL);
 
-	for (String row : rows)
-	{
-		if (row.trim().empty())
-		{
-			continue;
-		}
+    for (String row : rows) {
+        if (row.trim().empty()) {
+            continue;
+        }
 
-		if (firstRow)
-		{
-			firstRow = false;
-		
-			// # GET /home HTTP/1.1
-			Core::outLn(row);
+        if (firstRow) {
+            firstRow = false;
 
-			StringList explodedRequest = row.explode(" ");
-			int explodedSize = explodedRequest.size();
+            // # GET /home HTTP/1.1
+            Core::debugLn(row);
 
-			if (explodedSize > 0)
-			{
-				this->setHttpMethod(explodedRequest.at(0));
+            StringList explodedRequest = row.explode(" ");
+            int explodedSize = explodedRequest.size();
 
-				if (explodedSize > 1)
-				{
-					String fullUrl = explodedRequest.at(1);
-					StringList parts = fullUrl.explode("?");
-					String url = parts.at(0);
-					String queryString = parts.size() > 1 ? parts.at(parts.size() - 1) : "";
+            if (explodedSize > 0) {
+                this->setHttpMethod(explodedRequest.at(0));
 
-					this->setUrl(url);
-					this->setQuery(queryString);
-				}
-			}
-			else
-			{
-				this->setHttpMethod("GET");
-				this->setUrl("");
-				this->setQuery("");
-			}
-		}
-		else
-		{
-			StringList keyVal = row.explode(": ");
+                if (explodedSize > 1) {
+                    String fullUrl = explodedRequest.at(1);
+                    StringList parts = fullUrl.explode("?");
+                    String url = parts.at(0);
+                    String queryString = parts.size() > 1 ? parts.at(parts.size() - 1) : "";
 
-			if (keyVal.size() == 2)
-			{
-				String key = keyVal.at(0);
-				String value = keyVal.at(1);
+                    this->setUrl(url);
+                    this->setQuery(queryString);
+                }
+            } else {
+                this->setHttpMethod("GET");
+                this->setUrl("");
+                this->setQuery("");
+            }
+        } else {
+            StringList keyVal = row.explode(": ");
 
-				this->set(key, value);
-			}
-		}
-	}
+            if (keyVal.size() == 2) {
+                String key = keyVal.at(0);
+                String value = keyVal.at(1);
+
+                this->set(key, value);
+            }
+        }
+    }
 }
 
-String HttpRequest::get(String key)
-{
-	return this->data_[key];
+String HttpRequest::get(String key) {
+    return this->data_[key];
 }
 
-String HttpRequest::getHttpMethod()
-{
-	return this->get("HTTP_METHOD");
+String HttpRequest::getHttpMethod() {
+    return this->get("HTTP_METHOD");
 }
 
-String HttpRequest::getUrl()
-{
-	return this->get("REQUEST_URI");
+String HttpRequest::getUrl() {
+    return this->get("REQUEST_URI");
 }
 
-StringMap HttpRequest::getQuery()
-{
-	return this->query_;
+StringMap HttpRequest::getQuery() {
+    return this->query_;
 }
 
-void HttpRequest::set(String key, String value)
-{
-	this->data_[key] = value;
+void HttpRequest::set(String key, String value) {
+    this->data_[key] = value;
 }
 
-void HttpRequest::setUrl(String url)
-{
-	if (url.contains("?")) {
-		url = url.explode("?").at(0);
-	}
+void HttpRequest::setUrl(String url) {
+    if (url.contains("?")) {
+        url = url.explode("?").at(0);
+    }
 
-	this->set("REQUEST_URI", url);
+    this->set("REQUEST_URI", url);
 }
 
-void HttpRequest::setHttpMethod(String method)
-{
-	if (method != "GET" && method != "POST" &&
-		method != "DELETE" && method != "PUT")
-	{
-		method = "GET";
-	}
-	
-	this->set("HTTP_METHOD", method);
+void HttpRequest::setHttpMethod(String method) {
+    if (method != "GET" && method != "POST" &&
+        method != "DELETE" && method != "PUT") {
+        method = "GET";
+    }
+
+    this->set("HTTP_METHOD", method);
 }
 
-void HttpRequest::setQueryParam(String key, String value)
-{
-	this->query_[key] = value;
+void HttpRequest::setQueryParam(String key, String value) {
+    this->query_[key] = value;
 }
 
-String HttpRequest::toString()
-{
-	String output;
+String HttpRequest::toString() {
+    String output;
 
-	for (auto pair : this->data_)
-	{
-		output.append(pair.first + ": " + pair.second + ENDL);
-	}
+    for (auto pair : this->data_) {
+        output.append(pair.first + ": " + pair.second + ENDL);
+    }
 
-	return output;
+    return output;
 }
 
-void HttpRequest::setQuery(String queryString)
-{
-	this->set("QUERY_STRING", queryString);
+void HttpRequest::setQuery(String queryString) {
+    this->set("QUERY_STRING", queryString);
 
-	StringList data = queryString.explode("&");
+    StringList data = queryString.explode("&");
 
-	for (String row : data)
-	{
-		StringList keyVal = row.explode("=");
+    for (String row : data) {
+        StringList keyVal = row.explode("=");
 
-		if (keyVal.size() == 2)
-		{
-			this->setQueryParam(keyVal.at(0), keyVal.at(1));
-		}
-	}
+        if (keyVal.size() == 2) {
+            this->setQueryParam(keyVal.at(0), keyVal.at(1));
+        }
+    }
 }

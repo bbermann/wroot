@@ -16,8 +16,7 @@
 
 #include "Core.hpp"
 
-class HttpResponse
-{
+class HttpResponse {
 public:
     HttpResponse();
 
@@ -25,8 +24,8 @@ public:
 
     String type;
     String content;
-	bool compressOutput;
-	unsigned short status;
+    bool compressOutput;
+    unsigned short status;
 
     String toString();
 

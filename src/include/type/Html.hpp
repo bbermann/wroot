@@ -6,18 +6,23 @@
 
 using namespace std;
 
-class Html
-{
+class Html {
 public:
     Html(String xml_namespace = "", String manifest = "");
+
     ~Html();
 
     void setXmlNamespace(String xml_namespace);
+
     void setManifest(String manifest);
+
     HtmlElement head;
     HtmlElement body;
+
     String getResponse(String htmlCode);
+
     String formatHtml(String value);
+
     String toString();
 
 private:

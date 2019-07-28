@@ -5,24 +5,27 @@
 
 #include "CustomLibrary.hpp"
 
-typedef std::vector<std::pair<String, String>> FileIndexList;
-typedef std::pair<String, String> FileIndex;
+typedef std::vector <std::pair<String, String>> FileIndexList;
+typedef std::pair <String, String> FileIndex;
 
-class FileLibrary : public CustomLibrary
-{
+class FileLibrary : public CustomLibrary {
 public:
     FileLibrary();
+
     virtual ~FileLibrary();
+
     virtual String toString() override;
 
-	void setResponseType();
-    
+    void setResponseType();
+
     FileIndexList file_list_;
 
 protected:
-	String getFileName();
-	String getFullPath();
-	String getFileExtension();
+    String getFileName();
+
+    String getFullPath();
+
+    String getFileExtension();
 };
 
 #endif // FILELIBRARY_H

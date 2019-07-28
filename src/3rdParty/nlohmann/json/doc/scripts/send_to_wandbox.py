@@ -66,7 +66,7 @@ def main():
 
            On success, the program prints a permalink to the uploaded
            directory on Wandbox and returns 0. On error, it prints the
-           response from the Wandbox API and returns 1.
+           handle from the Wandbox API and returns 1.
 
            Note that the comments are stripped from all the headers in the
            uploaded directory.

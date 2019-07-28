@@ -8,23 +8,20 @@
 
 using namespace std;
 
-Exception::Exception(string message, string location)
-{
+Exception::Exception(string message, string location) {
     this->message_ = message;
     this->where_ = location;
 }
 
-Exception::~Exception()
-{
-    
+Exception::~Exception() {
+
 }
 
-const char* Exception::what() const _GLIBCXX_USE_NOEXCEPT
+const char *Exception::what() const _GLIBCXX_USE_NOEXCEPT
 {
     return this->message_.c_str();
 }
 
-const char* Exception::where()
-{
+const char *Exception::where() {
     return this->where_.c_str();
 }

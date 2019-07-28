@@ -27,21 +27,29 @@ namespace File {
 class FileHelper {
 public:
     FileHelper();
-    FileHelper(const FileHelper& orig);
-    virtual ~FileHelper();
-    
-    String Read(String filename);
-    void Write(String filename, String text);
-    bool Exists(String filename, bool canBeFolder = false);
-    bool CheckExtension(String filename, String extension);
-    
-private:
-	void Open(File::OpenMode open_mode);
-	void VerifyFile();
-	void SetFilename(String filename);
-	String GetOpenMode(File::OpenMode open_mode);
 
-    FILE* file_;
+    FileHelper(const FileHelper &orig);
+
+    virtual ~FileHelper();
+
+    String Read(String filename);
+
+    void Write(String filename, String text);
+
+    bool Exists(String filename, bool canBeFolder = false);
+
+    bool CheckExtension(String filename, String extension);
+
+private:
+    void Open(File::OpenMode open_mode);
+
+    void VerifyFile();
+
+    void SetFilename(String filename);
+
+    String GetOpenMode(File::OpenMode open_mode);
+
+    FILE *file_;
     String filename_;
 
 };

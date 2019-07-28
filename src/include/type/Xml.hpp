@@ -6,19 +6,22 @@
 
 using namespace std;
 
-class Xml
-{
+class Xml {
 public:
-	Xml();
-	~Xml();
+    Xml();
 
-	void addElementString(XmlCode xml);
-	void setElementString(XmlCode xml);
-	String toString();
-	String getResponse();
+    ~Xml();
+
+    void addElementString(XmlCode xml);
+
+    void setElementString(XmlCode xml);
+
+    String toString();
+
+    String getResponse();
 
 private:
-	string element_string_;
+    string element_string_;
 };
 
 #endif // XML_HPP_INCLUDED

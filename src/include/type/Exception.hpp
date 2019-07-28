@@ -19,17 +19,19 @@
 #include "String.hpp"
 
 #ifndef _GLIBCXX_USE_NOEXCEPT
-    #define _GLIBCXX_USE_NOEXCEPT
+#define _GLIBCXX_USE_NOEXCEPT
 #endif
 
-class Exception : public std::exception
-{
+class Exception : public std::exception {
 public:
 
     Exception(std::string message, std::string location);
+
     virtual ~Exception();
-    virtual const char* what() const _GLIBCXX_USE_NOEXCEPT override;
-    virtual const char* where();
+
+    virtual const char *what() const _GLIBCXX_USE_NOEXCEPT override;
+
+    virtual const char *where();
 
 protected:
     std::string message_, where_;

@@ -3,10 +3,10 @@
 
 #include "../type/String.hpp"
 
-class ConsoleLineHelper
-{
+class ConsoleLineHelper {
 public:
     ConsoleLineHelper(String command);
+
     virtual ~ConsoleLineHelper();
 
     String executeStdOut();

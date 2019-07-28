@@ -4,10 +4,10 @@
 #include <regex>
 #include "../type/String.hpp"
 
-class UrlRewriteRule
-{
-  public:
+class UrlRewriteRule {
+public:
     UrlRewriteRule() {}
+
     ~UrlRewriteRule() {}
 
     std::regex input;

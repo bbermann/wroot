@@ -16,34 +16,28 @@
 
 using namespace std;
 
-Process::Process(String executable_path, String arguments)
-{
+Process::Process(String executable_path, String arguments) {
     this->executable_path_ = executable_path;
     this->arguments_ = arguments;
 }
 
-Process::Process(const Process& orig)
-{
+Process::Process(const Process &orig) {
 }
 
-Process::~Process()
-{
+Process::~Process() {
 }
 
-const char* Process::getCommand()
-{
+const char *Process::getCommand() {
     String call = this->executable_path_ + " " + this->arguments_;
     return call.c_str();
 }
 
-int Process::run()
-{
+int Process::run() {
     int status = system(getCommand());
     return status;
 }
 
-void Process::runAsync()
-{
+void Process::runAsync() {
 
     thread asyncCall(&system, getCommand());
     asyncCall.detach();

@@ -3,42 +3,36 @@
 #include "../helper/FileHelper.hpp"
 #include "../helper/EnvironmentBuilder.hpp"
 
-PhpLibrary::PhpLibrary() : CustomLibrary()
-{
+PhpLibrary::PhpLibrary() : CustomLibrary() {
     this->compressedOutput = false;
     this->responseType = "text/html";
 }
 
-PhpLibrary::~PhpLibrary()
-{
+PhpLibrary::~PhpLibrary() {
 }
 
-String PhpLibrary::toString()
-{
+String PhpLibrary::toString() {
     String scriptCall = this->getScriptPathWithUrl();
     String scriptPath = this->getScriptPath();
     String environment = this->getEnvironment(scriptPath);
     String bootstrapCode = "scripts/php/bootstrap.php";
-    
+
     String call = environment + " php " + bootstrapCode + " " + scriptCall;
     Core::debugLn(call);
-    
+
     ConsoleLineHelper cli(call);
     return cli.executeStdOut();
 }
 
-String PhpLibrary::getScriptPath()
-{
+String PhpLibrary::getScriptPath() {
     return Core::DocumentRoot + this->urlRewriter.getScriptPath(this->getHttpRequest().getUrl());
 }
 
-String PhpLibrary::getScriptPathWithUrl()
-{
+String PhpLibrary::getScriptPathWithUrl() {
     return Core::DocumentRoot + this->urlRewriter.rewrite(this->getHttpRequest().getUrl());
 }
 
-String PhpLibrary::getEnvironment(String scriptPath)
-{
+String PhpLibrary::getEnvironment(String scriptPath) {
     auto request = this->getHttpRequest();
 
     EnvironmentBuilder env;
@@ -59,8 +53,7 @@ String PhpLibrary::getEnvironment(String scriptPath)
     return env.toString();
 }
 
-String PhpLibrary::getSessionScript()
-{
+String PhpLibrary::getSessionScript() {
     auto request = this->getHttpRequest();
     auto queryString = request.get("QUERY_STRING");
     auto method = request.get("HTTP_METHOD");
@@ -69,16 +62,13 @@ String PhpLibrary::getSessionScript()
     String output = "--process-begin \"{code}\"";
     String script = "";
 
-    for (String var : vars)
-    {
+    for (String var : vars) {
         auto parts = var.explode("=");
 
-        if (parts.size() > 0)
-        {
+        if (parts.size() > 0) {
             String val = "true";
 
-            if (parts.size() > 1)
-            {
+            if (parts.size() > 1) {
                 val = parts.at(1);
             }
 
@@ -90,6 +80,6 @@ String PhpLibrary::getSessionScript()
         return "";
 
     output = String::replace(output, "{code}", script);
-    Core::outLn("[PHP BOOTSTRAP SCRIPT]: " + script);
+    Core::debugLn("[PHP BOOTSTRAP SCRIPT]: " + script);
     return output;
 }

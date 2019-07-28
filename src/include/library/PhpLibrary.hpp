@@ -6,18 +6,23 @@
 #include "CustomLibrary.hpp"
 #include "../helper/UrlRewriter.hpp"
 
-class PhpLibrary : public CustomLibrary
-{
-  public:
+class PhpLibrary : public CustomLibrary {
+public:
     PhpLibrary();
+
     virtual ~PhpLibrary();
+
     virtual String toString() override;
 
-  protected:
+protected:
     String getScriptPath();
+
     String getScriptPathWithUrl();
+
     String getEnvironment(String scriptPath);
+
     String getSessionScript();
+
     String process(String file);
 
     UrlRewriter urlRewriter;

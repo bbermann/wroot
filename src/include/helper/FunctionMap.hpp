@@ -19,18 +19,21 @@
 #include <map>
 
 typedef void (*FunctionPointer)();
-typedef std::map<std::string, FunctionPointer> FunctionMap_;
 
-class FunctionMap : public FunctionMap_
-{
+typedef std::map <std::string, FunctionPointer> FunctionMap_;
+
+class FunctionMap : public FunctionMap_ {
 public:
     FunctionMap();
-    FunctionMap(const FunctionMap& orig);
+
+    FunctionMap(const FunctionMap &orig);
+
     virtual ~FunctionMap();
 
     void add(std::string key, FunctionPointer function);
+
     void remove(std::string key);
-    
+
 private:
 };
 

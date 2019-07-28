@@ -4,8 +4,8 @@
 # Get the base Ubuntu image from Docker Hub
 FROM ubuntu:18.04
 
-# Install the working environment
-# Generated from wroot/dev/install-dev.sh
+# Install the development environment
+# WARNING: Based on "wroot/dev/install-dev.sh", if you change this file, please also update install-dev.sh.
 
 # Sets the install wroot working directory temporarily
 WORKDIR /tmp/wroot/install

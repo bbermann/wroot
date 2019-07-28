@@ -23,24 +23,45 @@ namespace BBermann::WRoot::Database {
 }
 
 class HttpServer;
+
 class HttpResponse;
 
 using BBermann::WRoot::Database::CustomDatabase;
 
-class Core
-{
-  public:
+class Core {
+public:
     Core();
+
     ~Core();
-    static void debug(std::string text);
-    static void debugLn(std::string text);
+
+#ifndef NDEBUG
+    static inline void debug(std::string text) {
+        Core::out(text);
+    }
+
+    static inline void debugLn(std::string text) {
+        Core::outLn(text);
+    }
+#else
+    static inline void debug(std::string text) {}
+
+    static inline void debugLn(std::string text) {}
+#endif
+
     static void error(std::string text, int code = 0);
+
     static void error(std::string text, std::string function);
+
     static void out(std::string text);
+
     static void outLn(std::string text);
+
     static void setEnvironment(int argc, const char *argv[]);
+
     static void stopServers();
+
     static void warning(std::string text, std::string function);
+
     static HttpResponse httpError(unsigned short statusCode);
 
 #ifdef WINDOWS
@@ -48,7 +69,7 @@ class Core
 #endif
 
     static const unsigned int kMaxConnections = 10000, kBufferSize = 8192 * 10;
-    
+
     static String ApplicationPath;
     static String ExecutablePath;
     static String PathSeparator;
@@ -64,13 +85,15 @@ class Core
     static int ThreadCount;
     static int ServerPort;
     static std::mutex ThreadMutex;
-    static std::shared_ptr<HttpServer> Server;
-    static std::vector<UrlRewriteRule> UrlRewriteRules;
-    static const std::shared_ptr<CustomDatabase> db;
+    static std::shared_ptr <HttpServer> Server;
+    static std::vector <UrlRewriteRule> UrlRewriteRules;
+    static const std::shared_ptr <CustomDatabase> db;
 
-  private:
+private:
     static void readConfiguration();
-    static void checkPrint(String check, String value);
+
+    static void printStartupCheck(String check, String value);
+
     static std::mutex outMutex;
 };
 

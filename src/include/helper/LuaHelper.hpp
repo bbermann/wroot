@@ -22,25 +22,30 @@ extern "C" {
 #include "../../3rdParty/lua/lauxlib.h"
 }
 
-class LuaHelper
-{
+class LuaHelper {
 public:
     LuaHelper(String script_path);
-    LuaHelper(const LuaHelper& orig);
+
+    LuaHelper(const LuaHelper &orig);
+
     virtual ~LuaHelper();
 
     String executeScript();
+
     void print(String msg);
-    
-    static int lua_print(lua_State* lua_state);
-    static int lua_println(lua_State* lua_state);
-    
+
+    static int lua_print(lua_State *lua_state);
+
+    static int lua_println(lua_State *lua_state);
+
 protected:
     String getError();
+
     bool loadFile();
+
     void registerMemberFunctions();
-    
-    lua_State* state_;
+
+    lua_State *state_;
     String script_path_, last_error_, lua_output_;
 };
 

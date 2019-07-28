@@ -5,13 +5,14 @@
 #include "../type/String.hpp"
 #include "../type/UrlRewriteRule.hpp"
 
-class UrlRewriter
-{
-  public:
+class UrlRewriter {
+public:
     UrlRewriter();
+
     virtual ~UrlRewriter();
 
     String rewrite(String url);
+
     String getScriptPath(String url);
 };
 

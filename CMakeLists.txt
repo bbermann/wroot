@@ -31,13 +31,11 @@ set(SOURCES
         src/include/helper/Crypto.cpp
         src/include/helper/FileHelper.cpp
         src/include/helper/FunctionMap.cpp
-        src/include/helper/SerialConnector.cpp
         src/include/helper/UrlRewriter.cpp
         src/include/library/CustomLibrary.cpp
         src/include/library/ErrorLibrary.cpp
         src/include/library/FileLibrary.cpp
         src/include/library/PhpLibrary.cpp
-        src/include/library/ClusterLibrary.cpp
         src/include/library/HtmlLibrary.cpp
         src/include/library/XmlLibrary.cpp
         src/include/type/Exception.cpp
@@ -54,11 +52,8 @@ set(SOURCES
 
 set(HEADERS
         src/include/repository/BaseRepository.hpp
-        src/include/repository/ClusterRepository.hpp
         src/include/model/BaseModel.hpp
         src/include/model/User.hpp
-        src/include/model/Cluster.hpp
-        src/include/model/ClusterNode.hpp
         src/include/helper/Base64.hpp
         src/3rdParty/boost/config/abi/borland_prefix.hpp
         src/3rdParty/boost/config/abi/borland_suffix.hpp
@@ -525,12 +520,10 @@ set(HEADERS
         src/include/helper/LuaHelper.hpp
         src/include/helper/ConsoleLineHelper.hpp
         src/include/helper/EnvironmentBuilder.hpp
-        src/include/helper/ArduinoHelper.hpp
         src/include/helper/Crypto.hpp
         src/include/helper/ExampleHelper.hpp
         src/include/helper/FileHelper.hpp
         src/include/helper/FunctionMap.hpp
-        src/include/helper/SerialConnector.hpp
         src/include/helper/TestHelper.hpp
         src/include/helper/ValidationHelper.hpp
         src/include/helper/UrlRewriter.hpp
@@ -538,7 +531,6 @@ set(HEADERS
         src/include/library/ErrorLibrary.hpp
         src/include/library/FileLibrary.hpp
         src/include/library/PhpLibrary.hpp
-        src/include/library/ClusterLibrary.hpp
         src/include/library/HtmlLibrary.hpp
         src/include/library/XmlLibrary.hpp
         src/include/type/Exception.hpp
@@ -978,9 +970,7 @@ set(HEADERS
         src/3rdParty/sqlite-cpp/src/sqlite_cpp.h
 )
 
-
 add_executable(wroot ${SOURCES} ${HEADERS})
-add_compile_options(-DEBUG)
 
 ## Link libraries
 target_link_libraries(wroot pthread z sqlite3 lua ${CMAKE_DL_LIBS})

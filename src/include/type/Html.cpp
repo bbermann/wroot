@@ -1,8 +1,7 @@
 #include "../core/Core.hpp"
 #include "Html.hpp"
 
-Html::Html(String xml_namespace, String manifest)
-{
+Html::Html(String xml_namespace, String manifest) {
     setXmlNamespace(xml_namespace);
     setManifest(manifest);
 
@@ -15,34 +14,28 @@ Html::Html(String xml_namespace, String manifest)
     body.setTag("body");
 }
 
-Html::~Html()
-{
+Html::~Html() {
 }
 
-void Html::setXmlNamespace(String xml_namespace)
-{
+void Html::setXmlNamespace(String xml_namespace) {
     xmlns = xml_namespace;
 }
 
-void Html::setManifest(String manifest)
-{
+void Html::setManifest(String manifest) {
     manifest = manifest;
 }
 
-String Html::toString()
-{
+String Html::toString() {
     String strret = "<!DOCTYPE HTML>\r\n";
-	strret.append("<html");
+    strret.append("<html");
 
-    if (!xmlns.empty())
-    {
+    if (!xmlns.empty()) {
         strret.append(" xmlns='");
         strret.append(xmlns);
         strret.append("'");
     }
 
-    if (!manifest.empty())
-    {
+    if (!manifest.empty()) {
         strret.append(" manifest='");
         strret.append(manifest);
         strret.append("'");
@@ -54,22 +47,19 @@ String Html::toString()
     strret.append(body.toString());
     strret.append("</html>");
 
-	return strret; //formatHtml(strret);
+    return strret; //formatHtml(strret);
 }
 
-String Html::getResponse(String htmlCode)
-{
+String Html::getResponse(String htmlCode) {
     String tmpstr = htmlCode;
     String strret = "";
 
-    StringList strvct = String::regex_search(tmpstr, "response/.+/.+");
-    if (strvct.size() > 0)
-    {
+    StringList strvct = String::regex_search(tmpstr, "handle/.+/.+");
+    if (strvct.size() > 0) {
         strret = strvct.at(0);
         strvct = strret.explode("/");
 
-        if (strvct.size() >= 3)
-        {
+        if (strvct.size() >= 3) {
             strret = strvct.at(3);
             String::replace(strret, "'>", "");
         }
@@ -80,8 +70,7 @@ String Html::getResponse(String htmlCode)
     return strret;
 }
 
-String Html::formatHtml(String value)
-{
+String Html::formatHtml(String value) {
     String strRet = value;
     String::replace(strRet, "</", "\r\n</");
     String::replace(strRet, ">", ">\r\n");

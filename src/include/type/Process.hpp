@@ -21,15 +21,18 @@
 class Process {
 public:
     Process(String executable_path, String arguments = "");
-    Process(const Process& orig);
+
+    Process(const Process &orig);
+
     virtual ~Process();
-    
+
     int run();
+
     void runAsync();
-    
+
 protected:
-    const char* getCommand();
-    
+    const char *getCommand();
+
 private:
     String executable_path_;
     String arguments_;
