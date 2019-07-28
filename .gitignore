@@ -35,7 +35,6 @@
 .idea
 bin
 dist/bin
-lib
 releases
 cmake-build-debug
 
