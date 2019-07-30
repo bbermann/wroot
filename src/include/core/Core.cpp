@@ -93,8 +93,8 @@ void Core::readConfiguration() {
     Core::ServerPort = server["port"];
 
     Core::DocumentRoot = server["document_root"];
-    if (!Core::DocumentRoot.endsWith("/")) {
-        Core::DocumentRoot.append("/");
+    if (Core::DocumentRoot.endsWith("/")) {
+        Core::DocumentRoot = Core::DocumentRoot.substr(0, Core::DocumentRoot.size() - 1);
     }
 
     Core::CompressedOutput = server["compressed_output"];
@@ -170,11 +170,4 @@ void Core::warning(string text, string function) {
 
 void Core::printStartupCheck(String check, String value) {
     Core::outLn("- " + check + ": [" + value + "]");
-}
-
-HttpResponse Core::httpError(unsigned short statusCode) {
-    HttpResponse response;
-    response.status = statusCode;
-    response.compressOutput = true;
-    return response;
 }

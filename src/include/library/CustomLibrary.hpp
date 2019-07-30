@@ -35,7 +35,7 @@ public:
     bool is_empty = false;
 
     ///<summary>Abstract method implemented in children classes</summary>
-    virtual String toString() = 0;
+    virtual String toString();
 
     ///<summary>Get the HttpResponse object passed to browser.</summary>
     virtual HttpResponse getResponse();

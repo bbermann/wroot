@@ -18,7 +18,7 @@
 
 class HttpResponse {
 public:
-    HttpResponse();
+    HttpResponse(unsigned short statusCode = 200, String content = "");
 
     virtual ~HttpResponse();
 

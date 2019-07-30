@@ -1,5 +1,5 @@
 #!/bin/bash
 
-./build.sh &&
+./build.sh $1 &&
 cd ../bin &&
 ./wroot;

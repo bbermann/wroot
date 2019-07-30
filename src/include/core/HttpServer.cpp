@@ -193,7 +193,7 @@ void HttpServer::start() {
                 }
             }
 
-            ms_sleep = this->client_pending_.size() > 0 ? 0 : 5;
+            ms_sleep = this->client_pending_.size() > 0 ? 0 : 1;
             this_thread::sleep_for(chrono::milliseconds(ms_sleep));
         }
 
@@ -363,7 +363,7 @@ String HttpServer::process(HttpRequest httpRequest) {
         Core::warning(String("Exception silenced by HttpServer: ") + ex.what(), "HttpServer::process");
     }
 
-    return Core::httpError((unsigned short) 500).toString();
+    return HttpResponse(500).toString();
 }
 
 void HttpServer::getUrl(String &url, String &library, String &function, StringList &arguments) {

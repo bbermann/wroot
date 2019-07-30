@@ -18,6 +18,8 @@ public:
 
     void setResponseType();
 
+    HttpResponse getResponse() override;
+
     FileIndexList file_list_;
 
 protected:

@@ -29,6 +29,7 @@ bool String::endsWith(const char *str)
 }
 */
 
+
 bool String::contains(string str) {
     string cmp_value = str;
 

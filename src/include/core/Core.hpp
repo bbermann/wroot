@@ -62,8 +62,6 @@ public:
 
     static void warning(std::string text, std::string function);
 
-    static HttpResponse httpError(unsigned short statusCode);
-
 #ifdef WINDOWS
     static const int kWSockVersion = 2;
 #endif

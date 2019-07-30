@@ -19,5 +19,13 @@ make
 cd ${wroot_dir}
 cd bin
 
-cmake -DCMAKE_BUILD_TYPE=Debug ../
+if [[ $1 == 'prod' ]]
+then
+    echo "Using \"Release\" build configuration..."
+    cmake -DCMAKE_BUILD_TYPE=Release ../
+else
+    echo "Using \"Debug\" build configuration..."
+    cmake -DCMAKE_BUILD_TYPE=Debug ../
+fi
+
 make

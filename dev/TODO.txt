@@ -3,7 +3,6 @@ TODO MVP:
 - Better support for HTTP requests and responses.
 - Fill empty environment variables in PhpLibrary ($_SERVER).
 - Improve HTTP handle status
-- Improve Google Chrome TTFB (time to first byte) performance
 - Implement Keep-Alive (possibly related to the above TTFB issue)
 - Implement access control for files and directories
 

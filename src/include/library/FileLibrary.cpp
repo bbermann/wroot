@@ -3,6 +3,7 @@
 #include "../type/Process.hpp"
 #include <fstream>
 #include "../../3rdParty/zlib/ZLib.hpp"
+#include "../exceptions/http/NotFound.hpp"
 
 using namespace std;
 
@@ -15,10 +16,14 @@ FileLibrary::~FileLibrary() {
 
 }
 
-String FileLibrary::toString() {
+HttpResponse FileLibrary::getResponse() {
     this->setResponseType();
 
-    String returnString, currentLine;
+    return CustomLibrary::getResponse();
+}
+
+String FileLibrary::toString() {
+    String fileContent, currentLine;
     String fullPath = this->getFullPath();
 
     Core::debugLn("[FileLibrary] Reading file: " + fullPath);
@@ -33,29 +38,30 @@ String FileLibrary::toString() {
     try {
         ifstream file;
 
+        // Allow ifstream to throw exceptions
+        file.exceptions(ifstream::failbit);
+
         file.open(fullPath, ios::in | ios::binary);
 
         if (file.is_open()) {
             while (file.good()) {
                 getline(file, currentLine);
-                returnString.append(currentLine + LINE_BREAK);
+                fileContent.append(currentLine + LINE_BREAK);
             }
 
             file.close();
         }
-
-    }
-    catch (exception e) {
-        Core::error("Um erro foi disparado em FileLibrary::toString(): " + String(e.what()));
+    } catch (const exception &ex) {
+        throw NotFound();
     }
 
     FileIndex newIndex;
     newIndex.first = fullPath;
-    newIndex.second = returnString;
+    newIndex.second = fileContent;
 
     this->file_list_.insert(this->file_list_.end(), newIndex);
 
-    return returnString;
+    return fileContent;
 }
 
 String FileLibrary::getFileName() {

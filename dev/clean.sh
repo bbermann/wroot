@@ -1,6 +1,9 @@
 #!/bin/bash
 
-cd ../
+cd ../bin
 
-rm bin/*.o
-rm bin/Makefile
+rm *.o
+rm Makefile
+rm cmake_install.cmake
+rm CMakeCache.txt
+rm -rf CMakeFiles
