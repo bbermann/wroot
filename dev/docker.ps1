@@ -8,7 +8,7 @@ if ($args[0] -eq "build") {
     echo "Rebuilding docker image 'wroot'..."
     docker build -t wroot ../
 } elseif ($args[0] -eq "run") {
-    docker run -it -p 8000:8000/tcp -v G:\Programacao\wroot:/wroot wroot bash -c "cd /wroot/dev && ./run.sh"
+    docker run -it -p 8000:8000/tcp -p 666:666/tcp -v G:\Programacao\wroot:/wroot wroot bash -c "cd /wroot/dev && ./run.sh"
 } else {
-    docker run -it -p 8000:8000/tcp -v G:\Programacao\wroot:/wroot wroot bash
+    docker run -it -p 8000:8000/tcp -p 666:666/tcp -v G:\Programacao\wroot:/wroot wroot bash
 }
