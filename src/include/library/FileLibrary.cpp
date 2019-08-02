@@ -35,24 +35,20 @@ String FileLibrary::toString() {
         }
     }
 
-    try {
-        ifstream file;
+    ifstream file;
 
-        // Allow ifstream to throw exceptions
-        file.exceptions(ifstream::failbit);
+    file.open(fullPath, ios::in | ios::binary);
 
-        file.open(fullPath, ios::in | ios::binary);
-
-        if (file.is_open()) {
-            while (file.good()) {
-                getline(file, currentLine);
-                fileContent.append(currentLine + LINE_BREAK);
-            }
-
-            file.close();
-        }
-    } catch (const exception &ex) {
+    if (file.fail()) {
         throw NotFound();
+    }
+
+    if (file.is_open()) {
+        while (getline(file, currentLine)) {
+            fileContent.append(currentLine + LINE_BREAK);
+        }
+
+        file.close();
     }
 
     FileIndex newIndex;

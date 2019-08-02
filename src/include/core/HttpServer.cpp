@@ -201,7 +201,7 @@ void HttpServer::start() {
         ++request_count_;
 
         if (request_count_ % this->announce_rate_ == 0) {
-            Core::outLn("Request count: " + to_string(request_count_));
+            Core::debugLn("Request count: " + to_string(request_count_));
         }
 
         this->client_pending_.push(conn);
@@ -328,7 +328,7 @@ void HttpServer::handle(IncommingConnection &conn) {
     ++response_count_;
 
     if (response_count_ % this->announce_rate_ == 0) {
-        Core::outLn("Response count: " + to_string(response_count_));
+        Core::debugLn("Response count: " + to_string(response_count_));
     }
 
     Core::ThreadMutex.unlock();
@@ -356,10 +356,10 @@ String HttpServer::process(HttpRequest httpRequest) {
         HttpResponse response = app->getResponse();
         return response.toString();
     }
-    catch (std::runtime_error ex) {
+    catch (const std::runtime_error &ex) {
         Core::warning(String("Runtime error silenced by HttpServer: ") + ex.what(), "HttpServer::process");
     }
-    catch (std::exception ex) {
+    catch (const std::exception &ex) {
         Core::warning(String("Exception silenced by HttpServer: ") + ex.what(), "HttpServer::process");
     }
 
