@@ -31,15 +31,15 @@ HttpResponse CustomLibrary::getResponse() {
 
     try {
         response.content = this->toString();
-    } catch (NotFound $exception) {
+    } catch (const NotFound &exception) {
         response.status = 404;
-    } catch (Unauthorized $exception) {
+    } catch (const Unauthorized &exception) {
         response.status = 401;
-    } catch (Forbidden $exception) {
+    } catch (const Forbidden &exception) {
         response.status = 403;
-    } catch (InternalServerError $exception) {
+    } catch (const InternalServerError &exception) {
         response.status = 500;
-        response.content = $exception.what();
+        response.content = exception.what();
     }
 
     return response;

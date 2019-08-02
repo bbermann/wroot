@@ -164,7 +164,7 @@ void HttpServer::start() {
             serverThreads[threadIterator]->detach();
         }
     }
-    catch (exception e) {
+    catch (const exception &e) {
         string description = "Failed spawning worker threads on HttpServer::run.\nDetails: \"";
         description.append(e.what());
         description.append("\"\n");
@@ -246,7 +246,7 @@ void HttpServer::run() {
             //Process the request and send the handle to the client
             this->handle(conn);
         }
-        catch (exception e) {
+        catch (const exception &e) {
             throw Exception("Falha ao processar resposta ao cliente http.", "void HttpServer::run()");
         }
     }

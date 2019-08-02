@@ -80,7 +80,7 @@ String FileHelper::Read(String filename) {
         }
 
     }
-    catch (exception e) {
+    catch (const exception &e) {
         Core::error("Um erro foi disparado em FileHelper::Read(): " + String(e.what()));
     }
     return ret;
@@ -125,7 +125,7 @@ bool FileHelper::Exists(String filename, bool canBeFolder) {
         }
 
     }
-    catch (exception e) {
+    catch (const exception &e) {
         Core::error("Um erro foi disparado em FileHelper::Exists(String): " + String(e.what()));
     }
 
