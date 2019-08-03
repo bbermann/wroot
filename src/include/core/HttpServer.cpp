@@ -291,6 +291,7 @@ void HttpServer::handle(IncommingConnection &conn) {
         HttpRequest httpRequest(receivedData, clientIpAddress);
         return httpRequest;
     });
+
     auto httpRequest = httpRequestFuture.get();
 
     if (!httpRequest.isValid()) {
@@ -301,15 +302,18 @@ void HttpServer::handle(IncommingConnection &conn) {
     //Process request and get handle
     std::future <String> responseFuture = std::async([this, &httpRequest, &timer] {
         timer.start();
+
         auto response = this->process(httpRequest);
+
         Core::debugLn("Request processed in " + to_string(timer.finish()) + "ms.");
+
         return response;
     });
+
     String response = responseFuture.get();
-    //String handle = this->process(httpRequest);
 
     if (response.length() > 0) {
-        ssize_t bytesSent = -1;
+        ssize_t bytesSent;
 
         timer.start();
 
@@ -337,14 +341,15 @@ void HttpServer::handle(IncommingConnection &conn) {
 String HttpServer::process(HttpRequest httpRequest) {
     try {
         String url = httpRequest.getUrl();
-
-        FileHelper fileHelper;
         String fileName = Core::ApplicationPath + url;
 
         //Custom library initializer
+        // TODO: Instancia de FileLibrary deve ser reutilizável na mesma thread (future/async)
         shared_ptr <CustomLibrary> app(new FileLibrary());
 
 #if defined(WROOT_USE_PHPLIBRARY)
+        FileHelper fileHelper;
+
         if (!fileHelper.Exists(Core::DocumentRoot + fileName) || fileHelper.CheckExtension(fileName, "php"))
         {
             app.reset(new PhpLibrary());

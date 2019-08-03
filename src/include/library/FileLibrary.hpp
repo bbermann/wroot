@@ -5,9 +5,6 @@
 
 #include "CustomLibrary.hpp"
 
-typedef std::vector <std::pair<String, String>> FileIndexList;
-typedef std::pair <String, String> FileIndex;
-
 class FileLibrary : public CustomLibrary {
 public:
     FileLibrary();
@@ -20,7 +17,7 @@ public:
 
     HttpResponse getResponse() override;
 
-    FileIndexList file_list_;
+    StringMap file_list;
 
 protected:
     String getFileName();

@@ -1,11 +1,13 @@
 #include "FileLibrary.hpp"
+#include <fstream>
+#include <stdexcept>
 #include "../core/Core.hpp"
 #include "../type/Process.hpp"
-#include <fstream>
 #include "../../3rdParty/zlib/ZLib.hpp"
 #include "../exceptions/http/NotFound.hpp"
 
-using namespace std;
+using std::ifstream;
+using std::ios;
 
 FileLibrary::FileLibrary() : CustomLibrary() {
     //This library implicitly compress the output
@@ -28,11 +30,12 @@ String FileLibrary::toString() {
 
     Core::debugLn("[FileLibrary] Reading file: " + fullPath);
 
-    for (FileIndex index : this->file_list_) {
-        if (index.first == fullPath) {
-            Core::debugLn("[FileLibrary] Retrieving file cache for \"" + fullPath + "\".");
-            return index.second;
-        }
+    try {
+        auto fileContent = this->file_list.at(fullPath);
+        Core::outLn("[FileLibrary] Retrieving file cache for \"" + fullPath + "\".");
+        return fileContent;
+    } catch (const std::out_of_range &exception) {
+        // Map index not found.
     }
 
     ifstream file;
@@ -51,11 +54,7 @@ String FileLibrary::toString() {
         file.close();
     }
 
-    FileIndex newIndex;
-    newIndex.first = fullPath;
-    newIndex.second = fileContent;
-
-    this->file_list_.insert(this->file_list_.end(), newIndex);
+    this->file_list[fullPath] = fileContent;
 
     return fileContent;
 }
