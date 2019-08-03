@@ -1,9 +1,13 @@
 #!/bin/bash
 
-cd ../bin
+wroot_dir="$(dirname $0)"
+cd $wroot_dir/../
+wroot_dir=$PWD
 
-rm *.o
-rm Makefile
-rm cmake_install.cmake
-rm CMakeCache.txt
-rm -rf CMakeFiles
+cd $wroot_dir/bin
+
+rm *.o > /dev/null 2>&1
+rm Makefile > /dev/null 2>&1
+rm cmake_install.cmake > /dev/null 2>&1
+rm CMakeCache.txt > /dev/null 2>&1
+rm -rf CMakeFiles > /dev/null 2>&1

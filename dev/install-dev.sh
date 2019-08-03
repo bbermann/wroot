@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
-cd ../
+wroot_dir="$(dirname $0)"
+cd $wroot_dir/../
 wroot_dir=$PWD
 
 # WARNING: Do not change this file without also changing Dockerfile.
@@ -37,6 +38,9 @@ cd zlib-1.2.11/ && \
 ./configure && \
 make && \
 make install
+
+# BOOST
+sudo apt-get update && sudo apt-get install -y libboost-all-dev
 
 # Change directory to the actual wroot working directory
 cd $wroot_dir

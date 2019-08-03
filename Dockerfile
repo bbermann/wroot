@@ -39,11 +39,27 @@ cd zlib-1.2.11/ && \
 make && \
 make install
 
+# BOOST
+RUN apt-get update && apt-get install -y libboost-all-dev
+
+# SSH
+RUN apt-get update && apt-get install -y openssh-server
+
 # Sets the actual wroot working directory
 WORKDIR /wroot
 
 EXPOSE 8000
+EXPOSE 666
+EXPOSE 22
 
-# Keep the container running
-CMD ["/wroot/bin/wroot"]
+RUN mkdir /var/run/sshd
+RUN echo 'root:wroot' | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
+# SSH login fix. Otherwise user is kicked off after login
+# RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+# ENV NOTVISIBLE "in users profile"
+# RUN echo "export VISIBLE=now" >> /etc/profile
+
+CMD /usr/sbin/sshd -D && bash
