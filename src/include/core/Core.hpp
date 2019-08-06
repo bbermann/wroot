@@ -78,14 +78,12 @@ public:
     static StringList Parameters;
     static bool IsDebugging;
     static bool CompressedOutput;
-    static bool CallBrowserOnStart;
     static bool Running;
     static int ThreadCount;
     static int ServerPort;
     static std::mutex ThreadMutex;
     static std::shared_ptr <HttpServer> Server;
     static std::vector <UrlRewriteRule> UrlRewriteRules;
-    static const std::shared_ptr <CustomDatabase> db;
 
 private:
     static void readConfiguration();

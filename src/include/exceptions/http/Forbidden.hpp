@@ -4,9 +4,11 @@
 
 #pragma once
 
-#include "../../type/Exception.hpp"
+#include <exception>
 
-class Forbidden : public Exception {
+class Forbidden : public std::exception {
 public:
-    Forbidden() : Exception("Http::Forbidden") {}
+    virtual char const *what() const noexcept override {
+        return "Http::Forbidden";
+    }
 };

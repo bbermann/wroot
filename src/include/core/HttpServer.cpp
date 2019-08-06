@@ -2,14 +2,9 @@
 #include "HttpRequest.hpp"
 #include "../type/Html.hpp"
 #include "../type/Timer.hpp"
-#include "../type/Exception.hpp"
 #include "../type/Process.hpp"
 #include "../helper/FileHelper.hpp"
 #include "../library/FileLibrary.hpp"
-
-#if defined(WROOT_USE_PHPLIBRARY)
-#include "../library/PhpLibrary.hpp"
-#endif
 
 #include <mutex>
 #include <exception>
@@ -247,7 +242,7 @@ void HttpServer::run() {
             this->handle(conn);
         }
         catch (const exception &e) {
-            throw Exception("Falha ao processar resposta ao cliente http.", "void HttpServer::run()");
+            throw runtime_error("Falha ao processar resposta ao cliente http.");
         }
     }
 }
@@ -338,7 +333,7 @@ void HttpServer::handle(IncommingConnection &conn) {
     Core::ThreadMutex.unlock();
 }
 
-String HttpServer::process(HttpRequest httpRequest) {
+String HttpServer::process(HttpRequest &httpRequest) {
     try {
         String url = httpRequest.getUrl();
         String fileName = Core::ApplicationPath + url;
@@ -347,18 +342,9 @@ String HttpServer::process(HttpRequest httpRequest) {
         // TODO: Instancia de FileLibrary deve ser reutilizável na mesma thread (future/async)
         shared_ptr <CustomLibrary> app(new FileLibrary());
 
-#if defined(WROOT_USE_PHPLIBRARY)
-        FileHelper fileHelper;
-
-        if (!fileHelper.Exists(Core::DocumentRoot + fileName) || fileHelper.CheckExtension(fileName, "php"))
-        {
-            app.reset(new PhpLibrary());
-        }
-#endif
-
         app->setHttpRequest(httpRequest);
-
         HttpResponse response = app->getResponse();
+
         return response.toString();
     }
     catch (const std::runtime_error &ex) {
@@ -368,7 +354,10 @@ String HttpServer::process(HttpRequest httpRequest) {
         Core::warning(String("Exception silenced by HttpServer: ") + ex.what(), "HttpServer::process");
     }
 
-    return HttpResponse(500).toString();
+    return HttpResponse(500).
+
+            toString();
+
 }
 
 void HttpServer::getUrl(String &url, String &library, String &function, StringList &arguments) {

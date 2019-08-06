@@ -4,10 +4,11 @@
 
 #pragma once
 
-#include "../../type/Exception.hpp"
+#include <exception>
 
-class InternalServerError : public Exception {
+class InternalServerError : public std::exception {
 public:
-    InternalServerError() : Exception("Http::InternalServerError") {}
+    virtual char const *what() const noexcept override {
+        return "Http::InternalServerError";
+    }
 };
-

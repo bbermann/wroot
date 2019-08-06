@@ -12,7 +12,6 @@
  */
 
 #include "Process.hpp"
-#include "Exception.hpp"
 
 using namespace std;
 
@@ -38,7 +37,6 @@ int Process::run() {
 }
 
 void Process::runAsync() {
-
     thread asyncCall(&system, getCommand());
     asyncCall.detach();
 }

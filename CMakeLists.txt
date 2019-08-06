@@ -27,18 +27,12 @@ set(SOURCES
         src/include/core/HttpRequest.cpp
         src/include/core/HttpResponse.cpp
         src/include/core/HttpServer.cpp
-        src/include/database/SQLiteDatabase.cpp
         src/include/helper/Crypto.cpp
         src/include/helper/FileHelper.cpp
         src/include/helper/FunctionMap.cpp
         src/include/helper/UrlRewriter.cpp
         src/include/library/CustomLibrary.cpp
-        src/include/library/ErrorLibrary.cpp
         src/include/library/FileLibrary.cpp
-        src/include/library/PhpLibrary.cpp
-        src/include/library/HtmlLibrary.cpp
-        src/include/library/XmlLibrary.cpp
-        src/include/type/Exception.cpp
         src/include/type/Html.cpp
         src/include/type/HtmlElement.cpp
         src/include/type/Process.cpp
@@ -51,8 +45,6 @@ set(SOURCES
 
 set(HEADERS
         src/include/repository/BaseRepository.hpp
-        src/include/model/BaseModel.hpp
-        src/include/model/User.hpp
         src/include/helper/Base64.hpp
         src/3rdParty/boost/config/abi/borland_prefix.hpp
         src/3rdParty/boost/config/abi/borland_suffix.hpp
@@ -514,8 +506,6 @@ set(HEADERS
         src/include/core/HttpRequest.hpp
         src/include/core/HttpResponse.hpp
         src/include/core/HttpServer.hpp
-        src/include/database/CustomDatabase.hpp
-        src/include/database/SQLiteDatabase.hpp
         src/include/helper/LuaHelper.hpp
         src/include/helper/ConsoleLineHelper.hpp
         src/include/helper/EnvironmentBuilder.hpp
@@ -527,12 +517,7 @@ set(HEADERS
         src/include/helper/ValidationHelper.hpp
         src/include/helper/UrlRewriter.hpp
         src/include/library/CustomLibrary.hpp
-        src/include/library/ErrorLibrary.hpp
         src/include/library/FileLibrary.hpp
-        src/include/library/PhpLibrary.hpp
-        src/include/library/HtmlLibrary.hpp
-        src/include/library/XmlLibrary.hpp
-        src/include/type/Exception.hpp
         src/include/type/Html.hpp
         src/include/type/HtmlElement.hpp
         src/include/type/Process.hpp

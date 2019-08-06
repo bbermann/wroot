@@ -4,9 +4,11 @@
 
 #pragma once
 
-#include "../../type/Exception.hpp"
+#include <exception>
 
-class NotFound : public Exception {
+class NotFound : public std::exception {
 public:
-    NotFound() : Exception("Http::NotFound") {}
+    virtual char const *what() const noexcept override {
+        return "Http::NotFound";
+    }
 };

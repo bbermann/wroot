@@ -2,7 +2,6 @@
 #include "../helper/ConsoleLineHelper.hpp"
 #include "nlohmann/json/src/json.hpp"
 #include "include/core/HttpResponse.hpp"
-#include "include/database/SQLiteDatabase.hpp"
 #include <mutex>
 #include <fstream>
 
@@ -27,7 +26,6 @@ std::mutex Core::ThreadMutex;
 std::shared_ptr <HttpServer> Core::Server;
 std::vector <UrlRewriteRule> Core::UrlRewriteRules;
 std::mutex Core::outMutex;
-const std::shared_ptr <CustomDatabase> Core::db = make_shared<SQLiteDatabase>();
 
 Core::Core() {
 }

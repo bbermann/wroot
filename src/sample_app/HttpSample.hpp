@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../include/library/HtmlLibrary.hpp"
+#include "../include/library/CustomLibrary.hpp"
 
-class HttpSample :
-        public HtmlLibrary {
+class HttpSample : public CustomLibrary {
 public:
     HttpSample();
 
