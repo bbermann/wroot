@@ -16,25 +16,25 @@ function confirm()
     return 1
 }
 
-if [[ $1 -eq "build" ]];
+if [[ $1 == "build" ]];
 then
     confirm Rebuild docker image? && \
     echo "Rebuilding docker image 'wroot'..." && \
     docker build -t wroot ../
-elif [[ $1 -eq "run" ]];
+elif [[ $1 == "run" ]];
 then
     echo "Running wroot server..."
     docker run -d -p 8000:8000/tcp -p 666:666/tcp -p 22:22/tcp -v G:\Programacao\wroot:/wroot wroot bash -c "cd /wroot/dev && ./run.sh"
-elif [[ $1 -eq "ssh" ]];
+elif [[ $1 == "ssh" ]];
 then
     echo "Running ssh into wroot container..."
     ssh root@localhost
-elif [[ $1 -eq "stop" ]];
+elif [[ $1 == "stop" ]];
 then
     echo "Stopping wroot container..."
     docker stop $(docker ps -q --filter ancestor=wroot)
 else
     echo "Running wroot container"
-    docker run -d -p 8000:8000/tcp -p 666:666/tcp -p 22:22/tcp -v G:\Programacao\wroot:/wroot wroot
+    docker run -d -p 8081:8000/tcp -p 666:666/tcp -p 22:22/tcp -v /home/melhorenvio/Documentos/dev/wroot:/wroot wroot
     ssh root@localhost
 fi

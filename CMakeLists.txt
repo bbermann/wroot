@@ -38,8 +38,7 @@ set(SOURCES
         src/include/type/Timer.cpp
         src/include/type/Xml.cpp
         src/include/type/XmlCode.cpp
-        src/sample_app/HttpSample.cpp
-        src/3rdParty/sqlite-cpp/src/sqlite_cpp.cpp)
+        src/sample_app/HttpSample.cpp)
 
 set(HEADERS
         src/include/repository/BaseRepository.hpp
@@ -947,10 +946,9 @@ set(HEADERS
         src/3rdParty/boost/shared_ptr.hpp
         src/3rdParty/boost/smart_ptr.hpp
         src/3rdParty/boost/throw_exception.hpp
-        src/3rdParty/sqlite-cpp/src/sqlite_cpp.h
         src/include/exceptions/http/NotFound.hpp)
 
 add_executable(wroot ${SOURCES} ${HEADERS})
 
 ## Link libraries
-target_link_libraries(wroot pthread z sqlite3 lua ${CMAKE_DL_LIBS})
+target_link_libraries(wroot pthread z lua ${CMAKE_DL_LIBS})
