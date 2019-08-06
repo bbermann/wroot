@@ -2,9 +2,9 @@ TODO MVP:
 
 - Better support for HTTP requests and responses.
 - Improve HTTP handle status
-- Implement Keep-Alive (possibly related to the above TTFB issue)
+- Implement Keep-Alive
 - Implement access control for files and directories
-
+- Change POSIX sockets for boost asio
 
 Benchmark:
 

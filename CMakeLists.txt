@@ -33,8 +33,6 @@ set(SOURCES
         src/include/helper/UrlRewriter.cpp
         src/include/library/CustomLibrary.cpp
         src/include/library/FileLibrary.cpp
-        src/include/type/Html.cpp
-        src/include/type/HtmlElement.cpp
         src/include/type/Process.cpp
         src/include/type/String.cpp
         src/include/type/Timer.cpp
@@ -518,8 +516,6 @@ set(HEADERS
         src/include/helper/UrlRewriter.hpp
         src/include/library/CustomLibrary.hpp
         src/include/library/FileLibrary.hpp
-        src/include/type/Html.hpp
-        src/include/type/HtmlElement.hpp
         src/include/type/Process.hpp
         src/include/type/String.hpp
         src/include/type/Timer.hpp

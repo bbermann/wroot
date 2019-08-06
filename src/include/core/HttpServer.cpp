@@ -1,6 +1,5 @@
 #include "HttpServer.hpp"
 #include "HttpRequest.hpp"
-#include "../type/Html.hpp"
 #include "../type/Timer.hpp"
 #include "../type/Process.hpp"
 #include "../helper/FileHelper.hpp"
@@ -26,8 +25,6 @@
 
 using namespace std;
 
-vector <HtmlElement> HtmlElement::templates;
-
 HttpServer::HttpServer(size_t port) {
     this->port_ = port;
     this->server_socket_ = INVALID_SOCKET;
@@ -37,8 +34,6 @@ HttpServer::HttpServer(size_t port) {
 
     this->free_connection_slots_ = Core::kMaxConnections;
     this->announce_rate_ = Core::IsDebugging ? 10 : 1000;
-
-    HtmlElement::createTemplates();
 }
 
 HttpServer::~HttpServer() {
