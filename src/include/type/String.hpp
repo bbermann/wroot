@@ -20,34 +20,27 @@ public:
 
     ~String();
 
-    /*inline virtual String operator=(const char* str) { 
-        return static_cast<std::string>(str);
-    }*/
+    bool contains(const String &str) const;
 
-    /*bool contains(const char *str);
-    bool endsWith(const char *str);*/
+    bool endsWith(const String &str) const;
 
-    bool contains(std::string str);
+    bool startsWith(const String &str) const;
 
-    bool endsWith(std::string str);
+    StringList regex_search(const String &regexp);
 
-    bool startsWith(std::string str);
+    StringList explode(const String &separator) const;
 
-    StringList regex_search(std::string regexp);
+    static void explode(const String &str, const String &separator, StringList *results);
 
-    StringList explode(String separator);
+    static String& replace(String &str, const String &from, const String &to);
 
-    static void explode(std::string str, std::string separator, StringList *results);
+    static String& toLower(String &str);
 
-    static std::string replace(std::string &str, std::string from, std::string to);
+    static String& toUpper(String &str);
 
-    static std::string toLower(std::string str);
+    static String& trim(String &str);
 
-    static std::string toUpper(std::string str);
-
-    static std::string trim(std::string str);
-
-    static StringList regex_search(std::string text, std::string regexp);
+    static StringList regex_search(const String &text, const String &regexp);
 
     // trim from start (in place)
     String ltrim();

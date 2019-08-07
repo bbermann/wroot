@@ -7,32 +7,32 @@ class HttpRequest {
 public:
     HttpRequest();
 
-    HttpRequest(String request, String ipAddress);
+    HttpRequest(const String &request, const String &ipAddress);
 
     virtual ~HttpRequest();
 
-    String get(String key);
+    String get(const String &key) const;
 
-    String getHttpMethod();
+    String getHttpMethod() const;
 
-    String getUrl();
+    String getUrl() const;
 
-    StringMap getQuery();
+    StringMap getQuery() const;
 
-    String toString();
+    String toString() const;
 
-    bool isValid();
+    bool isValid() const;
 
 protected:
-    void set(String key, String value);
+    void set(const String &key, const String &value);
 
     void setHttpMethod(String method);
 
     void setUrl(String url);
 
-    void setQueryParam(String key, String value);
+    void setQueryParam(const String &key, const String &value);
 
-    void setQuery(String queryString);
+    void setQuery(const String &queryString);
 
     void process();
 

@@ -53,7 +53,7 @@ public:
     ///<example>
     ///ExecAPI("/estoque/produto/7893546218542/", "GET");
     ///</example>
-    String process(HttpRequest &request);
+    static String process(const HttpRequest &request);
 
 protected:
 #ifdef WINDOWS

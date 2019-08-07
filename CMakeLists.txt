@@ -6,7 +6,7 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
@@ -951,4 +951,4 @@ set(HEADERS
 add_executable(wroot ${SOURCES} ${HEADERS})
 
 ## Link libraries
-target_link_libraries(wroot pthread z lua ${CMAKE_DL_LIBS})
+target_link_libraries(wroot stdc++ pthread z lua ${CMAKE_DL_LIBS})

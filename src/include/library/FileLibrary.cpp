@@ -10,7 +10,7 @@ using std::ifstream;
 using std::ios;
 
 FileLibrary::FileLibrary() : CustomLibrary() {
-    //This library implicitly compress the output
+    // This library implicitly compress the output
     this->compressedOutput = false;
 }
 

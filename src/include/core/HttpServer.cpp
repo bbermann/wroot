@@ -1,8 +1,6 @@
 #include "HttpServer.hpp"
 #include "HttpRequest.hpp"
 #include "../type/Timer.hpp"
-#include "../type/Process.hpp"
-#include "../helper/FileHelper.hpp"
 #include "../library/FileLibrary.hpp"
 
 #include <mutex>
@@ -245,7 +243,7 @@ void HttpServer::run() {
 void HttpServer::handle(IncommingConnection &conn) {
     Timer timer;
 
-    std::future <HttpRequest> httpRequestFuture = std::async([conn, &timer] {
+    std::future<HttpRequest> httpRequestFuture = std::async([conn, &timer] {
         timer.start();
 
         char recvBuffer[Core::kBufferSize];
@@ -278,11 +276,10 @@ void HttpServer::handle(IncommingConnection &conn) {
 
         Core::debugLn("Request received in " + to_string(timer.finish()) + "ms.");
 
-        HttpRequest httpRequest(receivedData, clientIpAddress);
-        return httpRequest;
+        return HttpRequest(receivedData, clientIpAddress);
     });
 
-    auto httpRequest = httpRequestFuture.get();
+    const auto httpRequest = httpRequestFuture.get();
 
     if (!httpRequest.isValid()) {
         Core::debugLn("Socket closed.");
@@ -290,10 +287,10 @@ void HttpServer::handle(IncommingConnection &conn) {
     }
 
     //Process request and get handle
-    std::future <String> responseFuture = std::async([this, &httpRequest, &timer] {
+    std::future<String> responseFuture = std::async([this, &httpRequest, &timer] {
         timer.start();
 
-        auto response = this->process(httpRequest);
+        auto response = HttpServer::process(httpRequest);
 
         Core::debugLn("Request processed in " + to_string(timer.finish()) + "ms.");
 
@@ -328,16 +325,16 @@ void HttpServer::handle(IncommingConnection &conn) {
     Core::ThreadMutex.unlock();
 }
 
-String HttpServer::process(HttpRequest &httpRequest) {
+String HttpServer::process(const HttpRequest &httpRequest) {
     try {
         String url = httpRequest.getUrl();
         String fileName = Core::ApplicationPath + url;
 
         //Custom library initializer
-        // TODO: Instancia de FileLibrary deve ser reutilizável na mesma thread (future/async)
-        shared_ptr <CustomLibrary> app(new FileLibrary());
+        shared_ptr<CustomLibrary> app(new FileLibrary());
 
         app->setHttpRequest(httpRequest);
+
         HttpResponse response = app->getResponse();
 
         return response.toString();

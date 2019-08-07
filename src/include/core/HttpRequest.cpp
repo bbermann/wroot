@@ -6,7 +6,7 @@ HttpRequest::HttpRequest() {
     this->isValid_ = false;
 }
 
-HttpRequest::HttpRequest(String request, String ipAddress) {
+HttpRequest::HttpRequest(const String &request, const String &ipAddress) {
     this->request_ = request;
     this->set("REMOTE_ADDR", ipAddress);
 
@@ -17,11 +17,36 @@ HttpRequest::HttpRequest(String request, String ipAddress) {
     this->isValid_ = true;
 }
 
-HttpRequest::~HttpRequest() {
+HttpRequest::~HttpRequest() = default;
+
+bool HttpRequest::isValid() const {
+    return this->isValid_;
 }
 
-bool HttpRequest::isValid() {
-    return this->isValid_;
+String HttpRequest::get(const String &key) const {
+    return this->data_.at(key);
+}
+
+String HttpRequest::getHttpMethod() const {
+    return this->get("HTTP_METHOD");
+}
+
+String HttpRequest::getUrl() const {
+    return this->get("REQUEST_URI");
+}
+
+StringMap HttpRequest::getQuery() const {
+    return this->query_;
+}
+
+String HttpRequest::toString() const {
+    String output;
+
+    for (auto pair : this->data_) {
+        output.append(pair.first + ": " + pair.second + ENDL);
+    }
+
+    return output;
 }
 
 void HttpRequest::process() {
@@ -73,23 +98,7 @@ void HttpRequest::process() {
     }
 }
 
-String HttpRequest::get(String key) {
-    return this->data_[key];
-}
-
-String HttpRequest::getHttpMethod() {
-    return this->get("HTTP_METHOD");
-}
-
-String HttpRequest::getUrl() {
-    return this->get("REQUEST_URI");
-}
-
-StringMap HttpRequest::getQuery() {
-    return this->query_;
-}
-
-void HttpRequest::set(String key, String value) {
+void HttpRequest::set(const String &key, const String &value) {
     this->data_[key] = value;
 }
 
@@ -110,21 +119,11 @@ void HttpRequest::setHttpMethod(String method) {
     this->set("HTTP_METHOD", method);
 }
 
-void HttpRequest::setQueryParam(String key, String value) {
+void HttpRequest::setQueryParam(const String &key, const String &value) {
     this->query_[key] = value;
 }
 
-String HttpRequest::toString() {
-    String output;
-
-    for (auto pair : this->data_) {
-        output.append(pair.first + ": " + pair.second + ENDL);
-    }
-
-    return output;
-}
-
-void HttpRequest::setQuery(String queryString) {
+void HttpRequest::setQuery(const String &queryString) {
     this->set("QUERY_STRING", queryString);
 
     StringList data = queryString.explode("&");

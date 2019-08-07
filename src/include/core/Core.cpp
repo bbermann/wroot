@@ -112,7 +112,7 @@ void Core::readConfiguration() {
         Core::UrlRewriteRules.insert(Core::UrlRewriteRules.end(), rule);
     }
 
-    Core::ServerAddress = Core::ServerName;
+    Core::ServerAddress = Core::ServerName + ":" + to_string(Core::ServerPort);
     Core::printStartupCheck("Listening on", Core::ServerAddress);
 }
 

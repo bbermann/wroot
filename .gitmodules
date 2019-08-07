@@ -2,10 +2,6 @@
 	path = src/3rdParty/nlohmann/json
 	url = https://github.com/nlohmann/json.git
 
-[submodule "src/3rdParty/sqlite-cpp"]
-	path = src/3rdParty/sqlite-cpp
-	url = https://github.com/vincentlaucsb/sqlite-cpp.git
-
 [submodule "src/3rdParty/lua"]
 	path = src/3rdParty/lua
 	url = https://github.com/lua/lua.git
