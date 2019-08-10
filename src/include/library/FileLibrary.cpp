@@ -2,8 +2,6 @@
 #include <fstream>
 #include <stdexcept>
 #include "../core/Core.hpp"
-#include "../type/Process.hpp"
-#include "../../3rdParty/zlib/ZLib.hpp"
 #include "../exceptions/http/NotFound.hpp"
 
 using std::ifstream;
@@ -30,14 +28,6 @@ String FileLibrary::toString() {
 
     Core::debugLn("[FileLibrary] Reading file: " + fullPath);
 
-    try {
-        auto fileContent = this->file_list.at(fullPath);
-        Core::outLn("[FileLibrary] Retrieving file cache for \"" + fullPath + "\".");
-        return fileContent;
-    } catch (const std::out_of_range &exception) {
-        // Map index not found.
-    }
-
     ifstream file;
 
     file.open(fullPath, ios::in | ios::binary);
@@ -53,8 +43,6 @@ String FileLibrary::toString() {
 
         file.close();
     }
-
-    this->file_list[fullPath] = fileContent;
 
     return fileContent;
 }

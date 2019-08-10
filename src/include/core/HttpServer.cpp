@@ -84,7 +84,7 @@ bool HttpServer::createSocket() {
         if (::bind(server_socket_, (SOCKADDR *)&server_address_, sizeof(server_address_)) == SOCKET_ERROR)
         {
             Core::error("Socket binding has failed.");
-            CLOSESOCKET(server_socket_);
+            CLOSE_SOCKET(server_socket_);
             bReturn = false;
         }
     }
@@ -103,7 +103,11 @@ bool HttpServer::createSocket() {
         setsockopt(server_socket_, SOL_SOCKET, SO_REUSEADDR, &reuseSocket, sizeof(reuseSocket));
         setsockopt(server_socket_, SOL_SOCKET, SO_KEEPALIVE, &reuseSocket, sizeof(reuseSocket));
 
-        int fcntl_status = fcntl(server_socket_, F_SETFL, fcntl(server_socket_, F_GETFL, 0) /*| O_NONBLOCK*/);
+#ifdef WROOT_NONBLOCKING_IO
+        int fcntl_status = fcntl(server_socket_, F_SETFL, fcntl(server_socket_, F_GETFL, 0) | O_NONBLOCK);
+#else
+        int fcntl_status = fcntl(server_socket_, F_SETFL, fcntl(server_socket_, F_GETFL, 0));
+#endif
 
         if (fcntl_status == -1) {
             Core::error("Failed to set non blocking option on the server socket.", "bool HttpServer::createSocket()");
@@ -111,7 +115,7 @@ bool HttpServer::createSocket() {
 
         if (bind(server_socket_, (struct sockaddr *) &server_address_, sizeof(server_address_)) == SOCKET_ERROR) {
             Core::error("Socket binding has failed.");
-            CLOSESOCKET(server_socket_);
+            CLOSE_SOCKET(server_socket_);
             bReturn = false;
         } else {
             bReturn = true;
@@ -147,7 +151,7 @@ void HttpServer::start() {
 
     //Um thread pool para aceitar conexões (this_thread) e as demais threads processam respostas.
     try {
-        for (int threadIterator = 0; threadIterator < workerThreads; threadIterator++) {
+        for (unsigned int threadIterator = 0; threadIterator < workerThreads; threadIterator++) {
             serverThreads[threadIterator] = new thread(&HttpServer::run, this);
             serverThreads[threadIterator]->detach();
         }
@@ -162,27 +166,33 @@ void HttpServer::start() {
 
     Core::outLn("Waiting for HTTP requests on port " + to_string(port_) + "...\n");
 
-    IncommingConnection conn;
-    int ms_sleep = 0;
-    int free_slots = 0;
+    IncomingConnection conn;
+    unsigned int ms_sleep = 0;
+    unsigned int free_slots = 0;
 
     while (Core::Running) {
-        conn.incomming_socket = INVALID_SOCKET;
+        conn.incoming_socket = INVALID_SOCKET;
 
-        while (conn.incomming_socket == INVALID_SOCKET) {
+        while (conn.incoming_socket == INVALID_SOCKET) {
             free_slots = free_connection_slots_;
 
             if (free_slots > 0) {
-                conn.incomming_socket = accept(server_socket_, (struct sockaddr *) &conn.client_address,
-                                               &conn.client_length);
+                errno = 0;
+
+                conn.incoming_socket = accept(
+                        server_socket_,
+                        (struct sockaddr *) &conn.client_address,
+                        &conn.client_length
+                );
 
                 if (errno == EWOULDBLOCK || errno == EAGAIN || errno == ECONNABORTED) {
-                    conn.incomming_socket = INVALID_SOCKET;
+                    conn.incoming_socket = INVALID_SOCKET;
                 }
             }
 
-            ms_sleep = this->client_pending_.size() > 0 ? 0 : 1;
-            this_thread::sleep_for(chrono::milliseconds(ms_sleep));
+            if (this->connections_queue_.empty()) {
+                this->putCurrentThreadToSleep();
+            }
         }
 
         --free_connection_slots_;
@@ -192,41 +202,40 @@ void HttpServer::start() {
             Core::debugLn("Request count: " + to_string(request_count_));
         }
 
-        this->client_pending_.push(conn);
+        this->connections_queue_.push(conn);
     }
 
-    //Shutdown...
-    //Free the server threads memory
-    for (int it = 0; it < workerThreads; ++it) {
-        delete serverThreads[it];
-    }
+    // Free the server threads memory on shutdown
+    delete[] serverThreads;
 }
 
 void HttpServer::run() {
-    IncommingConnection conn;
+    IncomingConnection conn;
     int ms_sleep = 0;
 
     while (Core::Running) {
-        //Set an INVALID_SOCKET value to the object which represents incomming connections
-        conn.incomming_socket = INVALID_SOCKET;
+        //Set an INVALID_SOCKET value to the object which represents incoming connections
+        conn.incoming_socket = INVALID_SOCKET;
 
         Core::ThreadMutex.lock();
 
         //If any client is waiting for processing
-        if (this->client_pending_.size() > 0) {
+        if (!this->connections_queue_.empty()) {
             //Uses a FIFO approach, getting first element from the queue.
-            conn = this->client_pending_.front();
+            conn = this->connections_queue_.front();
 
             //Free this connection slot
-            this->client_pending_.pop();
+            this->connections_queue_.pop();
             ++free_connection_slots_;
         }
 
         Core::ThreadMutex.unlock();
 
-        if (conn.incomming_socket == INVALID_SOCKET) {
-            ms_sleep = this->client_pending_.size() > 0 ? 0 : 1;
-            this_thread::sleep_for(chrono::milliseconds(ms_sleep));
+        if (conn.incoming_socket == INVALID_SOCKET) {
+            if (this->connections_queue_.empty()) {
+                this->putCurrentThreadToSleep();
+            }
+
             continue;
         }
 
@@ -240,7 +249,12 @@ void HttpServer::run() {
     }
 }
 
-void HttpServer::handle(IncommingConnection &conn) {
+void HttpServer::putCurrentThreadToSleep() const {
+    const auto ms_sleep = chrono::milliseconds(1);
+    this_thread::sleep_for(ms_sleep);
+}
+
+void HttpServer::handle(IncomingConnection &conn) {
     Timer timer;
 
     std::future<HttpRequest> httpRequestFuture = std::async([conn, &timer] {
@@ -257,7 +271,7 @@ void HttpServer::handle(IncommingConnection &conn) {
         String receivedData = "";
 
         do {
-            ssize_t bytesReceived = recv(conn.incomming_socket, recvBuffer, Core::kBufferSize, 0);
+            ssize_t bytesReceived = recv(conn.incoming_socket, recvBuffer, Core::kBufferSize, 0);
 
             // Client disconnect or error receiving request
             if (bytesReceived <= 0 || errno != 0) {
@@ -283,7 +297,7 @@ void HttpServer::handle(IncommingConnection &conn) {
 
     if (!httpRequest.isValid()) {
         Core::debugLn("Socket closed.");
-        CLOSESOCKET(conn.incomming_socket);
+        CLOSE_SOCKET(conn.incoming_socket);
     }
 
     //Process request and get handle
@@ -305,10 +319,10 @@ void HttpServer::handle(IncommingConnection &conn) {
         timer.start();
 
         do {
-            bytesSent = send(conn.incomming_socket, response.data(), response.length(), MSG_NOSIGNAL);
+            bytesSent = send(conn.incoming_socket, response.data(), response.length(), MSG_NOSIGNAL);
         } while (errno == EWOULDBLOCK);
 
-        CLOSESOCKET(conn.incomming_socket);
+        CLOSE_SOCKET(conn.incoming_socket);
 
         Core::debugLn("Response sent in " + to_string(timer.finish()) + "ms.");
         Core::debugLn("Bytes Sent: " + to_string(bytesSent));
@@ -346,61 +360,11 @@ String HttpServer::process(const HttpRequest &httpRequest) {
         Core::warning(String("Exception silenced by HttpServer: ") + ex.what(), "HttpServer::process");
     }
 
-    return HttpResponse(500).
-
-            toString();
-
-}
-
-void HttpServer::getUrl(String &url, String &library, String &function, StringList &arguments) {
-    //Conversão do url em array (variável expurl), cada elemento é separado por uma barra (/).
-    StringList expurl = url.explode("/");
-
-    for (StringList::iterator i = expurl.begin(); i != expurl.end(); i++) {
-        //Primeiro elemento => LIBRARY
-        if (i == expurl.begin()) {
-            library = *i;
-            library = String::toLower(library);
-            continue;
-        }
-
-        //Segundo elemento => FUNCTION
-        if (i == expurl.begin() + 1) {
-            function = *i;
-            function = String::toLower(function);
-            continue;
-        }
-
-        /*	Demais elementos deverão ser absorvidos pelo
-        array "arguments" a cada iteração. */
-        arguments.push_back(*i);
-    }
+    return HttpResponse(500).toString();
 }
 
 void HttpServer::destroySocket() {
 #ifdef WINDOWS
     WSACleanup();
 #endif
-}
-
-String HttpServer::getHttpHeader(String request) {
-    StringList split = request.explode("\r\n\r\n");
-
-    if (split.size() > 0)
-        return split.at(0);
-
-    return "";
-}
-
-bool HttpServer::getHeaderParameter(String header, HeaderParameter parameter) {
-    switch (parameter) {
-        case HeaderParameter::ConnectionKeepAlive:
-            return header.contains("Connection: keep-alive");
-
-        case HeaderParameter::ConnectionClose:
-            return header.contains("Connection: close") ||
-                   header.contains("Connection: keep-alive, close");
-    }
-
-    return false;
 }

@@ -6,7 +6,7 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
@@ -36,12 +36,9 @@ set(SOURCES
         src/include/type/Process.cpp
         src/include/type/String.cpp
         src/include/type/Timer.cpp
-        src/include/type/Xml.cpp
-        src/include/type/XmlCode.cpp
         src/sample_app/HttpSample.cpp)
 
 set(HEADERS
-        src/include/repository/BaseRepository.hpp
         src/include/helper/Base64.hpp
         src/3rdParty/boost/config/abi/borland_prefix.hpp
         src/3rdParty/boost/config/abi/borland_suffix.hpp
@@ -518,8 +515,6 @@ set(HEADERS
         src/include/type/Process.hpp
         src/include/type/String.hpp
         src/include/type/Timer.hpp
-        src/include/type/Xml.hpp
-        src/include/type/XmlCode.hpp
         src/sample_app/HttpSample.hpp
         src/3rdParty/boost/config/abi/borland_prefix.hpp
         src/3rdParty/boost/config/abi/borland_suffix.hpp

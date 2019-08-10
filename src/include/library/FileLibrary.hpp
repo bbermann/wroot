@@ -17,8 +17,6 @@ public:
 
     HttpResponse getResponse() override;
 
-    StringMap file_list;
-
 protected:
     String getFileName();
 
