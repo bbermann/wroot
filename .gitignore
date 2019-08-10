@@ -35,17 +35,17 @@
 .idea
 bin
 dist/bin
+dist/file
+!dist/file/index.html
+!dist/file/favicon.ico
 releases
 cmake-build-debug
+cmake-build-release
+dev/cpplint
 
 # git modules
 src/3rdParty/nlohmann/json
-src/3rdParty/sqlite-cpp
 src/3rdParty/lua
-
-# sqlite libraries and dependencies
-src/3rdParty/sqlite/.libs
-src/3rdParty/sqlite/.deps
 
 # zlib library
 src/3rdParty/zlib/lib

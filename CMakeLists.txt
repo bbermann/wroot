@@ -10,9 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
-include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/sqlite")
 
-link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/sqlite/.libs)
 link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/zlib/lib/x86)
 link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/lua)
 
