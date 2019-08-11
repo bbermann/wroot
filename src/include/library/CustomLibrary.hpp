@@ -7,7 +7,7 @@
 
 class CustomLibrary {
 public:
-    CustomLibrary();
+    explicit CustomLibrary(const HttpRequest &request);
 
     virtual ~CustomLibrary();
 
@@ -17,16 +17,7 @@ public:
     ///<summary>FunctionList will be a vector of Function.</summary>
     typedef std::vector <std::pair<std::string, void (*)()>> FunctionList;
 
-    ///<summary>
-    ///Add a new function to be used calling by url passed to first parameter and 
-    ///processed by the second parameter method.
-    ///</summary>
-    void addHttpFunction(std::string &_function, void(*_process)());
-
-    ///<summary>HttpRequest</summary>
-    void setHttpRequest(HttpRequest request);
-
-    HttpRequest getHttpRequest();
+    const HttpRequest& getHttpRequest();
 
     ///<summary>Return url from HttpRequest</summary>
     String getRequestUrl();
@@ -43,7 +34,7 @@ public:
 protected:
     bool compressedOutput = Core::CompressedOutput;
     unsigned short statusCode = 200;
-    HttpRequest request;
+    const HttpRequest &request;
     String responseType = "text/plain";
 };
 

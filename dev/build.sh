@@ -25,7 +25,7 @@ make
 
 cd ${wroot_dir}/bin
 
-if [[ $1 -eq "prod" ]];
+if [[ $1 == "prod" ]];
 then
     echo "Using \"Release\" build configuration..."
     cmake -DCMAKE_BUILD_TYPE=Release ../

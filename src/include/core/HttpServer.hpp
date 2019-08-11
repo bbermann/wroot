@@ -55,7 +55,8 @@ protected:
     WSAData wsa_data_;
 #endif
 
-    unsigned free_connection_slots_, request_count_, response_count_;
+    unsigned free_connection_slots_;
+    unsigned long long request_count_, response_count_;
     size_t port_;
     std::queue<IncomingConnection> connections_queue_;
     SOCKET server_socket_;

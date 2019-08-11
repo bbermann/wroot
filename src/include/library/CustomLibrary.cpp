@@ -1,22 +1,18 @@
-#include "CustomLibrary.hpp"
-#include "../exceptions/http/NotFound.hpp"
-#include "../exceptions/http/InternalServerError.hpp"
-#include "../exceptions/http/Unauthorized.hpp"
-#include "../exceptions/http/Forbidden.hpp"
+#include <include/library/CustomLibrary.hpp>
+#include <include/exceptions/http/response/NotFound.hpp>
+#include <include/exceptions/http/response/InternalServerError.hpp>
+#include <include/exceptions/http/response/Unauthorized.hpp>
+#include <include/exceptions/http/response/Forbidden.hpp>
 
 using namespace std;
 
-CustomLibrary::CustomLibrary() {
+CustomLibrary::CustomLibrary(const HttpRequest &request) : request(request) {
+
 }
 
-CustomLibrary::~CustomLibrary() {
-}
+CustomLibrary::~CustomLibrary() = default;
 
-void CustomLibrary::setHttpRequest(HttpRequest request) {
-    this->request = request;
-}
-
-HttpRequest CustomLibrary::getHttpRequest() {
+const HttpRequest& CustomLibrary::getHttpRequest() {
     return request;
 }
 

@@ -1,30 +1,21 @@
-#include "HttpRequest.hpp"
-#include "Core.hpp"
-
-HttpRequest::HttpRequest() {
-    this->request_ = "";
-    this->isValid_ = false;
-}
+#include <include/core/HttpRequest.hpp>
+#include <include/core/Core.hpp>
+#include <include/exceptions/http/request/KeyNotFound.hpp>
 
 HttpRequest::HttpRequest(const String &request, const String &ipAddress) {
     this->request_ = request;
     this->set("REMOTE_ADDR", ipAddress);
-
-    process();
-
-    //Core::debugLn(this->toString());
-
-    this->isValid_ = true;
+    this->process();
 }
 
 HttpRequest::~HttpRequest() = default;
 
-bool HttpRequest::isValid() const {
-    return this->isValid_;
-}
-
 String HttpRequest::get(const String &key) const {
-    return "";//this->data_.at(key);
+    try {
+        return this->data_.at(key);
+    } catch (std::out_of_range &) {
+        throw KeyNotFound(key + " doesn't exists in this request.");
+    }
 }
 
 String HttpRequest::getHttpMethod() const {
@@ -42,7 +33,7 @@ StringMap HttpRequest::getQuery() const {
 String HttpRequest::toString() const {
     String output;
 
-    for (auto pair : this->data_) {
+    for (const auto& pair : this->data_) {
         output.append(pair.first + ": " + pair.second + ENDL);
     }
 
@@ -50,6 +41,10 @@ String HttpRequest::toString() const {
 }
 
 void HttpRequest::process() {
+    this->setHttpMethod("GET");
+    this->setUrl("");
+    this->setQuery("");
+
     bool firstRow = true;
 
     StringList rows = this->request_.explode(ENDL);
@@ -65,8 +60,8 @@ void HttpRequest::process() {
             // # GET /home HTTP/1.1
             Core::debugLn(row);
 
-            StringList explodedRequest = row.explode(" ");
-            int explodedSize = explodedRequest.size();
+            const StringList explodedRequest = row.explode(" ");
+            const int explodedSize = explodedRequest.size();
 
             if (explodedSize > 1) {
                 this->setHttpMethod(explodedRequest.at(0));
@@ -81,10 +76,6 @@ void HttpRequest::process() {
                     this->setUrl(url);
                     this->setQuery(queryString);
                 }
-            } else {
-                this->setHttpMethod("GET");
-                this->setUrl("");
-                this->setQuery("");
             }
         } else {
             StringList keyVal = row.explode(": ");

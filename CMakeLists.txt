@@ -937,10 +937,12 @@ set(HEADERS
         src/3rdParty/boost/shared_ptr.hpp
         src/3rdParty/boost/smart_ptr.hpp
         src/3rdParty/boost/throw_exception.hpp
-        src/include/exceptions/http/NotFound.hpp
-        src/include/exceptions/http/Forbidden.hpp
-        src/include/exceptions/http/InternalServerError.hpp
-        src/include/exceptions/http/Unauthorized.hpp
+        src/include/exceptions/http/response/NotFound.hpp
+        src/include/exceptions/http/response/Forbidden.hpp
+        src/include/exceptions/http/response/InternalServerError.hpp
+        src/include/exceptions/http/response/Unauthorized.hpp
+        src/include/exceptions/http/request/KeyNotFound.hpp
+        src/include/exceptions/http/request/FailedReceivingData.hpp
         src/include/exceptions/lua/LuaScriptException.hpp)
 
 add_executable(wroot ${SOURCES} ${HEADERS})

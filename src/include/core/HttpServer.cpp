@@ -1,8 +1,6 @@
-#include "HttpServer.hpp"
-#include "HttpRequest.hpp"
-#include "../type/Timer.hpp"
-#include "../library/FileLibrary.hpp"
-
+#include <include/core/HttpServer.hpp>
+#include <include/library/FileLibrary.hpp>
+#include <include/exceptions/http/request/FailedReceivingData.hpp>
 #include <mutex>
 #include <exception>
 #include <future>
@@ -253,11 +251,7 @@ void HttpServer::putCurrentThreadToSleep() const {
 }
 
 void HttpServer::handle(IncomingConnection &conn) {
-    Timer timer;
-
-    std::future<HttpRequest> httpRequestFuture = std::async([conn, &timer] {
-        timer.start();
-
+    std::future<HttpRequest> httpRequestFuture = std::async([conn] {
         char recvBuffer[Core::kBufferSize];
 
         //Retrieve the client ip address and announce it when debugging
@@ -265,16 +259,15 @@ void HttpServer::handle(IncomingConnection &conn) {
         Core::debugLn("\nHandling request from " + clientIpAddress + "...");
 
         bool retry = false;
-        errno = 0;
+        //errno = 0;
         String receivedData = "";
 
         do {
             ssize_t bytesReceived = recv(conn.incoming_socket, recvBuffer, Core::kBufferSize, 0);
 
             // Client disconnect or error receiving request
-            if (bytesReceived <= 0 || errno != 0) {
-                // TODO: Add error log
-                return HttpRequest();
+            if (bytesReceived <= 0 /*|| errno != 0*/) {
+                throw FailedReceivingData();
             }
 
             // The request should not be fully received yet, let's read some more data
@@ -286,63 +279,53 @@ void HttpServer::handle(IncomingConnection &conn) {
             receivedData.append(recvBuffer);
         } while (retry);
 
-        Core::debugLn("Request received in " + to_string(timer.finish()) + "ms.");
-
         return HttpRequest(receivedData, clientIpAddress);
     });
 
-    const auto httpRequest = httpRequestFuture.get();
+    try {
+        const auto httpRequest = httpRequestFuture.get();
 
-    if (!httpRequest.isValid()) {
-        Core::debugLn("Socket closed.");
+        //Process request and get handle
+        std::future<String> responseFuture = std::async([this, &httpRequest] {
+            auto response = HttpServer::process(httpRequest);
+
+            return response;
+        });
+
+        String response = responseFuture.get();
+
+        if (response.length() > 0) {
+            ssize_t bytesSent;
+
+            do {
+                bytesSent = send(conn.incoming_socket, response.data(), response.length(), MSG_NOSIGNAL);
+            } while (errno == EWOULDBLOCK);
+
+            CLOSE_SOCKET(conn.incoming_socket);
+
+            Core::debugLn("Bytes Sent: " + to_string(bytesSent));
+        }
+
+        Core::ThreadMutex.lock();
+
+        ++response_count_;
+
+        if (response_count_ % this->announce_rate_ == 0) {
+            Core::debugLn("Response count: " + to_string(response_count_));
+        }
+
+        Core::ThreadMutex.unlock();
+    } catch (const std::exception &exception) {
+        Core::debugLn(String("Socket closed: ") + exception.what());
+
         CLOSE_SOCKET(conn.incoming_socket);
     }
-
-    //Process request and get handle
-    std::future<String> responseFuture = std::async([this, &httpRequest, &timer] {
-        timer.start();
-
-        auto response = HttpServer::process(httpRequest);
-
-        Core::debugLn("Request processed in " + to_string(timer.finish()) + "ms.");
-
-        return response;
-    });
-
-    String response = responseFuture.get();
-
-    if (response.length() > 0) {
-        ssize_t bytesSent;
-
-        timer.start();
-
-        do {
-            bytesSent = send(conn.incoming_socket, response.data(), response.length(), MSG_NOSIGNAL);
-        } while (errno == EWOULDBLOCK);
-
-        CLOSE_SOCKET(conn.incoming_socket);
-
-        Core::debugLn("Response sent in " + to_string(timer.finish()) + "ms.");
-        Core::debugLn("Bytes Sent: " + to_string(bytesSent));
-    }
-
-    Core::ThreadMutex.lock();
-
-    ++response_count_;
-
-    if (response_count_ % this->announce_rate_ == 0) {
-        Core::debugLn("Response count: " + to_string(response_count_));
-    }
-
-    Core::ThreadMutex.unlock();
 }
 
 String HttpServer::process(const HttpRequest &httpRequest) {
     try {
         //Custom library initializer
-        shared_ptr<CustomLibrary> app(new FileLibrary());
-
-        app->setHttpRequest(httpRequest);
+        shared_ptr<CustomLibrary> app(new FileLibrary(httpRequest));
 
         HttpResponse response = app->getResponse();
 

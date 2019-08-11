@@ -1,6 +1,7 @@
-#include "HttpSample.hpp"
+#include <sample_app/HttpSample.hpp>
+#include <include/core/HttpRequest.hpp>
 
-HttpSample::HttpSample() : CustomLibrary() {
+HttpSample::HttpSample(const HttpRequest &request) : CustomLibrary(request) {
 }
 
 HttpSample::~HttpSample() {

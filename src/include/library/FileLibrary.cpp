@@ -1,13 +1,12 @@
-#include "FileLibrary.hpp"
+#include <include/library/FileLibrary.hpp>
+#include <include/exceptions/http/response/NotFound.hpp>
 #include <fstream>
 #include <stdexcept>
-#include "../core/Core.hpp"
-#include "../exceptions/http/NotFound.hpp"
 
 using std::ifstream;
 using std::ios;
 
-FileLibrary::FileLibrary() : CustomLibrary() {
+FileLibrary::FileLibrary(const HttpRequest &request) : CustomLibrary(request) {
     // This library implicitly compress the output
     this->compressedOutput = false;
 }
@@ -59,11 +58,7 @@ String FileLibrary::getFileName() {
 
 String FileLibrary::getFullPath() {
     String fileName = this->getFileName();
-    String fullPath = Core::DocumentRoot;
-    if (fullPath.endsWith("/")) {
-        fullPath.append(Core::PathSeparator);
-    }
-    fullPath.append(fileName);
+    String fullPath = Core::DocumentRoot + fileName;
     return fullPath;
 }
 
