@@ -15,7 +15,7 @@
 
 using namespace std;
 
-Process::Process(String executable_path, String arguments) {
+Process::Process(const String &executable_path, const String &arguments) {
     this->executable_path_ = executable_path;
     this->arguments_ = arguments;
 }
@@ -23,8 +23,7 @@ Process::Process(String executable_path, String arguments) {
 Process::Process(const Process &orig) {
 }
 
-Process::~Process() {
-}
+Process::~Process() = default;
 
 const char *Process::getCommand() {
     String call = this->executable_path_ + " " + this->arguments_;
@@ -32,11 +31,31 @@ const char *Process::getCommand() {
 }
 
 int Process::run() {
-    int status = system(getCommand());
+    int status = system(this->getCommand());
     return status;
 }
 
 void Process::runAsync() {
-    thread asyncCall(&system, getCommand());
+    thread asyncCall(&system, this->getCommand());
     asyncCall.detach();
+}
+
+String Process::runWithOutput() {
+    std::array<char, 128> buffer{};
+    std::string result;
+
+    FILE *pipeDescriptor = popen(this->getCommand(), "r");
+    std::shared_ptr<FILE> pipe(pipeDescriptor, pclose);
+
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+
+    while (!feof(pipe.get())) {
+        if (fgets(buffer.data(), 128, pipe.get()) != nullptr) {
+            result += buffer.data();
+        }
+    }
+
+    return result;
 }

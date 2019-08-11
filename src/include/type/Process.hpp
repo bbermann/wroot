@@ -20,7 +20,7 @@
 
 class Process {
 public:
-    Process(String executable_path, String arguments = "");
+    explicit Process(const String &executable_path, const String &arguments = "");
 
     Process(const Process &orig);
 
@@ -29,6 +29,8 @@ public:
     int run();
 
     void runAsync();
+
+    String runWithOutput();
 
 protected:
     const char *getCommand();

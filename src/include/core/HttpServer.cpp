@@ -167,7 +167,6 @@ void HttpServer::start() {
     Core::outLn("Waiting for HTTP requests on port " + to_string(port_) + "...\n");
 
     IncomingConnection conn;
-    unsigned int ms_sleep = 0;
     unsigned int free_slots = 0;
 
     while (Core::Running) {
@@ -211,7 +210,6 @@ void HttpServer::start() {
 
 void HttpServer::run() {
     IncomingConnection conn;
-    int ms_sleep = 0;
 
     while (Core::Running) {
         //Set an INVALID_SOCKET value to the object which represents incoming connections
@@ -341,9 +339,6 @@ void HttpServer::handle(IncomingConnection &conn) {
 
 String HttpServer::process(const HttpRequest &httpRequest) {
     try {
-        String url = httpRequest.getUrl();
-        String fileName = Core::ApplicationPath + url;
-
         //Custom library initializer
         shared_ptr<CustomLibrary> app(new FileLibrary());
 

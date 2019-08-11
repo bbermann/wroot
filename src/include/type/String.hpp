@@ -34,6 +34,8 @@ public:
 
     static String& replace(String &str, const String &from, const String &to);
 
+    static String& replace_last(String &str, const String &from, const String &to);
+
     static String& toLower(String &str);
 
     static String& toUpper(String &str);

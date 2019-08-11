@@ -18,8 +18,7 @@ set(SOURCES
         src/main.cpp
         src/include/helper/Base64.cpp
         src/3rdParty/zlib/ZLib.cpp
-        src/include/helper/LuaHelper.cpp
-        src/include/helper/ConsoleLineHelper.cpp
+        src/include/helper/LuaScript.cpp
         src/include/helper/EnvironmentBuilder.cpp
         src/include/core/Core.cpp
         src/include/core/HttpRequest.cpp
@@ -498,8 +497,7 @@ set(HEADERS
         src/include/core/HttpRequest.hpp
         src/include/core/HttpResponse.hpp
         src/include/core/HttpServer.hpp
-        src/include/helper/LuaHelper.hpp
-        src/include/helper/ConsoleLineHelper.hpp
+        src/include/helper/LuaScript.hpp
         src/include/helper/EnvironmentBuilder.hpp
         src/include/helper/Crypto.hpp
         src/include/helper/ExampleHelper.hpp
@@ -939,9 +937,13 @@ set(HEADERS
         src/3rdParty/boost/shared_ptr.hpp
         src/3rdParty/boost/smart_ptr.hpp
         src/3rdParty/boost/throw_exception.hpp
-        src/include/exceptions/http/NotFound.hpp)
+        src/include/exceptions/http/NotFound.hpp
+        src/include/exceptions/http/Forbidden.hpp
+        src/include/exceptions/http/InternalServerError.hpp
+        src/include/exceptions/http/Unauthorized.hpp
+        src/include/exceptions/lua/LuaScriptException.hpp)
 
 add_executable(wroot ${SOURCES} ${HEADERS})
 
 ## Link libraries
-target_link_libraries(wroot stdc++ pthread z lua ${CMAKE_DL_LIBS})
+target_link_libraries(wroot stdc++ stdc++fs pthread z lua ${CMAKE_DL_LIBS})

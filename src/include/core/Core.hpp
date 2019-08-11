@@ -35,32 +35,32 @@ public:
     ~Core();
 
 #ifndef NDEBUG
-    static inline void debug(std::string text) {
+    static inline void debug(const std::string &text) {
         Core::out(text);
     }
 
-    static inline void debugLn(std::string text) {
+    static inline void debugLn(const std::string &text) {
         Core::outLn(text);
     }
 #else
-    static inline void debug(std::string text) {}
+    static inline void debug(const std::string &text) {}
 
-    static inline void debugLn(std::string text) {}
+    static inline void debugLn(const std::string &text) {}
 #endif
 
-    static void error(std::string text, int code = 0);
+    static void error(const std::string &text, int code);
 
-    static void error(std::string text, std::string function);
+    static void error(const std::string &text, const std::string &function = "");
 
-    static void out(std::string text);
+    static void out(const std::string &text);
 
-    static void outLn(std::string text);
+    static void outLn(const std::string &text);
 
     static void setEnvironment(int argc, const char *argv[]);
 
     static void stopServers();
 
-    static void warning(std::string text, std::string function);
+    static void warning(const std::string &text, const std::string &function = "");
 
 #ifdef WINDOWS
     static const int kWSockVersion = 2;
@@ -68,18 +68,18 @@ public:
 
     static const unsigned int kMaxConnections = 10000, kBufferSize = 8192 * 10;
 
-    static String ApplicationPath;
-    static String ExecutablePath;
+    static String ApplicationRoot;
     static String PathSeparator;
     static String ServerAddress;
     static String ServerName;
     static String ServerProtocol;
     static String DocumentRoot;
     static StringList Parameters;
+    static StringList Plugins;
     static bool IsDebugging;
     static bool CompressedOutput;
     static bool Running;
-    static int ThreadCount;
+    static unsigned int ThreadCount;
     static int ServerPort;
     static std::mutex ThreadMutex;
     static std::shared_ptr <HttpServer> Server;
@@ -88,7 +88,9 @@ public:
 private:
     static void readConfiguration();
 
-    static void printStartupCheck(String check, String value);
+    static void loadPlugins();
+
+    static void printStartupCheck(const String &check, const String &value);
 
     static std::mutex outMutex;
 };

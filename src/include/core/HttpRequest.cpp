@@ -24,7 +24,7 @@ bool HttpRequest::isValid() const {
 }
 
 String HttpRequest::get(const String &key) const {
-    return this->data_.at(key);
+    return "";//this->data_.at(key);
 }
 
 String HttpRequest::getHttpMethod() const {
@@ -68,12 +68,13 @@ void HttpRequest::process() {
             StringList explodedRequest = row.explode(" ");
             int explodedSize = explodedRequest.size();
 
-            if (explodedSize > 0) {
+            if (explodedSize > 1) {
                 this->setHttpMethod(explodedRequest.at(0));
 
-                if (explodedSize > 1) {
+                if (explodedSize > 2) {
                     String fullUrl = explodedRequest.at(1);
                     StringList parts = fullUrl.explode("?");
+
                     String url = parts.at(0);
                     String queryString = parts.size() > 1 ? parts.at(parts.size() - 1) : "";
 

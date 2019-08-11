@@ -16,6 +16,10 @@ echo Moving Scripts...
 cp -R $wroot_dir/dist/scripts $wroot_dir/bin/
 chmod 777 bin/scripts -R
 
+echo Moving Plugins...
+cp -R $wroot_dir/dist/plugins $wroot_dir/bin/
+chmod 777 bin/plugins -R
+
 cd $wroot_dir/src/3rdParty/lua
 make
 

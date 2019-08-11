@@ -1,39 +1,41 @@
 #include "Core.hpp"
-#include "../helper/ConsoleLineHelper.hpp"
 #include "nlohmann/json/src/json.hpp"
-#include "include/core/HttpResponse.hpp"
 #include <mutex>
 #include <fstream>
+#include <iostream>
+#include <experimental/filesystem>
+#include <include/helper/LuaScript.hpp>
+#include <include/exceptions/lua/LuaScriptException.hpp>
 
 using json = nlohmann::json;
 using namespace std;
 using namespace BBermann::WRoot::Database;
 
-String Core::ApplicationPath;
-String Core::ExecutablePath;
+namespace filesystem = std::experimental::filesystem;
+
+String Core::ApplicationRoot;
 String Core::PathSeparator;
 String Core::ServerAddress;
 String Core::ServerName;
 String Core::ServerProtocol;
 String Core::DocumentRoot;
 StringList Core::Parameters;
+StringList Core::Plugins;
 bool Core::IsDebugging;
 bool Core::CompressedOutput;
 bool Core::Running;
-int Core::ThreadCount;
+unsigned int Core::ThreadCount;
 int Core::ServerPort;
 std::mutex Core::ThreadMutex;
-std::shared_ptr <HttpServer> Core::Server;
-std::vector <UrlRewriteRule> Core::UrlRewriteRules;
+std::shared_ptr<HttpServer> Core::Server;
+std::vector<UrlRewriteRule> Core::UrlRewriteRules;
 std::mutex Core::outMutex;
 
-Core::Core() {
-}
+Core::Core() = default;
 
-Core::~Core() {
-}
+Core::~Core() = default;
 
-void Core::error(string text, int code) {
+void Core::error(const string &text, int code) {
     String tmp = "## ERROR ##";
 
     if (code > 0) {
@@ -46,7 +48,7 @@ void Core::error(string text, int code) {
     exit(code);
 }
 
-void Core::error(string text, string function) {
+void Core::error(const string &text, const string &function) {
     String tmp = "## ERROR ##";
 
     if (!function.empty()) {
@@ -60,18 +62,18 @@ void Core::error(string text, string function) {
     exit(-1);
 }
 
-void Core::out(string text) {
+void Core::out(const string &text) {
     Core::outMutex.lock();
     cout << text.c_str();
     Core::outMutex.unlock();
 }
 
-void Core::outLn(string text) {
+void Core::outLn(const string &text) {
     out(text + ENDL);
 }
 
 void Core::readConfiguration() {
-    String configFile(Core::ExecutablePath + ".json");
+    String configFile("wroot.json");
     Core::printStartupCheck("Configuration file", configFile);
 
     ifstream reader(configFile.c_str());
@@ -112,8 +114,34 @@ void Core::readConfiguration() {
         Core::UrlRewriteRules.insert(Core::UrlRewriteRules.end(), rule);
     }
 
+    Core::loadPlugins();
+
     Core::ServerAddress = Core::ServerName + ":" + to_string(Core::ServerPort);
     Core::printStartupCheck("Listening on", Core::ServerAddress);
+}
+
+void Core::loadPlugins() {
+    String pluginsRoot = Core::ApplicationRoot + "/plugins";
+
+    for (auto &file: filesystem::recursive_directory_iterator(pluginsRoot.c_str())) {
+        if (file.path().extension() == ".lua") {
+            String pluginPath = (String)file.path();
+            String status = "OK";
+
+            try {
+                LuaScript luaScript(pluginPath);
+                luaScript.executeScript("test()");
+
+                Core::Plugins.push_back(pluginPath);
+            } catch (const LuaScriptException &exception) {
+                status = "FAILED";
+
+                Core::warning(exception.what());
+            }
+
+            Core::printStartupCheck("Loading '" + pluginPath + "'", status);
+        }
+    }
 }
 
 void Core::setEnvironment(int argc, const char *argv[]) {
@@ -131,14 +159,14 @@ void Core::setEnvironment(int argc, const char *argv[]) {
     Core::PathSeparator = "/";
 #endif
 
-    Core::ApplicationPath = String(argv[0]);
+    Core::ApplicationRoot = String(argv[0]);
     Core::ServerProtocol = "HTTP/1.1";
 
-    StringList arrPath = Core::ApplicationPath.explode(Core::PathSeparator);
-    Core::ExecutablePath = arrPath.at(arrPath.size() - 1);
+    StringList arrPath = Core::ApplicationRoot.explode(Core::PathSeparator);
+    const auto executableName = arrPath.at(arrPath.size() - 1);
 
-    //Get Application Path Without Executable Name
-    String::replace(Core::ApplicationPath, Core::ExecutablePath, "");
+    //Get Application Root Path Without Executable Name
+    String::replace_last(Core::ApplicationRoot, Core::PathSeparator + executableName, "");
 
     for (int i = 1; i < argc; i++) {
         Core::Parameters.insert(Core::Parameters.end(), argv[i]);
@@ -154,7 +182,7 @@ void Core::stopServers() {
     this_thread::sleep_for(chrono::seconds(10));
 }
 
-void Core::warning(string text, string function) {
+void Core::warning(const string &text, const string &function) {
     String tmp = "## WARNING ##";
 
     if (!function.empty()) {
@@ -166,6 +194,6 @@ void Core::warning(string text, string function) {
     outLn(tmp);
 }
 
-void Core::printStartupCheck(String check, String value) {
+void Core::printStartupCheck(const String &check, const String &value) {
     Core::outLn("- " + check + ": [" + value + "]");
 }
