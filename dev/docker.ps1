@@ -19,5 +19,6 @@ if ($args[0] -eq "build") {
 } else {
     echo "Running wroot container"
     docker run -d -p 8000:8000/tcp -p 666:666/tcp -p 22:22/tcp -v G:\Programacao\wroot:/wroot wroot
+    sleep 5 # seconds
     ssh root@localhost
 }
