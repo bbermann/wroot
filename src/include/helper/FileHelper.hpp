@@ -14,10 +14,10 @@
 #ifndef FILEHELPER_HPP
 #define FILEHELPER_HPP
 
-#include "../type/String.hpp"
+#include <include/type/String.hpp>
 
 namespace File {
-    enum OpenMode {
+    enum class OpenMode {
         Read,
         Write,
         WriteAppend,

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../type/String.hpp"
+#include <include/type/String.hpp>
 
-enum ValidationCondition {
+enum class ValidationCondition {
     NoCondition = 0,
     IsZero = 1,
     IsPositive = 2,

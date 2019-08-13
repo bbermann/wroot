@@ -46,7 +46,7 @@ public:
 
     virtual ~HttpServer();
 
-    void start();
+    int eventLoop();
 
     static String process(const HttpRequest &request);
 
@@ -54,6 +54,12 @@ protected:
 #ifdef WINDOWS
     WSAData wsa_data_;
 #endif
+
+    enum class Status {
+        Ok = 0,
+        UnknownError,
+        UnableToOpenSocket,
+    };
 
     unsigned free_connection_slots_;
     unsigned long long request_count_, response_count_;

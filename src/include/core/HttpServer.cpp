@@ -124,10 +124,10 @@ bool HttpServer::createSocket() {
     return bReturn;
 }
 
-void HttpServer::start() {
+int HttpServer::eventLoop() {
     if (listen(server_socket_, Core::kMaxConnections) == SOCKET_ERROR) {
         Core::error("Unable to open socket on port " + to_string(port_) + ".");
-        return;
+        return (int)Status::UnableToOpenSocket;
     }
 
     request_count_ = 0;
@@ -204,6 +204,8 @@ void HttpServer::start() {
 
     // Free the server threads memory on shutdown
     delete[] serverThreads;
+
+    return (int)Status::Ok;
 }
 
 void HttpServer::run() {

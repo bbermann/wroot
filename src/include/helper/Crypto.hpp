@@ -1,13 +1,19 @@
 #pragma once
 
-#include "../core/Core.hpp"
+#include <include/core/Core.hpp>
+#include <exception>
 
-enum CryptoEngine {
+enum class CryptoEngine {
     NoEngine,
     EngineBase64,
     EngineMd5,
-    EngineSha1,
-    EngineSha256
+};
+
+class CryptoEngineNotImplemented : public std::exception {
+public:
+    virtual char const *what() const noexcept override {
+        return "CryptoEngine not implemented yet.";
+    }
 };
 
 class Crypto {

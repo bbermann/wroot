@@ -29,20 +29,14 @@ String &Crypto::decode() {
     crypto_value_ = "";
 
     switch (engine_) {
-        case NoEngine:
+        case CryptoEngine::NoEngine:
             crypto_value_ = value_;
             break;
-        case EngineBase64:
+        case CryptoEngine::EngineBase64:
             crypto_value_ = base64_decode(value_);
             break;
-        case EngineMd5:
-            break;
-        case EngineSha1:
-            break;
-        case EngineSha256:
-            break;
         default:
-            break;
+            throw CryptoEngineNotImplemented();
     }
 
     return crypto_value_;
@@ -56,17 +50,11 @@ String &Crypto::encode() {
     crypto_value_ = "";
 
     switch (engine_) {
-        case NoEngine:
+        case CryptoEngine::NoEngine:
             crypto_value_ = value_;
             break;
-        case EngineBase64:
+        case CryptoEngine::EngineBase64:
             crypto_value_ = base64_encode(ustr, len);
-            break;
-        case EngineMd5:
-            break;
-        case EngineSha1:
-            break;
-        case EngineSha256:
             break;
         default:
             break;

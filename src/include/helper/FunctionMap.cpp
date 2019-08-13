@@ -15,19 +15,14 @@
 
 using namespace std;
 
-FunctionMap::FunctionMap() {
-}
+FunctionMap::FunctionMap() = default;
 
-FunctionMap::FunctionMap(const FunctionMap &orig) {
-}
+FunctionMap::~FunctionMap() = default;
 
-FunctionMap::~FunctionMap() {
-}
-
-void FunctionMap::add(std::string key, FunctionPointer function) {
+void FunctionMap::add(const String &key, FunctionPointer function) {
     this->insert(make_pair(key, function));
 }
 
-void FunctionMap::remove(std::string key) {
+void FunctionMap::remove(const String &key) {
     this->erase(key);
 }
