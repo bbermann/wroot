@@ -98,7 +98,7 @@ void Core::readConfiguration() {
     Core::CompressedOutput = server["compressed_output"];
     Core::printStartupCheck("Compressed output", (Core::CompressedOutput ? "Yes" : "No"));
 
-    Core::ThreadCount = std::thread::hardware_concurrency();
+    Core::ThreadCount = Core::IsDebugging ? 1 : std::thread::hardware_concurrency();
     Core::printStartupCheck("CPU Cores", std::to_string(Core::ThreadCount));
 
     auto urlRewriteRulesParser = config["url_rewrite"];
@@ -147,9 +147,11 @@ void Core::setEnvironment(int argc, const char *argv[]) {
 
 #ifndef NDEBUG
     Core::IsDebugging = true;
+
 #else
     Core::IsDebugging = false;
 #endif
+    Core::printStartupCheck("Debug Mode", Core::IsDebugging ? "Enabled" : "Disabled");
 
 #ifdef WINDOWS
     Core::PathSeparator = "\\";
