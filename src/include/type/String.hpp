@@ -2,7 +2,7 @@
 #define STRING_HPP
 
 #include <iostream>
-#include <string.h>
+#include <string>
 #include <vector>
 #include <algorithm>
 #include <regex>
