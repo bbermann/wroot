@@ -8,8 +8,6 @@
 #include <include/exceptions/lua/LuaScriptException.hpp>
 
 using json = nlohmann::json;
-using namespace std;
-using namespace BBermann::WRoot::Database;
 
 namespace filesystem = std::experimental::filesystem;
 
@@ -35,11 +33,11 @@ Core::Core() = default;
 
 Core::~Core() = default;
 
-void Core::error(const string &text, int code) {
+void Core::error(const std::string &text, int code) {
     String tmp = "## ERROR ##";
 
     if (code > 0) {
-        tmp.append(" " + to_string(code));
+        tmp.append(" " + std::to_string(code));
     }
 
     tmp.append(ENDL + TAB + text);
@@ -48,7 +46,7 @@ void Core::error(const string &text, int code) {
     exit(code);
 }
 
-void Core::error(const string &text, const string &function) {
+void Core::error(const std::string &text, const std::string &function) {
     String tmp = "## ERROR ##";
 
     if (!function.empty()) {
@@ -62,13 +60,13 @@ void Core::error(const string &text, const string &function) {
     exit(-1);
 }
 
-void Core::out(const string &text) {
+void Core::out(const std::string &text) {
     Core::outMutex.lock();
-    cout << text.c_str();
+    std::cout << text.c_str();
     Core::outMutex.unlock();
 }
 
-void Core::outLn(const string &text) {
+void Core::outLn(const std::string &text) {
     out(text + ENDL);
 }
 
@@ -76,7 +74,7 @@ void Core::readConfiguration() {
     String configFile("wroot.json");
     Core::printStartupCheck("Configuration file", configFile);
 
-    ifstream reader(configFile.c_str());
+    std::ifstream reader(configFile.c_str());
 
     //The JSON string parser which will interpret the config file
     json config;
@@ -100,8 +98,8 @@ void Core::readConfiguration() {
     Core::CompressedOutput = server["compressed_output"];
     Core::printStartupCheck("Compressed output", (Core::CompressedOutput ? "Yes" : "No"));
 
-    Core::ThreadCount = thread::hardware_concurrency();
-    Core::printStartupCheck("CPU Cores", to_string(Core::ThreadCount));
+    Core::ThreadCount = std::thread::hardware_concurrency();
+    Core::printStartupCheck("CPU Cores", std::to_string(Core::ThreadCount));
 
     auto urlRewriteRulesParser = config["url_rewrite"];
     for (auto ruleParser : urlRewriteRulesParser) {
@@ -116,7 +114,7 @@ void Core::readConfiguration() {
 
     Core::loadPlugins();
 
-    Core::ServerAddress = Core::ServerName + ":" + to_string(Core::ServerPort);
+    Core::ServerAddress = Core::ServerName + ":" + std::to_string(Core::ServerPort);
     Core::printStartupCheck("Listening on", Core::ServerAddress);
 }
 
@@ -179,10 +177,10 @@ void Core::setEnvironment(int argc, const char *argv[]) {
 void Core::stopServers() {
     Core::Running = false;
     Core::ThreadMutex.lock();
-    this_thread::sleep_for(chrono::seconds(10));
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 }
 
-void Core::warning(const string &text, const string &function) {
+void Core::warning(const std::string &text, const std::string &function) {
     String tmp = "## WARNING ##";
 
     if (!function.empty()) {

@@ -18,15 +18,9 @@
 #include "../type/String.hpp"
 #include "../type/UrlRewriteRule.hpp"
 
-namespace BBermann::WRoot::Database {
-    class CustomDatabase;
-}
-
 class HttpServer;
 
 class HttpResponse;
-
-using BBermann::WRoot::Database::CustomDatabase;
 
 class Core {
 public:
