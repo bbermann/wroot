@@ -6,3 +6,6 @@
 	path = src/3rdParty/lua
 	url = https://github.com/lua/lua.git
 
+[submodule "src/3rdParty/luawrapper"]
+	path = src/3rdParty/luawrapper
+	url = https://github.com/ahupowerdns/luawrapper
