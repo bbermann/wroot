@@ -1,5 +1,4 @@
-#ifndef FILELIBRARY_H
-#define FILELIBRARY_H
+#pragma once
 
 #define BUFFER_SIZE 1024
 
@@ -11,11 +10,9 @@ public:
 
     virtual ~FileLibrary();
 
-    virtual String toString() override;
+    String toString() override;
 
     void setResponseType();
-
-    HttpResponse getResponse() override;
 
 protected:
     String getFileName();
@@ -24,5 +21,3 @@ protected:
 
     String getFileExtension();
 };
-
-#endif // FILELIBRARY_H

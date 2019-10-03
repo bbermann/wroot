@@ -8,27 +8,20 @@ using std::ios;
 
 FileLibrary::FileLibrary(const HttpRequest &request) : CustomLibrary(request) {
     // This library implicitly compress the output
-    this->compressedOutput = false;
+    this->response.compressOutput = false;
 }
 
-FileLibrary::~FileLibrary() {
-
-}
-
-HttpResponse FileLibrary::getResponse() {
-    this->setResponseType();
-
-    return CustomLibrary::getResponse();
-}
+FileLibrary::~FileLibrary() = default;
 
 String FileLibrary::toString() {
     String fileContent, currentLine;
     String fullPath = this->getFullPath();
 
+    this->setResponseType();
+
     Core::debugLn("[FileLibrary] Reading file: " + fullPath);
 
     ifstream file;
-
     file.open(fullPath, ios::in | ios::binary);
 
     if (file.fail()) {
@@ -47,7 +40,7 @@ String FileLibrary::toString() {
 }
 
 String FileLibrary::getFileName() {
-    String fileName = this->getRequestUrl();
+    String fileName = this->request.getUrl();
 
     if (fileName.empty() || fileName == "/") {
         fileName = "/index.html";
@@ -64,28 +57,28 @@ String FileLibrary::getFullPath() {
 
 String FileLibrary::getFileExtension() {
     String fileName = this->getFileName();
-    String file_extension = fileName.explode(".").back();
-    return file_extension;
+    String fileExtension = fileName.explode(".").back();
+    return fileExtension;
 }
 
 void FileLibrary::setResponseType() {
     String fileExtension = this->getFileExtension();
 
     if (fileExtension == "html") {
-        this->responseType = "text/html";
+        this->response.type = "text/html";
     } else if (fileExtension == "xml") {
-        this->responseType = "application/xhtml";
+        this->response.type = "application/xhtml";
     } else if (fileExtension == "css") {
-        this->responseType = "text/css";
+        this->response.type = "text/css";
     } else if (fileExtension == "js") {
-        this->responseType = "text/javascript";
+        this->response.type = "text/javascript";
     } else if (fileExtension == "png" || fileExtension == "ico") {
-        this->responseType = "image/png";
+        this->response.type = "image/png";
     } else if (fileExtension == "jpg" || fileExtension == "jpeg") {
-        this->responseType = "image/jpeg";
+        this->response.type = "image/jpeg";
     } else if (fileExtension == "gif") {
-        this->responseType = "image/gif";
+        this->response.type = "image/gif";
     } else {
-        this->responseType = "application/octet-stream";
+        this->response.type = "application/octet-stream";
     }
 }

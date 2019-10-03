@@ -16,13 +16,16 @@
 
 using namespace std;
 
-HttpResponse::HttpResponse(unsigned short statusCode, String content) {
+HttpResponse::HttpResponse(const HttpRequest &request) {
+    // TODO: Add fields from request...
+}
+
+HttpResponse::HttpResponse(unsigned short statusCode, const String &content) {
     this->status = statusCode;
     this->content = content;
 }
 
-HttpResponse::~HttpResponse() {
-}
+HttpResponse::~HttpResponse() = default;
 
 String HttpResponse::toString() {
     string returnString;
@@ -35,7 +38,6 @@ String HttpResponse::toString() {
     returnString.append("Content-Type: " + this->type + "; charset=UTF-8" + ENDL);
     returnString.append("Content-Length: " + to_string(this->content.size()) + ENDL);
 
-    //Para que não seja compactado o conteúdo de arquivos (previamente compactado pelo módulo FileLibrary).
     if (this->compressOutput) {
         //returnString.append("Transfer-Encoding: gzip" + ENDL);
 

@@ -3,8 +3,8 @@
 #include <stdexcept>
 
 RouterLibrary::RouterLibrary(const HttpRequest &request) : CustomLibrary(request) {
-    this->compressedOutput = false;
-    this->responseType = "text/html";
+    this->response.compressOutput = false;
+    this->response.type = "text/html";
 }
 
 RouterLibrary::~RouterLibrary() = default;

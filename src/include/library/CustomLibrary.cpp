@@ -6,13 +6,14 @@
 
 using namespace std;
 
-CustomLibrary::CustomLibrary(const HttpRequest &request) : request(request) {
+CustomLibrary::CustomLibrary(const HttpRequest &request)
+: request(request), response(request) {
 
 }
 
 CustomLibrary::~CustomLibrary() = default;
 
-const HttpRequest& CustomLibrary::getHttpRequest() {
+const HttpRequest &CustomLibrary::getHttpRequest() {
     return request;
 }
 
@@ -21,10 +22,6 @@ String CustomLibrary::toString() {
 }
 
 HttpResponse CustomLibrary::getResponse() {
-    HttpResponse response(this->statusCode);
-    response.type = this->responseType;
-    response.compressOutput = this->compressedOutput;
-
     try {
         response.content = this->toString();
     } catch (const NotFound &exception) {
@@ -38,9 +35,5 @@ HttpResponse CustomLibrary::getResponse() {
         response.content = exception.what();
     }
 
-    return response;
-}
-
-String CustomLibrary::getRequestUrl() {
-    return request.getUrl();
+    return this->response;
 }

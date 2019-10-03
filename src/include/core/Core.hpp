@@ -15,6 +15,7 @@
 
 #include <mutex>
 #include <thread>
+#include <memory>
 #include "../type/String.hpp"
 #include "../type/UrlRewriteRule.hpp"
 
