@@ -5,8 +5,6 @@
 
 class HttpRequest {
 public:
-    HttpRequest();
-
     HttpRequest(const String &request, const String &ipAddress);
 
     virtual ~HttpRequest();
@@ -20,8 +18,6 @@ public:
     StringMap getQuery() const;
 
     String toString() const;
-
-    bool isValid() const;
 
 protected:
     void set(const String &key, const String &value);
@@ -40,7 +36,6 @@ private:
     String request_;
     StringMap data_;
     StringMap query_;
-    bool isValid_ = true;
 };
 
 #endif //HTTPREQUEST_HPP
