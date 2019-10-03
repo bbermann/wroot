@@ -14,34 +14,34 @@
 #ifndef LUASCRIPT_HPP
 #define LUASCRIPT_HPP
 
-#include "../core/Core.hpp"
-
-extern "C" {
-#include "../../3rdParty/lua/lua.h"
-#include "../../3rdParty/lua/lualib.h"
-#include "../../3rdParty/lua/lauxlib.h"
-}
+#include <3rdParty/luawrapper/include/LuaContext.hpp>
+#include <include/core/Core.hpp>
+#include <fstream>
 
 class LuaScript {
 public:
     explicit LuaScript(const String &script_path);
 
-    LuaScript(const LuaScript &orig);
-
     virtual ~LuaScript();
 
-    String executeScript(const String &entrypoint = "");
+    String getOutput();
 
-    void print(String msg);
+    template<typename T = void>
+    T executeScript() {
+        auto reader = std::ifstream{this->script_path_.c_str()};
 
-    static int lua_print(lua_State *lua_state);
+        return this->context.executeCode<T>(reader);
+    }
+
+    template<typename T = void>
+    T execute(const String &code) {
+        return this->context.executeCode<T>(code.c_str());
+    }
+
+    LuaContext context;
 
 protected:
-    String getError();
-
-    bool loadFile();
-
-    void registerUserData();
+    void registerFunctions();
 
     lua_State *state_{};
     String script_path_, last_error_, lua_output_;

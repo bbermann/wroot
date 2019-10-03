@@ -128,7 +128,8 @@ void Core::loadPlugins() {
 
             try {
                 LuaScript luaScript(pluginPath);
-                luaScript.executeScript("test()");
+                luaScript.executeScript();
+                luaScript.execute("test()");
 
                 Core::Plugins.push_back(pluginPath);
             } catch (const LuaScriptException &exception) {

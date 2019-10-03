@@ -1,5 +1,6 @@
 #include <include/core/HttpServer.hpp>
 #include <include/library/FileLibrary.hpp>
+#include <include/library/RouterLibrary.hpp>
 #include <include/exceptions/http/request/FailedReceivingData.hpp>
 #include <mutex>
 #include <exception>
@@ -330,6 +331,12 @@ String HttpServer::process(const HttpRequest &httpRequest) {
         shared_ptr<CustomLibrary> app(new FileLibrary(httpRequest));
 
         HttpResponse response = app->getResponse();
+
+        if (response.status == 404) {
+            app.reset(new RouterLibrary(httpRequest));
+
+            response = app->getResponse();
+        }
 
         return response.toString();
     }

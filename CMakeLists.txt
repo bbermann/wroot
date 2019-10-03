@@ -30,6 +30,7 @@ set(SOURCES
         src/include/helper/UrlRewriter.cpp
         src/include/library/CustomLibrary.cpp
         src/include/library/FileLibrary.cpp
+        src/include/library/RouterLibrary.cpp
         src/include/type/Process.cpp
         src/include/type/String.cpp
         src/include/type/Timer.cpp
@@ -487,6 +488,7 @@ set(HEADERS
         src/3rdParty/lua/lundump.h
         src/3rdParty/lua/lvm.h
         src/3rdParty/lua/lzio.h
+        src/3rdParty/luacpp/lua.hpp
         src/3rdParty/pthreads/pthread.h
         src/3rdParty/pthreads/sched.h
         src/3rdParty/pthreads/semaphore.h
@@ -508,6 +510,7 @@ set(HEADERS
         src/include/helper/UrlRewriter.hpp
         src/include/library/CustomLibrary.hpp
         src/include/library/FileLibrary.hpp
+        src/include/library/RouterLibrary.hpp
         src/include/type/Process.hpp
         src/include/type/String.hpp
         src/include/type/Timer.hpp
