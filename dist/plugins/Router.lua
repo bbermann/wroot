@@ -22,7 +22,7 @@ function handle()
     local url = request:get("REQUEST_URI")
 
     if (url == "/404") then
-        response.status = 200
+        response.status = 404
         response.type = "text/html"
         print(read_file("plugins/Router/404.html"))
         return
