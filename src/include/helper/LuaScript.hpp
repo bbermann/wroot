@@ -15,7 +15,7 @@
 #define LUASCRIPT_HPP
 
 #include <3rdParty/luawrapper/include/LuaContext.hpp>
-#include <include/core/Core.hpp>
+#include <include/type/String.hpp>
 #include <fstream>
 
 class LuaScript {

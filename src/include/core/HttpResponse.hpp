@@ -15,6 +15,7 @@
 
 #include <include/core/Core.hpp>
 #include <include/core/HttpRequest.hpp>
+#include <include/type/String.hpp>
 
 class HttpResponse {
 public:
@@ -22,15 +23,23 @@ public:
 
     explicit HttpResponse(const HttpRequest &request);
 
+    HttpResponse(const HttpResponse &response);
+
     virtual ~HttpResponse();
 
-    String type = "text/plain";
-    String content = "";
+    std::string type = "text/plain";
+    std::string content = "";
     bool compressOutput = Core::CompressedOutput;
     unsigned short status = 200;
+
+    void set(const std::string &key, const std::string &value);
+
+    String get(const std::string &key);
 
     String toString();
 
 private:
     String getStatusString();
+
+    StringMap data_;
 };

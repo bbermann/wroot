@@ -2,12 +2,10 @@
 
 using namespace std;
 
-String::String(string val)
-        : string(val) {
+String::String(const char *val) : string(val) {
 }
 
-String::String(const char *cval)
-        : string(cval) {
+String::String(const string &val) : string(val) {
 }
 
 String::~String() = default;

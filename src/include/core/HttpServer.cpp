@@ -335,7 +335,7 @@ String HttpServer::process(const HttpRequest &httpRequest) {
         if (response.status == 404) {
             app.reset(new RouterLibrary(httpRequest));
 
-            response = app->getResponse();
+            response = std::move(app->getResponse());
         }
 
         return response.toString();

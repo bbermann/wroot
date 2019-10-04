@@ -1,12 +1,16 @@
 #include <include/core/HttpRequest.hpp>
 #include <include/core/Core.hpp>
 #include <include/exceptions/http/request/KeyNotFound.hpp>
+#include "HttpRequest.hpp"
+
 
 HttpRequest::HttpRequest(const String &request, const String &ipAddress) {
     this->request_ = request;
     this->set("REMOTE_ADDR", ipAddress);
     this->process();
 }
+
+HttpRequest::HttpRequest(const HttpRequest &request) = default;
 
 HttpRequest::~HttpRequest() = default;
 

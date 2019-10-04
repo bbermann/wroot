@@ -14,29 +14,34 @@
 #include "HttpResponse.hpp"
 #include "../../3rdParty/zlib/ZLib.hpp"
 
-using namespace std;
-
-HttpResponse::HttpResponse(const HttpRequest &request) {
-    // TODO: Add fields from request...
-}
-
 HttpResponse::HttpResponse(unsigned short statusCode, const String &content) {
     this->status = statusCode;
     this->content = content;
 }
 
+HttpResponse::HttpResponse(const HttpRequest &request) {
+    // TODO: Add fields from request...
+}
+
+HttpResponse::HttpResponse(const HttpResponse &response) = default;
+
 HttpResponse::~HttpResponse() = default;
 
 String HttpResponse::toString() {
-    string returnString;
+    String returnString;
 
     returnString.append(Core::ServerProtocol + " " + this->getStatusString() + ENDL);
-    returnString.append("Host: " + Core::ServerAddress + ":" + to_string(Core::ServerPort) + ENDL);
+    returnString.append("Host: " + Core::ServerAddress + ENDL);
     returnString.append("Server: " + Core::ServerName + ENDL);
     returnString.append("X-Powered-By: " + Core::ServerName + ENDL);
     returnString.append("Connection: close" + ENDL);
     returnString.append("Content-Type: " + this->type + "; charset=UTF-8" + ENDL);
-    returnString.append("Content-Length: " + to_string(this->content.size()) + ENDL);
+    returnString.append("Content-Length: " + std::to_string(this->content.size()) + ENDL);
+
+    // Insert the extra headers from external sources.
+    for (const auto &item : this->data_) {
+        returnString.append(item.first + ": " + item.second + ENDL);
+    }
 
     if (this->compressOutput) {
         //returnString.append("Transfer-Encoding: gzip" + ENDL);
@@ -76,6 +81,14 @@ String HttpResponse::getStatusString() {
             return "503 Service Unavailable";
 
         default:
-            return to_string(this->status);
+            return std::to_string(this->status);
     }
+}
+
+void HttpResponse::set(const std::string &key, const std::string &value) {
+    this->data_[key] = value;
+}
+
+String HttpResponse::get(const std::string &key) {
+    return this->data_[key];
 }

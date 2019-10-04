@@ -16,7 +16,7 @@ class String : public std::string {
 public:
     String(const char *val = "");
 
-    String(std::string val);
+    String(const std::string &val);
 
     ~String();
 

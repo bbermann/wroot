@@ -7,6 +7,8 @@ class HttpRequest {
 public:
     HttpRequest(const String &request, const String &ipAddress);
 
+    HttpRequest(const HttpRequest &request);
+
     virtual ~HttpRequest();
 
     String get(const String &key) const;

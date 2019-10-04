@@ -14,10 +14,8 @@
 #include "LuaScript.hpp"
 #include <include/exceptions/lua/LuaScriptException.hpp>
 
-LuaScript::LuaScript(const String &script_path) {
+LuaScript::LuaScript(const String &script_path) : script_path_(script_path) {
     this->registerFunctions();
-
-    this->script_path_ = script_path;
 }
 
 LuaScript::~LuaScript() = default;
@@ -27,7 +25,10 @@ String LuaScript::getOutput() {
 }
 
 void LuaScript::registerFunctions() {
-    this->context.writeFunction("print", [this](const std::string &msg) {
-        this->lua_output_.append(msg);
-    });
+    this->context.writeFunction(
+        "print",
+        [this](const std::string &msg) {
+            this->lua_output_.append(msg);
+        }
+    );
 }
