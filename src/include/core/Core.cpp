@@ -103,7 +103,7 @@ void Core::readConfiguration() {
         Core::ThreadCount = server["threads"];
     }
 
-    Core::printStartupCheck("CPU Cores", std::to_string(Core::ThreadCount));
+    Core::printStartupCheck("Workers Threads", std::to_string(Core::ThreadCount));
 
     auto urlRewriteRulesParser = config["url_rewrite"];
     for (auto ruleParser : urlRewriteRulesParser) {

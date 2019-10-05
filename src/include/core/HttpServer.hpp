@@ -74,7 +74,11 @@ protected:
 
     void run();
 
-    void handle(IncomingConnection &conn);
+    void handle(const IncomingConnection &conn);
+
+    HttpRequest receiveRequest(const IncomingConnection &conn);
+
+    void sendResponse(const IncomingConnection &conn, const HttpRequest &request);
 
 private:
     int announce_rate_;

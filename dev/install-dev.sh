@@ -12,19 +12,26 @@ cd /tmp/wroot/install
 
 sudo apt-get update && apt-get install -y \
 man \
+apt-transport-https \
+ca-certificates \
+gnupg \
+wget \
 build-essential \
 software-properties-common \
 libreadline-dev \
-wget \
 apache2-utils \
 nano \
 htop \
 psmisc
 
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add - && \
+sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main' && \
+sudo apt-get update && \
+sudo apt-get install cmake -y
+
 # GCC 6.3.0 (wroot build) + 4.8 (for building old libs)
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && apt-get update && apt-get install -y \
-cmake \
-gcc-6 g++-6 \
+gcc-9 g++-9 \
 libc6-dev \
 gdb \
 gdbserver \
