@@ -41,6 +41,8 @@ dist/file
 releases
 cmake-build-debug
 cmake-build-release
+cmake-build-debug-wroot
+cmake-build-release-wroot
 dev/cpplint
 
 # git modules
