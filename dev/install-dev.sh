@@ -24,19 +24,16 @@ nano \
 htop \
 psmisc
 
+# CMake 3.15+
 wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add - && \
 sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main' && \
 sudo apt-get update && \
 sudo apt-get install cmake -y
 
-# GCC 6.3.0 (wroot build) + 4.8 (for building old libs)
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && apt-get update && apt-get install -y \
-gcc-9 g++-9 \
-libc6-dev \
-gdb \
-gdbserver \
-gcc-4.8 \
-g++-4.8
+# GCC 9
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+sudo apt-get update && \
+sudo apt-get install -y gcc-9 g++-9 libc6-dev gdb gdbserver
 
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
@@ -49,7 +46,9 @@ make && \
 make install
 
 # BOOST
-sudo apt-get update && sudo apt-get install -y libboost-all-dev
+sudo add-apt-repository ppa:mhier/libboost-latest -y && \
+sudo apt-get update && \
+sudo apt-get install -y libboost1.70-dev
 
 # Change directory to the actual wroot working directory
 cd $wroot_dir
