@@ -3,13 +3,12 @@
 #include <mutex>
 #include <fstream>
 #include <iostream>
-#include <experimental/filesystem>
+#include <optional>
+#include <filesystem>
 #include <include/helper/LuaScript.hpp>
 #include <include/exceptions/lua/LuaScriptException.hpp>
 
 using json = nlohmann::json;
-
-namespace filesystem = std::experimental::filesystem;
 
 String Core::ApplicationRoot;
 String Core::PathSeparator;
@@ -98,10 +97,10 @@ void Core::readConfiguration() {
     Core::CompressedOutput = server["compressed_output"];
     Core::printStartupCheck("Compressed output", (Core::CompressedOutput ? "Yes" : "No"));
 
-    if (unsigned int threadCount = server["threads"]) {
-        Core::ThreadCount = threadCount;
-    } else {
+    if (server["threads"].empty()) {
         Core::ThreadCount = Core::IsDebugging ? 1 : std::thread::hardware_concurrency();
+    } else {
+        Core::ThreadCount = server["threads"];
     }
 
     Core::printStartupCheck("CPU Cores", std::to_string(Core::ThreadCount));
@@ -126,7 +125,7 @@ void Core::readConfiguration() {
 void Core::loadPlugins() {
     String pluginsRoot = Core::ApplicationRoot + "/plugins";
 
-    for (auto &file: filesystem::recursive_directory_iterator(pluginsRoot.c_str())) {
+    for (auto &file: std::filesystem::recursive_directory_iterator(pluginsRoot.c_str())) {
         if (file.path().extension() == ".lua") {
             String pluginPath = (String)file.path();
             String status = "OK";

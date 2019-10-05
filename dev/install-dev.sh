@@ -31,7 +31,7 @@ gdbserver \
 gcc-4.8 \
 g++-4.8
 
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
 # ZLIB
 sudo wget http://zlib.net/zlib-1.2.11.tar.gz && \
