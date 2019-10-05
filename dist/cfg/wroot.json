@@ -4,7 +4,8 @@
         "listen": "*",
         "port": 8000,
         "document_root": "WROOT_DOCUMENT_ROOT",
-        "compressed_output": true
+        "compressed_output": true,
+        "threads": 8
     },
     "url_rewrite": [
         {

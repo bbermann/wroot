@@ -98,7 +98,12 @@ void Core::readConfiguration() {
     Core::CompressedOutput = server["compressed_output"];
     Core::printStartupCheck("Compressed output", (Core::CompressedOutput ? "Yes" : "No"));
 
-    Core::ThreadCount = Core::IsDebugging ? 1 : std::thread::hardware_concurrency();
+    if (unsigned int threadCount = server["threads"]) {
+        Core::ThreadCount = threadCount;
+    } else {
+        Core::ThreadCount = Core::IsDebugging ? 1 : std::thread::hardware_concurrency();
+    }
+
     Core::printStartupCheck("CPU Cores", std::to_string(Core::ThreadCount));
 
     auto urlRewriteRulesParser = config["url_rewrite"];
