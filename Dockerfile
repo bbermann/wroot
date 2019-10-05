@@ -34,7 +34,7 @@ RUN add-apt-repository ppa:ubuntu-toolchain-r/test -y && apt-get update && apt-g
 gcc-9 g++-9 \
 libc6-dev \
 gdb \
-gdbserver \
+gdbserver
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
