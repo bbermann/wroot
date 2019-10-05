@@ -26,7 +26,7 @@ echo Moving Plugins...
 cp -R $wroot_dir/dist/plugins $wroot_dir/bin/
 chmod 777 bin/plugins -R
 
-cd $wroot_dir/src/3rdParty/lua
+cd $wroot_dir/src/3rdParty/lua && \
 make
 
 cd ${wroot_dir}/bin
