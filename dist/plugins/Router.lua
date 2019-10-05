@@ -1,33 +1,38 @@
+local fileReader = require "scripts.lua.FileReader"
+
+routes = {
+    PageNotFound = "/404"
+}
+
+local router = {
+    [routes.PageNotFound] = function ()
+        response.status = 404
+        print(fileReader.readAll("plugins/Router/404.html"))
+    end
+}
+
 function test()
-    print("OK")
-end
 
-function read_file(path)
-    -- Opens a file in read
-    local file = io.open(path, "r")
-
-    -- sets the default input file
-    io.input(file)
-
-    -- prints the first line of the file
-    local content = io.read("*all")
-
-    -- closes the open file
-    io.close(file)
-
-    return content
 end
 
 function handle()
     local url = request:get("REQUEST_URI")
 
-    if (url == "/404") then
-        response.status = 404
-        response.type = "text/html"
-        print(read_file("plugins/Router/404.html"))
+    setResponseDefaults()
+
+    if router[url] ~= nil then
+        router[url]()
         return
     end
 
+    redirectTo(routes.PageNotFound);
+end
+
+function setResponseDefaults()
+    response.type = "text/html"
+end
+
+function redirectTo(url)
     response.status = 307;
-    response:set("Location", "/404");
+    response:set("Location", url);
 end
