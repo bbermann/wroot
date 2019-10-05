@@ -464,31 +464,6 @@ set(HEADERS
         src/3rdParty/boost/shared_ptr.hpp
         src/3rdParty/boost/smart_ptr.hpp
         src/3rdParty/boost/throw_exception.hpp
-        src/3rdParty/lua/lapi.h
-        src/3rdParty/lua/lauxlib.h
-        src/3rdParty/lua/lcode.h
-        src/3rdParty/lua/lctype.h
-        src/3rdParty/lua/ldebug.h
-        src/3rdParty/lua/ldo.h
-        src/3rdParty/lua/lfunc.h
-        src/3rdParty/lua/lgc.h
-        src/3rdParty/lua/llex.h
-        src/3rdParty/lua/llimits.h
-        src/3rdParty/lua/lmem.h
-        src/3rdParty/lua/lobject.h
-        src/3rdParty/lua/lopcodes.h
-        src/3rdParty/lua/lparser.h
-        src/3rdParty/lua/lprefix.h
-        src/3rdParty/lua/lstate.h
-        src/3rdParty/lua/lstring.h
-        src/3rdParty/lua/ltable.h
-        src/3rdParty/lua/ltm.h
-        src/3rdParty/lua/lua.h
-        src/3rdParty/lua/luaconf.h
-        src/3rdParty/lua/lualib.h
-        src/3rdParty/lua/lundump.h
-        src/3rdParty/lua/lvm.h
-        src/3rdParty/lua/lzio.h
         src/3rdParty/luacpp/lua.hpp
         src/3rdParty/pthreads/pthread.h
         src/3rdParty/pthreads/sched.h
