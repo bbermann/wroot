@@ -18,7 +18,8 @@ libreadline-dev \
 wget \
 apache2-utils \
 nano \
-htop
+htop \
+psmisc
 
 # GCC 6.3.0 (wroot build) + 4.8 (for building old libs)
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test -y && apt-get update && apt-get install -y \
