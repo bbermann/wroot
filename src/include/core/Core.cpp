@@ -27,6 +27,7 @@ std::mutex Core::ThreadMutex;
 std::shared_ptr<HttpServer> Core::Server;
 std::vector<UrlRewriteRule> Core::UrlRewriteRules;
 std::mutex Core::outMutex;
+boost::asio::io_context Core::IOContext;
 
 Core::Core() = default;
 
