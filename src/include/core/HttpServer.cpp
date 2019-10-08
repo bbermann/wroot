@@ -2,6 +2,8 @@
 #include <include/library/FileLibrary.hpp>
 #include <include/library/RouterLibrary.hpp>
 #include <include/exceptions/http/request/FailedReceivingData.hpp>
+#include <include/exceptions/http/request/RequestTimeoutException.hpp>
+#include <include/exceptions/http/request/NullRequestException.hpp>
 #include <exception>
 #include <future>
 #include <memory>
@@ -10,15 +12,18 @@
 #include <vector>
 
 #ifdef WINDOWS
-#undef errno
-#define errno WSAGetLastError()
-#ifndef EWOULDBLOCK
-#define EWOULDBLOCK WSAEWOULDBLOCK
-#endif
+
+    #undef errno
+    #define errno WSAGetLastError()
+
+    #ifndef EWOULDBLOCK
+        #define EWOULDBLOCK WSAEWOULDBLOCK
+    #endif
+
 #else
 
-#include <fcntl.h>  /* For O_RDWR */
-#include <unistd.h> /* For open(), creat() */
+    #include <fcntl.h>  /* For O_RDWR */
+    #include <unistd.h> /* For open(), creat() */
 
 #endif
 
@@ -31,6 +36,8 @@ HttpServer::HttpServer(size_t port) {
 
     this->free_connection_slots_ = Core::kMaxConnections;
     this->announce_rate_ = Core::IsDebugging ? 10 : 1000;
+
+    this->start();
 }
 
 HttpServer::~HttpServer() {
@@ -83,7 +90,7 @@ bool HttpServer::createSocket() {
         if (::bind(server_socket_, (SOCKADDR *)&server_address_, sizeof(server_address_)) == SOCKET_ERROR)
         {
             Core::error("Socket binding has failed.");
-            CLOSE_SOCKET(server_socket_);
+            this->closeSocket(server_socket_);
             bReturn = false;
         }
     }
@@ -114,7 +121,7 @@ bool HttpServer::createSocket() {
 
         if (bind(server_socket_, (struct sockaddr *) &server_address_, sizeof(server_address_)) == SOCKET_ERROR) {
             Core::error("Socket binding has failed.");
-            CLOSE_SOCKET(server_socket_);
+            this->closeSocket(server_socket_);
             bReturn = false;
         } else {
             bReturn = true;
@@ -125,33 +132,33 @@ bool HttpServer::createSocket() {
     return bReturn;
 }
 
-int HttpServer::eventLoop() {
+void HttpServer::start() {
     if (listen(server_socket_, Core::kMaxConnections) == SOCKET_ERROR) {
         Core::error("Unable to open socket on port " + std::to_string(port_) + ".");
-        return (int) Status::UnableToOpenSocket;
     }
 
     request_count_ = 0;
     response_count_ = 0;
 
-    //Uma thread (std::this_thread) é reservada para escutar a porta de entrada.
+    // Uma thread (std::this_thread) é reservada para escutar a porta de entrada.
     const unsigned int listenThreadsCount = 1;
-    //Ao menos uma thread é necessária para processar as respostas...
+    // Ao menos uma thread é necessária para processar as respostas...
     unsigned int workerThreadsCount = 1;
-    //Se for viável alocar mais de uma thread para processar as respostas, então calcule quantas...
+
+    // Se for viável alocar mais de uma thread para processar as respostas, então calcule quantas...
     if (Core::ThreadCount > 1) {
         workerThreadsCount = Core::ThreadCount - listenThreadsCount;
     }
 
-    std::vector<std::shared_ptr<std::thread>> workerThreads;
-
+    // O servidor precisa estar rodando p/ que as threads não abortem imediatamente.
     Core::Running = true;
-    Core::Server = std::shared_ptr<HttpServer>(this);
 
-    //Um thread pool para aceitar conexões (std::this_thread) e as demais threads processam respostas.
+    // Um thread pool para aceitar conexões (std::this_thread) e as demais threads processam respostas.
+    std::vector<std::unique_ptr<std::thread>> workerThreads;
+
     try {
         for (unsigned int i = 0; i < workerThreadsCount; ++i) {
-            workerThreads.push_back(std::make_shared<std::thread>(&HttpServer::run, this));
+            workerThreads.push_back(std::make_unique<std::thread>(&HttpServer::run, this));
             workerThreads.back()->detach();
         }
     }
@@ -164,7 +171,9 @@ int HttpServer::eventLoop() {
     }
 
     Core::outLn("Waiting for HTTP requests on port " + std::to_string(port_) + "...\n");
+}
 
+int HttpServer::eventLoop() {
     IncomingConnection conn;
     unsigned int free_slots = 0;
 
@@ -200,7 +209,14 @@ int HttpServer::eventLoop() {
             Core::debugLn("Request count: " + std::to_string(request_count_));
         }
 
-        this->connections_queue_.push(conn);
+        try {
+            conn.request = this->receiveRequest(conn);
+
+            this->connections_queue_.push(conn);
+        }
+        catch (const FailedReceivingData &exception) {
+            Core::debugLn(String("Silent exception: ") + exception.what());
+        }
     }
 
     return (int) Status::Ok;
@@ -251,12 +267,16 @@ void HttpServer::putCurrentThreadToSleep() const {
 
 void HttpServer::handle(const IncomingConnection &conn) {
     try {
-        const auto httpRequest = this->receiveRequest(conn);
+        if (!conn.request) {
+            throw NullRequestException();
+        }
 
-        this->sendResponse(conn, httpRequest);
-    } catch (const std::exception &exception) {
-        Core::debugLn(String("Socket closed: ") + exception.what());
-        CLOSE_SOCKET(conn.incoming_socket);
+        String response = HttpServer::process(conn.request.value());
+
+        this->sendResponse(conn, response);
+    }
+    catch (const std::exception &exception) {
+        this->closeSocket(conn.incoming_socket, exception);
     }
 }
 
@@ -268,14 +288,13 @@ HttpRequest HttpServer::receiveRequest(const IncomingConnection &conn) {
     Core::debugLn("\nHandling request from " + clientIpAddress + "...");
 
     bool retry = false;
-    //errno = 0;
     String receivedData = "";
 
     do {
-        ssize_t bytesReceived = recv(conn.incoming_socket, recvBuffer, Core::kBufferSize, 0);
+        auto bytesReceived = recv(conn.incoming_socket, recvBuffer, Core::kBufferSize, 0);
 
         // Client disconnect or error receiving request
-        if (bytesReceived <= 0 /*|| errno != 0*/) {
+        if (bytesReceived <= 0) {
             throw FailedReceivingData();
         }
 
@@ -291,9 +310,7 @@ HttpRequest HttpServer::receiveRequest(const IncomingConnection &conn) {
     return HttpRequest(receivedData, clientIpAddress);
 }
 
-void HttpServer::sendResponse(const IncomingConnection &conn, const HttpRequest &request) {
-    String response = HttpServer::process(request);
-
+void HttpServer::sendResponse(const IncomingConnection &conn, const String &response) {
     if (response.length() > 0) {
         ssize_t bytesSent;
 
@@ -301,7 +318,7 @@ void HttpServer::sendResponse(const IncomingConnection &conn, const HttpRequest 
             bytesSent = send(conn.incoming_socket, response.data(), response.length(), MSG_NOSIGNAL);
         } while (errno == EWOULDBLOCK);
 
-        CLOSE_SOCKET(conn.incoming_socket);
+        this->closeSocket(conn.incoming_socket);
 
         Core::debugLn("Bytes Sent: " + std::to_string(bytesSent));
     }
@@ -317,33 +334,52 @@ void HttpServer::sendResponse(const IncomingConnection &conn, const HttpRequest 
     Core::ThreadMutex.unlock();
 }
 
-String HttpServer::process(const HttpRequest &httpRequest) {
-    try {
-        //Custom library initializer
-        std::shared_ptr<CustomLibrary> app(new FileLibrary(httpRequest));
+String HttpServer::process(const HttpRequest &request) {
+    auto responseHandler = std::async(std::launch::async, [request] {
+        try {
+            std::shared_ptr<CustomLibrary> app(new FileLibrary(request));
 
-        HttpResponse response = app->getResponse();
+            HttpResponse response = app->getResponse();
 
-        if (response.status == 404) {
-            app.reset(new RouterLibrary(httpRequest));
+            if (response.status == 404) {
+                app.reset(new RouterLibrary(request));
 
-            response = std::move(app->getResponse());
+                response = std::move(app->getResponse());
+            }
+
+            return response.toString();
+        }
+        catch (const std::runtime_error &ex) {
+            Core::warning(String("Runtime error silenced by HttpServer: ") + ex.what(), "HttpServer::process");
+        }
+        catch (const std::exception &ex) {
+            Core::warning(String("Exception silenced by HttpServer: ") + ex.what(), "HttpServer::process");
         }
 
-        return response.toString();
-    }
-    catch (const std::runtime_error &ex) {
-        Core::warning(String("Runtime error silenced by HttpServer: ") + ex.what(), "HttpServer::process");
-    }
-    catch (const std::exception &ex) {
-        Core::warning(String("Exception silenced by HttpServer: ") + ex.what(), "HttpServer::process");
+        return HttpResponse(500).toString();
+    });
+
+    auto responseStatus = responseHandler.wait_for(
+            std::chrono::milliseconds(Core::RequestTimeout)
+    );
+
+    if (responseStatus == std::future_status::timeout) {
+        throw RequestTimeoutException();
     }
 
-    return HttpResponse(500).toString();
+    return responseHandler.get();
 }
 
 void HttpServer::destroySocket() {
 #ifdef WINDOWS
     WSACleanup();
 #endif
+}
+
+void HttpServer::closeSocket(SOCKET socket, std::optional<std::exception> exception) {
+    if (exception) {
+        Core::debugLn(String("Socket closed: ") + exception.value().what());
+    }
+
+    CLOSE_SOCKET(socket);
 }

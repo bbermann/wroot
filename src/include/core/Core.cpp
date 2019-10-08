@@ -21,10 +21,10 @@ StringList Core::Plugins;
 bool Core::IsDebugging;
 bool Core::CompressedOutput;
 bool Core::Running;
-unsigned int Core::ThreadCount;
-int Core::ServerPort;
+size_t Core::ThreadCount;
+size_t Core::ServerPort;
+size_t Core::RequestTimeout;
 std::mutex Core::ThreadMutex;
-std::shared_ptr<HttpServer> Core::Server;
 std::vector<UrlRewriteRule> Core::UrlRewriteRules;
 std::mutex Core::outMutex;
 boost::asio::io_context Core::IOContext;
@@ -103,8 +103,14 @@ void Core::readConfiguration() {
     } else {
         Core::ThreadCount = server["threads"];
     }
+    Core::printStartupCheck("Worker Threads", std::to_string(Core::ThreadCount));
 
-    Core::printStartupCheck("Workers Threads", std::to_string(Core::ThreadCount));
+    if (server["request_timeout"].empty()) {
+        Core::RequestTimeout = 60;
+    } else {
+        Core::RequestTimeout = server["request_timeout"];
+    }
+    Core::printStartupCheck("Request timeout", std::to_string(Core::RequestTimeout));
 
     auto urlRewriteRulesParser = config["url_rewrite"];
     for (auto ruleParser : urlRewriteRulesParser) {
