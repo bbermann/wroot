@@ -20,24 +20,27 @@
 #include "netinet/in.h"
 #include "arpa/inet.h"
 #include "unistd.h"
-#include <cstdio>
 
 typedef int SOCKET;
 
 #endif
 
 #include "../type/String.hpp"
+
 #include "../core/Core.hpp"
 #include "../core/HttpResponse.hpp"
 #include "../core/HttpRequest.hpp"
 
 #include <thread>
+#include <cstdio>
 #include <queue>
+#include <optional>
 
 struct IncomingConnection {
     struct sockaddr_in client_address{};
     socklen_t client_length = sizeof(client_address);
     SOCKET incoming_socket = INVALID_SOCKET;
+    std::optional<HttpRequest> request{};
 };
 
 class HttpServer {
@@ -78,12 +81,16 @@ protected:
 
     HttpRequest receiveRequest(const IncomingConnection &conn);
 
-    void sendResponse(const IncomingConnection &conn, const HttpRequest &request);
+    void sendResponse(const IncomingConnection &conn, const String &response);
 
 private:
     int announce_rate_;
 
     void putCurrentThreadToSleep() const;
+
+    void closeSocket(SOCKET socket, std::optional<std::exception> exception = std::nullopt);
+
+    void start();
 };
 
 #endif // HTTPSERVER_H

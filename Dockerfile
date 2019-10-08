@@ -24,17 +24,16 @@ nano \
 htop \
 psmisc
 
+# CMake 3.15+
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add - && \
 apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main' && \
 apt-get update && \
-apt-get install cmake -y
+apt-get install -y cmake
 
 # GCC 6.3.0 (wroot build) + 4.8 (for building old libs)
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test -y && apt-get update && apt-get install -y \
-gcc-9 g++-9 \
-libc6-dev \
-gdb \
-gdbserver
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+apt-get update && \
+apt-get install -y gcc-9 g++-9 libc6-dev gdb gdbserver
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
@@ -47,7 +46,9 @@ make && \
 make install
 
 # BOOST
-RUN apt-get update && apt-get install -y libboost-all-dev
+RUN add-apt-repository ppa:mhier/libboost-latest -y && \
+apt-get update && \
+apt-get install -y libboost1.70-dev
 
 # SSH
 RUN apt-get update && apt-get install -y openssh-server

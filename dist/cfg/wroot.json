@@ -5,7 +5,8 @@
         "port": 8000,
         "document_root": "WROOT_DOCUMENT_ROOT",
         "compressed_output": true,
-        "threads": 16
+        "threads": 16,
+        "request_timeout": 120
     },
     "url_rewrite": [
         {
