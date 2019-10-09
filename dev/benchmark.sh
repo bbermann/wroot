@@ -9,3 +9,4 @@ ab -t 10 -c 50 http://127.0.0.1:8000/ > logs/ab_output.log 2>&1 &
 htop
 killall ab
 killall wroot
+cat logs/ab_output.log
