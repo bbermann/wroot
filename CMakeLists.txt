@@ -7,14 +7,11 @@ set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 set(CMAKE_CXX_STANDARD 20)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(Boost_USE_STATIC_LIBS ON)
-
-find_package(Boost 1.70 REQUIRED)
 
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/luacpp")
-include_directories(${BOOST_INCLUDE_DIRS})
+include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/asio/asio/include")
 
 link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/lua)
 
@@ -80,4 +77,4 @@ set(HEADERS
 add_executable(wroot ${SOURCES} ${HEADERS})
 
 ## Link libraries
-target_link_libraries(wroot stdc++ stdc++fs pthread z lua ${CMAKE_DL_LIBS} ${Boost_LIBRARIES})
+target_link_libraries(wroot stdc++ stdc++fs pthread z lua ${CMAKE_DL_LIBS})
