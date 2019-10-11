@@ -15,6 +15,7 @@ String Core::PathSeparator;
 String Core::ServerAddress;
 String Core::ServerName;
 String Core::ServerProtocol;
+String Core::ServerListenAddress;
 String Core::DocumentRoot;
 StringList Core::Parameters;
 StringList Core::Plugins;
@@ -27,7 +28,6 @@ size_t Core::RequestTimeout;
 std::mutex Core::ThreadMutex;
 std::vector<UrlRewriteRule> Core::UrlRewriteRules;
 std::mutex Core::outMutex;
-boost::asio::io_context Core::IOContext;
 
 Core::Core() = default;
 
@@ -89,6 +89,7 @@ void Core::readConfiguration() {
 
     Core::ServerName = server["name"];
     Core::ServerPort = server["port"];
+    Core::ServerListenAddress = server["listen"];
 
     Core::DocumentRoot = server["document_root"];
     if (Core::DocumentRoot.endsWith("/")) {
@@ -125,7 +126,7 @@ void Core::readConfiguration() {
 
     Core::loadPlugins();
 
-    Core::ServerAddress = Core::ServerName + ":" + std::to_string(Core::ServerPort);
+    Core::ServerAddress = Core::ServerListenAddress + ":" + std::to_string(Core::ServerPort);
     Core::printStartupCheck("Listening on", Core::ServerAddress);
 }
 

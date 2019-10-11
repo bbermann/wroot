@@ -1,22 +1,22 @@
 #pragma once
 
 #include "../core/Core.hpp"
-#include "../core/HttpResponse.hpp"
-#include "../core/HttpRequest.hpp"
+#include "include/network/http/Response.hpp"
+#include "include/network/http/Request.hpp"
 
 class CustomLibrary {
 public:
-    explicit CustomLibrary(const HttpRequest &request);
+    explicit CustomLibrary(const Request &request);
 
     virtual ~CustomLibrary();
 
-    const HttpRequest& getHttpRequest();
+    const Request& getHttpRequest();
 
     virtual String toString();
 
-    HttpResponse getResponse();
+    Response getResponse();
 
 protected:
-    const HttpRequest &request;
-    HttpResponse response;
+    const Request &request;
+    Response response;
 };

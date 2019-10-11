@@ -9,3 +9,11 @@ TODO MVP:
 Benchmark:
 
 ab -n 1000 -c 10 127.0.0.1:8000/
+
+
+Sobre a implementação do exemplo boost asio (https://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/examples/cpp11_examples.html):
+
+Classes faltando:
+
+    boost_asio/example/cpp11/http/server/request_handler.cpp
+    boost_asio/example/cpp11/http/server/request_handler.hpp

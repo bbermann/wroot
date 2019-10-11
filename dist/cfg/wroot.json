@@ -1,11 +1,11 @@
 {
     "server": {
-        "name": "localhost",
-        "listen": "*",
+        "name": "wRoot Server",
+        "listen": "0.0.0.0",
         "port": 8000,
         "document_root": "WROOT_DOCUMENT_ROOT",
         "compressed_output": true,
-        "threads": 16,
+        "threads": 8,
         "request_timeout": 120
     },
     "url_rewrite": [

@@ -6,7 +6,7 @@
 
 class FileLibrary : public CustomLibrary {
 public:
-    explicit FileLibrary(const HttpRequest &request);
+    explicit FileLibrary(const Request &request);
 
     virtual ~FileLibrary();
 

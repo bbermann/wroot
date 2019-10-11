@@ -6,7 +6,7 @@
 using std::ifstream;
 using std::ios;
 
-FileLibrary::FileLibrary(const HttpRequest &request) : CustomLibrary(request) {
+FileLibrary::FileLibrary(const Request &request) : CustomLibrary(request) {
     // This library implicitly compress the output
     this->response.compressOutput = false;
 }
