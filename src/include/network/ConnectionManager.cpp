@@ -7,13 +7,13 @@
 ConnectionManager::ConnectionManager() {
 }
 
-void ConnectionManager::start(ConnectionPtr connection) {
+void ConnectionManager::start(const ConnectionPtr& connection) {
     this->connections_.insert(connection);
 
     connection->start();
 }
 
-void ConnectionManager::stop(ConnectionPtr connection) {
+void ConnectionManager::stop(const ConnectionPtr& connection) {
     this->connections_.erase(connection);
 
     connection->stop();

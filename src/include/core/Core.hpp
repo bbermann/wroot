@@ -62,7 +62,7 @@ public:
     static const int kWSockVersion = 2;
 #endif
 
-    static const unsigned int kMaxConnections = 10000, kBufferSize = 8192 * 10;
+    static const unsigned int BufferSize = 81920;
 
     static String ApplicationRoot;
     static String PathSeparator;
@@ -82,6 +82,7 @@ public:
     static std::mutex ThreadMutex;
     static std::shared_ptr <HttpServer> Server;
     static std::vector <UrlRewriteRule> UrlRewriteRules;
+    static StringMap Cache;
 
 private:
     static void readConfiguration();

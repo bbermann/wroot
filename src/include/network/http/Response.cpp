@@ -38,6 +38,7 @@ String Response::toString() {
 
 #include "Response.hpp"
 #include <string>
+#include <nlohmann/json/src/json.hpp>
 
 namespace StatusStrings {
     const std::string Ok = "HTTP/1.0 200 OK\r\n";
@@ -102,8 +103,8 @@ namespace MiscStrings {
     const char CRLF[] = {'\r', '\n'};
 } // namespace MiscStrings
 
-std::vector <asio::const_buffer> Response::toBuffers() {
-    std::vector <asio::const_buffer> buffers;
+std::vector<asio::const_buffer> Response::toBuffers() {
+    std::vector<asio::const_buffer> buffers;
 
     buffers.push_back(StatusStrings::toBuffer(status));
 
@@ -251,5 +252,46 @@ Response Response::stockResponse(Response::StatusType status) {
     response.headers[0].value = std::to_string(response.content.size());
     response.headers[1].name = "Content-Type";
     response.headers[1].value = "text/html";
+    return response;
+}
+
+#include <iostream>
+
+std::string Response::serialize() {
+    using json = nlohmann::json;
+
+    json serialized;
+    serialized["content"] = this->content;
+    serialized["status"] = this->status;
+
+    for (auto header : this->headers) {
+        serialized["headers"][header.name] = header.value;
+    }
+
+    return serialized.dump();
+}
+
+Response Response::unserialize(std::string &serialized) {
+    using json = nlohmann::json;
+
+    json responseData = json::parse(serialized);
+
+    Response response;
+    response.status = responseData["status"];
+
+    if (responseData.find("headers") != responseData.end()) {
+        for (auto it = responseData["headers"].begin(); it != responseData["headers"].end(); ++it) {
+            Header header;
+            header.name = it.key();
+            header.value = it.value();
+
+            response.headers.push_back(header);
+        }
+    }
+
+    if (responseData.find("content") != responseData.end()) {
+        response.content = responseData["content"];
+    }
+
     return response;
 }

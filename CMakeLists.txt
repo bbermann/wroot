@@ -28,11 +28,9 @@ set(SOURCES
         src/include/helper/FileHelper.cpp
         src/include/helper/FunctionMap.cpp
         src/include/helper/UrlRewriter.cpp
-# TODO: Habilitar novamente
-#        src/include/library/CustomLibrary.cpp
-#        src/include/library/FileLibrary.cpp
-#        src/include/library/RouterLibrary.cpp
-#        src/sample_app/HttpSample.cpp
+        src/include/library/CustomLibrary.cpp
+        src/include/library/FileLibrary.cpp
+        src/sample_app/HttpSample.cpp
         src/include/type/Process.cpp
         src/include/type/String.cpp
         src/include/type/Timer.cpp)
@@ -61,18 +59,31 @@ set(HEADERS
         src/include/helper/UrlRewriter.hpp
         src/include/library/CustomLibrary.hpp
         src/include/library/FileLibrary.hpp
-        src/include/library/RouterLibrary.hpp
         src/include/type/Process.hpp
         src/include/type/String.hpp
         src/include/type/Timer.hpp
-#        src/sample_app/HttpSample.hpp
+        src/sample_app/HttpSample.hpp
         src/include/exceptions/http/response/NotFound.hpp
         src/include/exceptions/http/response/Forbidden.hpp
         src/include/exceptions/http/response/InternalServerError.hpp
         src/include/exceptions/http/response/Unauthorized.hpp
         src/include/exceptions/http/request/KeyNotFound.hpp
         src/include/exceptions/http/request/FailedReceivingData.hpp
-        src/include/exceptions/lua/LuaScriptException.hpp src/include/type/Session.hpp src/include/network/Connection.cpp src/include/network/Connection.hpp src/include/network/ConnectionManager.cpp src/include/network/ConnectionManager.hpp src/include/network/http/RequestHandler.cpp src/include/network/http/RequestHandler.hpp src/include/network/http/Header.hpp src/include/network/http/Header.hpp src/include/network/http/Header.hpp src/include/network/http/MimeTypes.cpp src/include/network/http/MimeTypes.hpp src/include/network/http/RequestParser.cpp src/include/network/http/RequestParser.hpp)
+        src/include/exceptions/lua/LuaScriptException.hpp
+        src/include/network/Connection.cpp
+        src/include/network/Connection.hpp
+        src/include/network/ConnectionManager.cpp
+        src/include/network/ConnectionManager.hpp
+        src/include/network/http/RequestHandler.cpp
+        src/include/network/http/RequestHandler.hpp
+        src/include/network/http/Header.hpp
+        src/include/network/http/Header.hpp
+        src/include/network/http/Header.hpp
+        src/include/network/http/MimeTypes.cpp
+        src/include/network/http/MimeTypes.hpp
+        src/include/network/http/RequestParser.cpp
+        src/include/network/http/RequestParser.hpp
+        src/include/helper/Chronometer.hpp)
 
 add_executable(wroot ${SOURCES} ${HEADERS})
 

@@ -1,84 +1,89 @@
-#include <include/library/FileLibrary.hpp>
+#include "FileLibrary.hpp"
 #include <include/exceptions/http/response/NotFound.hpp>
+#include <include/network/http/MimeTypes.hpp>
 #include <fstream>
 #include <stdexcept>
+#include <nlohmann/json/src/json.hpp>
 
 using std::ifstream;
 using std::ios;
 
 FileLibrary::FileLibrary(const Request &request) : CustomLibrary(request) {
-    // This library implicitly compress the output
-    this->response.compressOutput = false;
 }
 
 FileLibrary::~FileLibrary() = default;
 
-String FileLibrary::toString() {
-    String fileContent, currentLine;
-    String fullPath = this->getFullPath();
+void FileLibrary::handle(Response &response) {
+    // Decode url to path.
+    std::string requestPath;
 
-    this->setResponseType();
+    if (!urlDecode(request.uri, requestPath)) {
+        response = Response::stockResponse(Response::BadRequest);
+        return;
+    }
+
+    // Request path must be absolute and not contain "..".
+    if (requestPath.empty() || requestPath[0] != '/' || requestPath.find("..") != std::string::npos) {
+        response = Response::stockResponse(Response::BadRequest);
+        return;
+    }
+
+    // If path ends in slash (i.e. is a directory) then add "index.html".
+    if (requestPath[requestPath.size() - 1] == '/') {
+        requestPath += "index.html";
+    }
+
+    // Determine the file extension.
+    std::size_t lastSlashPos = requestPath.find_last_of('/');
+    std::size_t lastDotPos = requestPath.find_last_of('.');
+    std::string extension;
+    if (lastDotPos != std::string::npos && lastDotPos > lastSlashPos) {
+        extension = requestPath.substr(lastDotPos + 1);
+    }
+
+    // Open the file to send back.
+    std::string fullPath = Core::DocumentRoot + requestPath;
+
+    try {
+        auto isCached = Core::Cache.find(fullPath);
+
+        if (isCached != Core::Cache.end()) {
+            auto cached = Core::Cache.at(fullPath);
+
+            response = Response::unserialize(cached);
+            return;
+        }
+    } catch (const nlohmann::json::exception &exception) {
+        Core::outLn(String("Failed parsing response cache for file ") + fullPath + ": " + exception.what());
+    }
 
     Core::debugLn("[FileLibrary] Reading file: " + fullPath);
 
-    ifstream file;
-    file.open(fullPath, ios::in | ios::binary);
+    std::ifstream file;
+    file.open(fullPath.c_str(), std::ios::in | std::ios::binary);
 
-    if (file.fail()) {
-        throw NotFound();
+    if (!file) {
+        response = Response::stockResponse(Response::NotFound);
+        return;
     }
 
-    if (file.is_open()) {
-        while (getline(file, currentLine)) {
-            fileContent.append(currentLine + LINE_BREAK);
-        }
+    // Fill out the reply to be sent to the client.
+    response.status = Response::Ok;
+    char buf[Core::BufferSize];
 
-        file.close();
+    while (file.read(buf, sizeof(buf)).gcount() > 0) {
+        response.content.append(buf, file.gcount());
     }
 
-    return fileContent;
-}
+    response.headers.resize(2);
+    response.headers[0].name = "Content-Length";
+    response.headers[0].value = std::to_string(response.content.size());
+    response.headers[1].name = "Content-Type";
+    response.headers[1].value = MimeTypes::extensionToType(extension);
 
-String FileLibrary::getFileName() {
-    String fileName = this->request.getUrl();
-
-    if (fileName.empty() || fileName == "/") {
-        fileName = "/index.html";
-    }
-
-    return fileName;
-}
-
-String FileLibrary::getFullPath() {
-    String fileName = this->getFileName();
-    String fullPath = Core::DocumentRoot + fileName;
-    return fullPath;
-}
-
-String FileLibrary::getFileExtension() {
-    String fileName = this->getFileName();
-    String fileExtension = fileName.explode(".").back();
-    return fileExtension;
-}
-
-void FileLibrary::setResponseType() {
-    String fileExtension = this->getFileExtension();
-
-    if (fileExtension == "html") {
-        this->response.type = "text/html";
-    } else if (fileExtension == "xml") {
-        this->response.type = "application/xhtml";
-    } else if (fileExtension == "css") {
-        this->response.type = "text/css";
-    } else if (fileExtension == "js") {
-        this->response.type = "text/javascript";
-    } else if (fileExtension == "png" || fileExtension == "ico") {
-        this->response.type = "image/png";
-    } else if (fileExtension == "jpg" || fileExtension == "jpeg") {
-        this->response.type = "image/jpeg";
-    } else if (fileExtension == "gif") {
-        this->response.type = "image/gif";
-    } else {
-        this->response.type = "application/octet-stream";
+    // If the file extension should be cached...
+    auto found = std::find(this->cacheableExtensions_.begin(), this->cacheableExtensions_.end(), extension);
+    if (found != this->cacheableExtensions_.end()) {
+        Core::Cache[fullPath] = response.serialize();
     }
 }

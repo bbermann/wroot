@@ -18,10 +18,10 @@ public:
     ConnectionManager();
 
     /// Add the specified connection to the manager and start it.
-    void start(ConnectionPtr c);
+    void start(const ConnectionPtr& c);
 
     /// Stop the specified connection.
-    void stop(ConnectionPtr c);
+    void stop(const ConnectionPtr& c);
 
     /// Stop all connections.
     void stopAll();

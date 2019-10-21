@@ -22,7 +22,9 @@ libreadline-dev \
 apache2-utils \
 nano \
 htop \
-psmisc
+psmisc \
+valgrind \
+kcachegrind
 
 # CMake 3.15+
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add - && \
@@ -51,14 +53,18 @@ apt-get update && \
 apt-get install -y libboost1.70-dev
 
 # SSH
-RUN apt-get update && apt-get install -y openssh-server
+RUN apt-get update && apt-get install -y openssh-server rsync
 
 # Sets the actual wroot working directory
 WORKDIR /wroot
 
+# wRoot
 EXPOSE 8000
 EXPOSE 666
+# SSH
 EXPOSE 22
+# GDB Server
+EXPOSE 7777
 
 RUN mkdir /var/run/sshd
 RUN echo 'root:wroot' | chpasswd

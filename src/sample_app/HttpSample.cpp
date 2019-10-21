@@ -7,6 +7,7 @@ HttpSample::HttpSample(const Request &request) : CustomLibrary(request) {
 HttpSample::~HttpSample() {
 }
 
-String HttpSample::toString() {
-    return "<h1>It works!</h1>";
+void HttpSample::handle(Response &response) {
+    response.status = Response::Ok;
+    response.content = "<h1>It works!</h1>";
 }

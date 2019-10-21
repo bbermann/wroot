@@ -1,7 +1,6 @@
 #include "Core.hpp"
-#include "nlohmann/json/src/json.hpp"
+#include <nlohmann/json/src/json.hpp>
 #include <mutex>
-#include <fstream>
 #include <iostream>
 #include <optional>
 #include <filesystem>
@@ -28,6 +27,7 @@ size_t Core::RequestTimeout;
 std::mutex Core::ThreadMutex;
 std::vector<UrlRewriteRule> Core::UrlRewriteRules;
 std::mutex Core::outMutex;
+StringMap Core::Cache;
 
 Core::Core() = default;
 

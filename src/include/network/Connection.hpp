@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 #include <boost/asio.hpp>
+#include <include/core/Core.hpp>
 #include <include/network/http/Response.hpp>
 #include <include/network/http/Request.hpp>
 #include <include/network/http/RequestHandler.hpp>
@@ -47,7 +48,7 @@ private:
     RequestHandler &requestHandler_;
 
     /// Buffer for incoming data.
-    std::array<char, 8192> buffer_;
+    std::array<char, Core::BufferSize> buffer_;
 
     /// The incoming request.
     Request request_;

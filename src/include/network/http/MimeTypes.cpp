@@ -10,15 +10,17 @@ namespace MimeTypes {
         const char *mimeType;
     } mappings[] =
             {
-                    {"gif",  "image/gif"},
                     {"htm",  "text/html"},
                     {"html", "text/html"},
+                    {"gif",  "image/gif"},
                     {"jpg",  "image/jpeg"},
-                    {"png",  "image/png"}
+                    {"png",  "image/png"},
+                    {"js", "text/javascript"},
+                    {"css", "text/css"}
             };
 
     std::string extensionToType(const std::string &extension) {
-        for (Mapping mapping : mappings) {
+        for (const Mapping &mapping : mappings) {
             if (mapping.extension == extension) {
                 return mapping.mimeType;
             }

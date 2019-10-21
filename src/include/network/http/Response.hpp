@@ -55,4 +55,8 @@ struct Response
 
     /// Get a stock response.
     static Response stockResponse(StatusType status);
+
+    std::string serialize();
+
+    static Response unserialize(std::string &serialized);
 };

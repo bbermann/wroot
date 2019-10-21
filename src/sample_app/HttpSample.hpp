@@ -9,5 +9,5 @@ public:
 
     virtual ~HttpSample();
 
-    virtual String toString() override;
+    void handle(Response &response) override;
 };

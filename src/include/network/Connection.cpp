@@ -13,6 +13,7 @@ Connection::Connection(asio::ip::tcp::socket socket, ConnectionManager &manager,
         : socket_(std::move(socket)),
           connectionManager_(manager),
           requestHandler_(handler) {
+    this->socket_.set_option(asio::ip::tcp::no_delay(true));
 }
 
 void Connection::start() {
@@ -23,13 +24,15 @@ void Connection::stop() {
     this->socket_.close();
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "InfiniteRecursion"
 void Connection::read() {
     auto self(this->shared_from_this());
 
     this->socket_.async_read_some(
             asio::buffer(this->buffer_),
-            [this, self](asio::error_code ec, std::size_t bytes_transferred) {
-                if (!ec) {
+            [this, self](asio::error_code error, std::size_t bytes_transferred) {
+                if (!error) {
                     RequestParser::ResultType result;
 
                     std::tie(result, std::ignore) = requestParser_.parse(
@@ -49,12 +52,13 @@ void Connection::read() {
                     } else {
                         this->read();
                     }
-                } else if (ec != asio::error::operation_aborted) {
+                } else if (error != asio::error::operation_aborted) {
                     this->connectionManager_.stop(this->shared_from_this());
                 }
             }
     );
 }
+#pragma clang diagnostic pop
 
 void Connection::write() {
     auto self(this->shared_from_this());

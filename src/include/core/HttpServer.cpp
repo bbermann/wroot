@@ -2,6 +2,9 @@
 #include "Core.hpp"
 #include <signal.h>
 #include <utility>
+#include <thread>
+#include <functional>
+#include <memory>
 
 HttpServer::HttpServer(const String &address, size_t port)
         : ioService_(),
@@ -9,7 +12,7 @@ HttpServer::HttpServer(const String &address, size_t port)
           acceptor_(ioService_),
           connectionManager_(),
           socket_(ioService_),
-          requestHandler_(Core::DocumentRoot) {
+          requestHandler_() {
     // Register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,
     // provided all registration for the specified signal is made through Asio.
@@ -21,12 +24,14 @@ HttpServer::HttpServer(const String &address, size_t port)
 
     this->awaitStop();
 
-    // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
-    asio::ip::tcp::resolver resolver(this->ioService_);
-    asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, std::to_string(port)});
+    using asio::ip::tcp;
+
+    tcp::resolver resolver(this->ioService_);
+    tcp::endpoint endpoint = *resolver.resolve({address, std::to_string(port)});
 
     this->acceptor_.open(endpoint.protocol());
-    this->acceptor_.set_option(asio::ip::tcp::acceptor::reuse_address(true));
+    this->acceptor_.set_option(tcp::acceptor::reuse_address(true));
+    this->acceptor_.set_option(tcp::acceptor::keep_alive(true));
     this->acceptor_.bind(endpoint);
     this->acceptor_.listen();
 
@@ -39,6 +44,30 @@ void HttpServer::run() {
     // asynchronous operation outstanding: the asynchronous accept call waiting
     // for new incoming connections.
     this->ioService_.run();
+
+//    // TODO: Implement Http Server 3 example (
+//    //  https://www.boost.org/doc/libs/1_69_0/doc/html/boost_asio/examples/cpp03_examples.html
+//    // )
+//    // Pendente coroutines (migrar p/ clang ou aguardar implementação do g++)
+//
+//    // For the sake of simplicity...
+//    using namespace std;
+//
+//    // Create a pool of threads to run all of the io_services.
+//    vector<shared_ptr<thread>> threads;
+//
+//    for (size_t i = 0; i < Core::ThreadCount; ++i) {
+//        auto threadPtr = make_shared<thread>([this]() {
+//            this->ioService_.run();
+//        });
+//
+//        threads.push_back(threadPtr);
+//    }
+//
+//    // Wait for all threads in the pool to exit.
+//    for (auto &thread : threads) {
+//        thread->join();
+//    }
 }
 
 #pragma clang diagnostic push
@@ -55,8 +84,12 @@ void HttpServer::accept() {
                 }
 
                 if (!ec) {
-                    this->connectionManager_.start(std::make_shared<Connection>(
-                            std::move(this->socket_), this->connectionManager_, this->requestHandler_)
+                    this->connectionManager_.start(
+                            std::make_shared<Connection>(
+                                    std::move(this->socket_),
+                                    this->connectionManager_,
+                                    this->requestHandler_
+                            )
                     );
                 }
 

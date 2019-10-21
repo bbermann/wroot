@@ -6,7 +6,8 @@
         "document_root": "WROOT_DOCUMENT_ROOT",
         "compressed_output": true,
         "threads": 8,
-        "request_timeout": 120
+        "request_timeout": 120,
+        "mapFilesToMemory": true
     },
     "url_rewrite": [
         {
