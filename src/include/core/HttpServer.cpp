@@ -7,7 +7,7 @@
 #include <memory>
 
 HttpServer::HttpServer(const String &address, size_t port)
-        : ioService_(),
+        : ioService_(1),
           signals_(ioService_),
           acceptor_(ioService_),
           connectionManager_(),
@@ -44,49 +44,27 @@ void HttpServer::run() {
     // asynchronous operation outstanding: the asynchronous accept call waiting
     // for new incoming connections.
     this->ioService_.run();
-
-//    // TODO: Implement Http Server 3 example (
-//    //  https://www.boost.org/doc/libs/1_69_0/doc/html/boost_asio/examples/cpp03_examples.html
-//    // )
-//    // Pendente coroutines (migrar p/ clang ou aguardar implementação do g++)
-//
-//    // For the sake of simplicity...
-//    using namespace std;
-//
-//    // Create a pool of threads to run all of the io_services.
-//    vector<shared_ptr<thread>> threads;
-//
-//    for (size_t i = 0; i < Core::ThreadCount; ++i) {
-//        auto threadPtr = make_shared<thread>([this]() {
-//            this->ioService_.run();
-//        });
-//
-//        threads.push_back(threadPtr);
-//    }
-//
-//    // Wait for all threads in the pool to exit.
-//    for (auto &thread : threads) {
-//        thread->join();
-//    }
 }
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "InfiniteRecursion"
 
 void HttpServer::accept() {
+    auto socket = std::make_shared<asio::ip::tcp::socket>(ioService_);
+
     this->acceptor_.async_accept(
-            socket_,
-            [this](asio::error_code ec) {
+            *socket,
+            [this, socket](asio::error_code errorCode) {
                 // Check whether the server was stopped by a signal before this
                 // completion handler had a chance to run.
                 if (!this->acceptor_.is_open()) {
                     return;
                 }
 
-                if (!ec) {
+                if (!errorCode) {
                     this->connectionManager_.start(
                             std::make_shared<Connection>(
-                                    std::move(this->socket_),
+                                    std::move(*socket),
                                     this->connectionManager_,
                                     this->requestHandler_
                             )

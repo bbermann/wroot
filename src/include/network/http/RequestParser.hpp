@@ -43,16 +43,16 @@ private:
     ResultType consume(Request &request, char input);
 
     /// Check if a byte is an HTTP character.
-    static bool isChar(int c);
+    static inline bool isChar(int c);
 
     /// Check if a byte is an HTTP control character.
-    static bool isCtl(int c);
+    static inline bool isCtl(int c);
 
     /// Check if a byte is defined as an HTTP tspecial character.
-    static bool isTSpecial(int c);
+    static inline bool isTSpecial(int c);
 
     /// Check if a byte is a digit.
-    static bool isDigit(int c);
+    static inline bool isDigit(int c);
 
     /// The current state of the parser.
     enum State {

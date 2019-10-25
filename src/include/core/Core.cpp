@@ -19,9 +19,6 @@ String Core::DocumentRoot;
 StringList Core::Parameters;
 StringList Core::Plugins;
 bool Core::IsDebugging;
-bool Core::CompressedOutput;
-bool Core::Running;
-size_t Core::ThreadCount;
 size_t Core::ServerPort;
 size_t Core::RequestTimeout;
 std::mutex Core::ThreadMutex;
@@ -96,16 +93,6 @@ void Core::readConfiguration() {
         Core::DocumentRoot = Core::DocumentRoot.substr(0, Core::DocumentRoot.size() - 1);
     }
 
-    Core::CompressedOutput = server["compressed_output"];
-    Core::printStartupCheck("Compressed output", (Core::CompressedOutput ? "Yes" : "No"));
-
-    if (server["threads"].empty()) {
-        Core::ThreadCount = Core::IsDebugging ? 1 : std::thread::hardware_concurrency();
-    } else {
-        Core::ThreadCount = server["threads"];
-    }
-    Core::printStartupCheck("Worker Threads", std::to_string(Core::ThreadCount));
-
     if (server["request_timeout"].empty()) {
         Core::RequestTimeout = 60;
     } else {
@@ -160,7 +147,6 @@ void Core::setEnvironment(int argc, const char *argv[]) {
 
 #ifndef NDEBUG
     Core::IsDebugging = true;
-
 #else
     Core::IsDebugging = false;
 #endif
@@ -186,11 +172,11 @@ void Core::setEnvironment(int argc, const char *argv[]) {
     }
 
     Core::readConfiguration();
-    Core::outLn("Done.");
+
+    Core::outLn("Listening for incoming connections...");
 }
 
 void Core::stopServers() {
-    Core::Running = false;
     Core::ThreadMutex.lock();
     std::this_thread::sleep_for(std::chrono::seconds(10));
 }

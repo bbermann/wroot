@@ -14,6 +14,12 @@ Connection::Connection(asio::ip::tcp::socket socket, ConnectionManager &manager,
           connectionManager_(manager),
           requestHandler_(handler) {
     this->socket_.set_option(asio::ip::tcp::no_delay(true));
+
+    Core::debugLn(
+            "Connected to " +
+            this->socket_.remote_endpoint().address().to_string() + ":" + // Remote Address
+            std::to_string(socket_.remote_endpoint().port()) // Remote Port
+    );
 }
 
 void Connection::start() {
@@ -26,6 +32,7 @@ void Connection::stop() {
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "InfiniteRecursion"
+
 void Connection::read() {
     auto self(this->shared_from_this());
 
@@ -58,6 +65,7 @@ void Connection::read() {
             }
     );
 }
+
 #pragma clang diagnostic pop
 
 void Connection::write() {

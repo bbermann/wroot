@@ -48,7 +48,7 @@ private:
     RequestHandler &requestHandler_;
 
     /// Buffer for incoming data.
-    std::array<char, Core::BufferSize> buffer_;
+    std::array<char, Core::BufferSize> buffer_{};
 
     /// The incoming request.
     Request request_;

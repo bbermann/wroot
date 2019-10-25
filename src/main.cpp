@@ -11,8 +11,7 @@ int main(int argc, const char *argv[]) {
     try {
         Core::setEnvironment(argc, argv);
 
-        HttpServer server(Core::ServerListenAddress, Core::ServerPort);
-        server.run();
+        HttpServer(Core::ServerListenAddress, Core::ServerPort).run();
     } catch (const std::exception &exception) {
         Core::error(exception.what());
     }
