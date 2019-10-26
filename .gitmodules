@@ -1,3 +1,9 @@
+[submodule "src/3rdParty/nlohmann/json"]
+	path = src/3rdParty/nlohmann/json
+	url = https://github.com/nlohmann/json.git
+[submodule "src/3rdParty/lua"]
+	path = src/3rdParty/lua
+	url = https://github.com/lua/lua.git
 [submodule "src/3rdParty/luawrapper"]
 	path = src/3rdParty/luawrapper
 	url = https://github.com/ahupowerdns/luawrapper

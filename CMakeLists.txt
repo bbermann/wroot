@@ -10,7 +10,6 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
-include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/luacpp")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/asio/asio/include")
 
 link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/lua)
@@ -38,9 +37,6 @@ set(SOURCES
 set(HEADERS
         src/include/helper/Base64.hpp
         src/3rdParty/luacpp/lua.hpp
-        src/3rdParty/pthreads/pthread.h
-        src/3rdParty/pthreads/sched.h
-        src/3rdParty/pthreads/semaphore.h
         src/3rdParty/zlib/include/zconf.h
         src/3rdParty/zlib/include/zlib.h
         src/3rdParty/zlib/ZLib.hpp
