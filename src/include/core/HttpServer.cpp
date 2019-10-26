@@ -1,15 +1,13 @@
 #include "HttpServer.hpp"
-#include "Core.hpp"
 #include <signal.h>
 #include <utility>
 #include <thread>
-#include <functional>
 #include <memory>
 
 using asio::ip::tcp;
 
 HttpServer::HttpServer(const String &address, size_t port)
-        : ioService_(1),
+        : ioService_(),
           signals_(ioService_),
           acceptor_(ioService_),
           connectionManager_(),

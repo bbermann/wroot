@@ -10,11 +10,11 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
-include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/luacpp") # <lua.hpp>
+include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/LuaJIT/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/asio/asio/include") # <asio/...>
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/nlohmann/json/include") # <nlohmann/json/...>
 
-link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/lua)
+link_directories("${CMAKE_SOURCE_DIR}/src/3rdParty/LuaJIT/src")
 
 set(SOURCES
         src/main.cpp
@@ -38,7 +38,6 @@ set(SOURCES
 
 set(HEADERS
         src/include/helper/Base64.hpp
-        src/3rdParty/luacpp/lua.hpp
         src/3rdParty/zlib/include/zconf.h
         src/3rdParty/zlib/include/zlib.h
         src/3rdParty/zlib/ZLib.hpp
@@ -86,4 +85,4 @@ set(HEADERS
 add_executable(wroot ${SOURCES} ${HEADERS})
 
 ## Link libraries
-target_link_libraries(wroot stdc++ stdc++fs pthread z lua ${CMAKE_DL_LIBS})
+target_link_libraries(wroot stdc++ stdc++fs pthread z luajit ${CMAKE_DL_LIBS})

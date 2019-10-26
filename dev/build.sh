@@ -26,8 +26,11 @@ echo Moving Plugins...
 cp -R $wroot_dir/dist/plugins $wroot_dir/bin/
 chmod 777 bin/plugins -R
 
-cd $wroot_dir/src/3rdParty/lua && \
-make
+cd $wroot_dir/src/3rdParty/LuaJIT && \
+make && \
+make install
+
+ldconfig
 
 cd ${wroot_dir}/bin
 
@@ -37,7 +40,7 @@ then
     cmake -DCMAKE_BUILD_TYPE=Release ../
 else
     echo "Using \"Debug\" build configuration..."
-    cmake -DCMAKE_BUILD_TYPE=Debug ../
+    cmakze -DCMAKE_BUILD_TYPE=Debug ../
 fi
 
 make
