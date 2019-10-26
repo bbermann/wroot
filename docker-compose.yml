@@ -1,18 +1,17 @@
-version: '1'
-# TODO: Ajustar ao Dockerfile e ao script "/wroot/dev/docker.ps1"
+version: '3.7'
 services:
-  dev:
+  wroot-dev:
     build: # use the Dockerfile in the current directory
       context: .
       dockerfile: Dockerfile
     security_opt: # options needed for gdb debugging
       - seccomp:unconfined
       - apparmor:unconfined
-    container_name: dev
+    container_name: wroot-dev
     ports:
       - "22:22" # SSH
       - "7777:7777" # GDB Server
       - "666:666" #
       - "8000:8000" # wRoot
     volumes:
-      - G:\Programacao\wroot:/wroot
+      - G:/Programacao/wroot:/wroot
