@@ -6,6 +6,8 @@
 #include <functional>
 #include <memory>
 
+using asio::ip::tcp;
+
 HttpServer::HttpServer(const String &address, size_t port)
         : ioService_(1),
           signals_(ioService_),
@@ -23,8 +25,6 @@ HttpServer::HttpServer(const String &address, size_t port)
 #endif
 
     this->awaitStop();
-
-    using asio::ip::tcp;
 
     tcp::resolver resolver(this->ioService_);
     tcp::endpoint endpoint = *resolver.resolve({address, std::to_string(port)});
@@ -50,7 +50,7 @@ void HttpServer::run() {
 #pragma ide diagnostic ignored "InfiniteRecursion"
 
 void HttpServer::accept() {
-    auto socket = std::make_shared<asio::ip::tcp::socket>(ioService_);
+    auto socket = std::make_shared<tcp::socket>(ioService_);
 
     this->acceptor_.async_accept(
             *socket,
