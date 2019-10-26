@@ -22,7 +22,9 @@ libreadline-dev \
 apache2-utils \
 nano \
 htop \
-psmisc
+psmisc \
+valgrind \
+kcachegrind
 
 # CMake 3.15+
 wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add - && \

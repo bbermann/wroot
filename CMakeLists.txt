@@ -7,14 +7,11 @@ set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 set(CMAKE_CXX_STANDARD 20)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(Boost_USE_STATIC_LIBS ON)
-
-find_package(Boost 1.70 REQUIRED)
 
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/luacpp")
-include_directories(${BOOST_INCLUDE_DIRS})
+include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/asio/asio/include")
 
 link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/lua)
 
@@ -25,8 +22,7 @@ set(SOURCES
         src/include/helper/LuaScript.cpp
         src/include/helper/EnvironmentBuilder.cpp
         src/include/core/Core.cpp
-        src/include/core/HttpRequest.cpp
-        src/include/core/HttpResponse.cpp
+        src/include/network/http/Response.cpp
         src/include/core/HttpServer.cpp
         src/include/helper/Crypto.cpp
         src/include/helper/FileHelper.cpp
@@ -34,11 +30,10 @@ set(SOURCES
         src/include/helper/UrlRewriter.cpp
         src/include/library/CustomLibrary.cpp
         src/include/library/FileLibrary.cpp
-        src/include/library/RouterLibrary.cpp
+        src/sample_app/HttpSample.cpp
         src/include/type/Process.cpp
         src/include/type/String.cpp
-        src/include/type/Timer.cpp
-        src/sample_app/HttpSample.cpp)
+        src/include/type/Timer.cpp)
 
 set(HEADERS
         src/include/helper/Base64.hpp
@@ -50,8 +45,8 @@ set(HEADERS
         src/3rdParty/zlib/include/zlib.h
         src/3rdParty/zlib/ZLib.hpp
         src/include/core/Core.hpp
-        src/include/core/HttpRequest.hpp
-        src/include/core/HttpResponse.hpp
+        src/include/network/http/Request.hpp
+        src/include/network/http/Response.hpp
         src/include/core/HttpServer.hpp
         src/include/helper/LuaScript.hpp
         src/include/helper/EnvironmentBuilder.hpp
@@ -64,7 +59,6 @@ set(HEADERS
         src/include/helper/UrlRewriter.hpp
         src/include/library/CustomLibrary.hpp
         src/include/library/FileLibrary.hpp
-        src/include/library/RouterLibrary.hpp
         src/include/type/Process.hpp
         src/include/type/String.hpp
         src/include/type/Timer.hpp
@@ -75,9 +69,23 @@ set(HEADERS
         src/include/exceptions/http/response/Unauthorized.hpp
         src/include/exceptions/http/request/KeyNotFound.hpp
         src/include/exceptions/http/request/FailedReceivingData.hpp
-        src/include/exceptions/lua/LuaScriptException.hpp)
+        src/include/exceptions/lua/LuaScriptException.hpp
+        src/include/network/Connection.cpp
+        src/include/network/Connection.hpp
+        src/include/network/ConnectionManager.cpp
+        src/include/network/ConnectionManager.hpp
+        src/include/network/http/RequestHandler.cpp
+        src/include/network/http/RequestHandler.hpp
+        src/include/network/http/Header.hpp
+        src/include/network/http/Header.hpp
+        src/include/network/http/Header.hpp
+        src/include/network/http/MimeTypes.cpp
+        src/include/network/http/MimeTypes.hpp
+        src/include/network/http/RequestParser.cpp
+        src/include/network/http/RequestParser.hpp
+        src/include/helper/Chronometer.hpp)
 
 add_executable(wroot ${SOURCES} ${HEADERS})
 
 ## Link libraries
-target_link_libraries(wroot stdc++ stdc++fs pthread z lua ${CMAKE_DL_LIBS} ${Boost_LIBRARIES})
+target_link_libraries(wroot stdc++ stdc++fs pthread z lua ${CMAKE_DL_LIBS})

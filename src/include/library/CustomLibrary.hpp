@@ -1,22 +1,21 @@
 #pragma once
 
 #include "../core/Core.hpp"
-#include "../core/HttpResponse.hpp"
-#include "../core/HttpRequest.hpp"
+#include "include/network/http/Response.hpp"
+#include "include/network/http/Request.hpp"
 
 class CustomLibrary {
 public:
-    explicit CustomLibrary(const HttpRequest &request);
-
+    explicit CustomLibrary(const Request &request);
     virtual ~CustomLibrary();
 
-    const HttpRequest& getHttpRequest();
+    virtual void handle(Response &response) = 0;
 
-    virtual String toString();
-
-    HttpResponse getResponse();
+    const Request& getHttpRequest();
 
 protected:
-    const HttpRequest &request;
-    HttpResponse response;
+    const Request &request;
+
+    /// Perform URL-decoding on a string. Returns false if the encoding was invalid.
+    static bool urlDecode(const std::string &in, std::string &out);
 };

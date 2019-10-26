@@ -1,13 +1,13 @@
 #pragma once
 
 #include <include/library/CustomLibrary.hpp>
-#include <include/core/HttpRequest.hpp>
+#include <include/network/http/Request.hpp>
 
 class HttpSample : public CustomLibrary {
 public:
-    HttpSample(const HttpRequest &request);
+    HttpSample(const Request &request);
 
     virtual ~HttpSample();
 
-    virtual String toString() override;
+    void handle(Response &response) override;
 };

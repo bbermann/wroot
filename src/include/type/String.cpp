@@ -2,10 +2,10 @@
 
 using namespace std;
 
-String::String(const char *val) : string(val) {
+String::String(const char *val) noexcept : string(val) {
 }
 
-String::String(const string &val) : string(val) {
+String::String(const string &val) noexcept : string(val) {
 }
 
 String::~String() = default;
@@ -65,40 +65,40 @@ void String::explode(const String &str, const String &separator, StringList *res
     }
 }
 
-String& String::replace(String &str, const String &from, const String &to) {
+String &String::replace(String &str, const String &from, const String &to) {
     size_t start_pos = 0;
 
     while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        ((std::string &)str).replace(start_pos, from.length(), to);
+        ((std::string &) str).replace(start_pos, from.length(), to);
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }
 
     return str;
 }
 
-String& String::replace_last(String &str, const String &from, const String &to) {
+String &String::replace_last(String &str, const String &from, const String &to) {
     auto found = str.rfind(from);
 
     if (found != std::string::npos) {
-        ((std::string &)str).replace(found, from.length(), to);
+        ((std::string &) str).replace(found, from.length(), to);
     }
 
     return str;
 }
 
-String& String::toLower(String &str) {
+String &String::toLower(String &str) {
     transform(str.begin(), str.end(), str.begin(), ::tolower);
 
     return str;
 }
 
-String& String::toUpper(String &str) {
+String &String::toUpper(String &str) {
     transform(str.begin(), str.end(), str.begin(), ::toupper);
 
     return str;
 }
 
-String& String::trim(String &str) {
+String &String::trim(String &str) {
     str.erase(str.begin(), find_if(str.begin(), str.end(),
                                    [](char &ch) -> bool { return !isspace(ch); }));
     str.erase(find_if(str.rbegin(), str.rend(),

@@ -9,3 +9,9 @@ TODO MVP:
 Benchmark:
 
 ab -n 1000 -c 10 127.0.0.1:8000/
+
+
+Sobre a implementação do exemplo boost asio (https://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/examples/cpp11_examples.html):
+
+Falta juntar o que foi desenvolvido com base no sample com o que já existia do servidor
+(libraries principalmente e código de gerenciamento do servidor).

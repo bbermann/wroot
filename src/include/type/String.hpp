@@ -14,9 +14,9 @@ typedef std::map <std::string, std::string> StringMap;
 
 class String : public std::string {
 public:
-    String(const char *val = "");
+    String(const char *val = "") noexcept;
 
-    String(const std::string &val);
+    String(const std::string &val) noexcept;
 
     ~String();
 

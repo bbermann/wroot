@@ -6,18 +6,11 @@
 
 class FileLibrary : public CustomLibrary {
 public:
-    explicit FileLibrary(const HttpRequest &request);
-
+    explicit FileLibrary(const Request &request);
     virtual ~FileLibrary();
 
-    String toString() override;
+    void handle(Response &response);
 
-    void setResponseType();
-
-protected:
-    String getFileName();
-
-    String getFullPath();
-
-    String getFileExtension();
+private:
+    StringList cacheableExtensions_ = {"html", "htm", "js", "css"};
 };

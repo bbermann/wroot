@@ -1,7 +1,6 @@
 #include "Core.hpp"
-#include "nlohmann/json/src/json.hpp"
+#include <nlohmann/json/src/json.hpp>
 #include <mutex>
-#include <fstream>
 #include <iostream>
 #include <optional>
 #include <filesystem>
@@ -15,19 +14,17 @@ String Core::PathSeparator;
 String Core::ServerAddress;
 String Core::ServerName;
 String Core::ServerProtocol;
+String Core::ServerListenAddress;
 String Core::DocumentRoot;
 StringList Core::Parameters;
 StringList Core::Plugins;
 bool Core::IsDebugging;
-bool Core::CompressedOutput;
-bool Core::Running;
-size_t Core::ThreadCount;
 size_t Core::ServerPort;
 size_t Core::RequestTimeout;
 std::mutex Core::ThreadMutex;
 std::vector<UrlRewriteRule> Core::UrlRewriteRules;
 std::mutex Core::outMutex;
-boost::asio::io_context Core::IOContext;
+StringMap Core::Cache;
 
 Core::Core() = default;
 
@@ -89,21 +86,12 @@ void Core::readConfiguration() {
 
     Core::ServerName = server["name"];
     Core::ServerPort = server["port"];
+    Core::ServerListenAddress = server["listen"];
 
     Core::DocumentRoot = server["document_root"];
     if (Core::DocumentRoot.endsWith("/")) {
         Core::DocumentRoot = Core::DocumentRoot.substr(0, Core::DocumentRoot.size() - 1);
     }
-
-    Core::CompressedOutput = server["compressed_output"];
-    Core::printStartupCheck("Compressed output", (Core::CompressedOutput ? "Yes" : "No"));
-
-    if (server["threads"].empty()) {
-        Core::ThreadCount = Core::IsDebugging ? 1 : std::thread::hardware_concurrency();
-    } else {
-        Core::ThreadCount = server["threads"];
-    }
-    Core::printStartupCheck("Worker Threads", std::to_string(Core::ThreadCount));
 
     if (server["request_timeout"].empty()) {
         Core::RequestTimeout = 60;
@@ -125,7 +113,7 @@ void Core::readConfiguration() {
 
     Core::loadPlugins();
 
-    Core::ServerAddress = Core::ServerName + ":" + std::to_string(Core::ServerPort);
+    Core::ServerAddress = Core::ServerListenAddress + ":" + std::to_string(Core::ServerPort);
     Core::printStartupCheck("Listening on", Core::ServerAddress);
 }
 
@@ -159,7 +147,6 @@ void Core::setEnvironment(int argc, const char *argv[]) {
 
 #ifndef NDEBUG
     Core::IsDebugging = true;
-
 #else
     Core::IsDebugging = false;
 #endif
@@ -185,11 +172,11 @@ void Core::setEnvironment(int argc, const char *argv[]) {
     }
 
     Core::readConfiguration();
-    Core::outLn("Done.");
+
+    Core::outLn("Listening for incoming connections...");
 }
 
 void Core::stopServers() {
-    Core::Running = false;
     Core::ThreadMutex.lock();
     std::this_thread::sleep_for(std::chrono::seconds(10));
 }

@@ -13,9 +13,7 @@
 #define END_CONNECTION String("\r\n\r\n")
 #define TAB String("\t")
 
-#define BOOST_ASIO_HAS_CO_AWAIT BOOST_ASIO_HAS_CO_AWAIT
-
-#include <boost/asio/io_context.hpp>
+#include <asio/io_context.hpp>
 #include <mutex>
 #include <thread>
 #include <memory>
@@ -24,7 +22,7 @@
 
 class HttpServer;
 
-class HttpResponse;
+class Response;
 
 class Core {
 public:
@@ -64,26 +62,24 @@ public:
     static const int kWSockVersion = 2;
 #endif
 
-    static const unsigned int kMaxConnections = 10000, kBufferSize = 8192 * 10;
+    static const unsigned int BufferSize = 81920;
 
     static String ApplicationRoot;
     static String PathSeparator;
     static String ServerAddress;
     static String ServerName;
     static String ServerProtocol;
+    static String ServerListenAddress;
     static String DocumentRoot;
     static StringList Parameters;
     static StringList Plugins;
     static bool IsDebugging;
-    static bool CompressedOutput;
-    static bool Running;
-    static size_t ThreadCount;
     static size_t ServerPort;
     static size_t RequestTimeout;
     static std::mutex ThreadMutex;
     static std::shared_ptr <HttpServer> Server;
     static std::vector <UrlRewriteRule> UrlRewriteRules;
-    static boost::asio::io_context IOContext;
+    static StringMap Cache;
 
 private:
     static void readConfiguration();
