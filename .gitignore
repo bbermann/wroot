@@ -45,9 +45,5 @@ cmake-build-debug-wroot
 cmake-build-release-wroot
 dev/cpplint
 
-# git modules
-src/3rdParty/nlohmann/json
-src/3rdParty/lua
-
 # zlib library
 src/3rdParty/zlib/lib
