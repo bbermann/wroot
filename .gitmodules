@@ -13,3 +13,6 @@
 [submodule "src/3rdParty/embed2-sapi"]
 	path = src/3rdParty/embed2-sapi
 	url = https://github.com/basvanbeek/embed2-sapi.git
+[submodule "src/3rdParty/LuaJIT"]
+	path = src/3rdParty/LuaJIT
+	url = https://github.com/LuaJIT/LuaJIT.git

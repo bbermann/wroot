@@ -36,8 +36,6 @@
 bin
 dist/bin
 dist/file
-!dist/file/index.html
-!dist/file/favicon.ico
 releases
 cmake-build-debug
 cmake-build-release
