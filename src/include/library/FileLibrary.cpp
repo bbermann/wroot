@@ -3,7 +3,7 @@
 #include <include/network/http/MimeTypes.hpp>
 #include <fstream>
 #include <stdexcept>
-#include <nlohmann/json/src/json.hpp>
+#include <nlohmann/json.hpp>
 
 using std::ifstream;
 using std::ios;

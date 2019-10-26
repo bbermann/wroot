@@ -1,5 +1,5 @@
 #include "Core.hpp"
-#include <nlohmann/json/src/json.hpp>
+#include <nlohmann/json.hpp>
 #include <mutex>
 #include <iostream>
 #include <optional>

@@ -38,7 +38,7 @@ String Response::toString() {
 
 #include "Response.hpp"
 #include <string>
-#include <nlohmann/json/src/json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace StatusStrings {
     const std::string Ok = "HTTP/1.0 200 OK\r\n";

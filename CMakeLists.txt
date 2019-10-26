@@ -10,7 +10,9 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
-include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/asio/asio/include")
+include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/luacpp") # <lua.hpp>
+include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/asio/asio/include") # <asio/...>
+include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/nlohmann/json/include") # <nlohmann/json/...>
 
 link_directories(${CMAKE_SOURCE_DIR}/src/3rdParty/lua)
 
