@@ -3,10 +3,11 @@
 #include <include/network/http/MimeTypes.hpp>
 #include <fstream>
 #include <stdexcept>
-#include <nlohmann/json.hpp>
 
 using std::ifstream;
 using std::ios;
+
+StringList FileLibrary::CacheableTypes = {"html", "htm", "js", "css"};
 
 FileLibrary::FileLibrary(const Request &request) : CustomLibrary(request) {
 }
@@ -44,17 +45,8 @@ void FileLibrary::handle(Response &response) {
     // Open the file to send back.
     std::string fullPath = Core::DocumentRoot + requestPath;
 
-    try {
-        auto isCached = Core::Cache.find(fullPath);
-
-        if (isCached != Core::Cache.end()) {
-            auto cached = Core::Cache.at(fullPath);
-
-            response = Response::unserialize(cached);
-            return;
-        }
-    } catch (const nlohmann::json::exception &exception) {
-        Core::outLn(String("Failed parsing response cache for file ") + fullPath + ": " + exception.what());
+    if (Core::HasFileCache && this->searchCacheFor(fullPath, response)) {
+        return;
     }
 
     Core::debugLn("[FileLibrary] Reading file: " + fullPath);
@@ -81,9 +73,39 @@ void FileLibrary::handle(Response &response) {
     response.headers[1].name = "Content-Type";
     response.headers[1].value = MimeTypes::extensionToType(extension);
 
-    // If the file extension should be cached...
-    auto found = std::find(this->cacheableExtensions_.begin(), this->cacheableExtensions_.end(), extension);
-    if (found != this->cacheableExtensions_.end()) {
-        Core::Cache[fullPath] = response.serialize();
+    if (Core::HasFileCache) {
+        FileLibrary::storeCacheFor(fullPath, extension, response);
+    }
+}
+
+bool FileLibrary::searchCacheFor(const std::string &key, Response &response) {
+    try {
+        auto isCached = Core::Cache.find(key);
+
+        if (isCached == Core::Cache.end()) return false;
+
+        auto cached = Core::Cache.at(key);
+        response = Response::unserialize(cached);
+
+        return true;
+    } catch (const nlohmann::json::exception &exception) {
+        Core::outLn(String("Failed parsing response cache for key '") + key + "': " + exception.what());
+    }
+
+    return false;
+}
+
+void FileLibrary::storeCacheFor(const std::string &key, const std::string &type, const Response &response) {
+    try {
+        auto found = std::find(FileLibrary::CacheableTypes.begin(), FileLibrary::CacheableTypes.end(), type);
+
+        if (found != FileLibrary::CacheableTypes.end()) {
+            Core::Cache[key] = response.serialize();
+        }
+    } catch (const std::exception &exception) {
+        Core::outLn(
+                String("Failed storing response cache for key '") + key + "' and type '" + type + "': " +
+                exception.what()
+        );
     }
 }

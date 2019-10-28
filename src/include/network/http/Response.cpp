@@ -257,7 +257,7 @@ Response Response::stockResponse(Response::StatusType status) {
 
 #include <iostream>
 
-std::string Response::serialize() {
+std::string Response::serialize() const {
     using json = nlohmann::json;
 
     json serialized;

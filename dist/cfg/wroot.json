@@ -6,7 +6,7 @@
         "document_root": "WROOT_DOCUMENT_ROOT",
         "compressed_output": true,
         "request_timeout": 120,
-        "mapFilesToMemory": true
+        "file_cache": true
     },
     "url_rewrite": [
         {

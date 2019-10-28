@@ -19,6 +19,7 @@ String Core::DocumentRoot;
 StringList Core::Parameters;
 StringList Core::Plugins;
 bool Core::IsDebugging;
+bool Core::HasFileCache;
 size_t Core::ServerPort;
 size_t Core::RequestTimeout;
 std::mutex Core::ThreadMutex;
@@ -99,6 +100,12 @@ void Core::readConfiguration() {
         Core::RequestTimeout = server["request_timeout"];
     }
     Core::printStartupCheck("Request timeout", std::to_string(Core::RequestTimeout));
+
+    Core::HasFileCache = true;
+    if (!server["file_cache"].empty()) {
+        Core::HasFileCache = server["file_cache"];
+    }
+    Core::printStartupCheck("File Cache", Core::HasFileCache ? "Enabled" : "Disabled");
 
     auto urlRewriteRulesParser = config["url_rewrite"];
     for (auto ruleParser : urlRewriteRulesParser) {

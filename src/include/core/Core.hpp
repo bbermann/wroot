@@ -75,6 +75,7 @@ public:
     static StringList Parameters;
     static StringList Plugins;
     static bool IsDebugging;
+    static bool HasFileCache;
     static size_t ServerPort;
     static size_t RequestTimeout;
     static std::mutex ThreadMutex;

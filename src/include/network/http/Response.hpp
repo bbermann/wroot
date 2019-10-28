@@ -53,10 +53,10 @@ struct Response
     /// not be changed until the write operation has completed.
     std::vector<boost::asio::const_buffer> toBuffers();
 
+    std::string serialize() const;
+
     /// Get a stock response.
     static Response stockResponse(StatusType status);
-
-    std::string serialize();
 
     static Response unserialize(std::string &serialized);
 };
