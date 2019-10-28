@@ -11,23 +11,18 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty")
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/LuaJIT/src")
-include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/asio/asio/include") # <asio/...>
 include_directories("${PROJECT_SOURCE_DIR}/src/3rdParty/nlohmann/json/include") # <nlohmann/json/...>
 
 link_directories("${CMAKE_SOURCE_DIR}/src/3rdParty/LuaJIT/src")
 
 set(SOURCES
         src/main.cpp
-        src/include/helper/Base64.cpp
-        src/3rdParty/zlib/ZLib.cpp
         src/include/helper/LuaScript.cpp
         src/include/helper/EnvironmentBuilder.cpp
         src/include/core/Core.cpp
         src/include/network/http/Response.cpp
         src/include/core/HttpServer.cpp
-        src/include/helper/Crypto.cpp
         src/include/helper/FileHelper.cpp
-        src/include/helper/FunctionMap.cpp
         src/include/helper/UrlRewriter.cpp
         src/include/library/CustomLibrary.cpp
         src/include/library/FileLibrary.cpp
@@ -37,20 +32,13 @@ set(SOURCES
         src/include/type/Timer.cpp)
 
 set(HEADERS
-        src/include/helper/Base64.hpp
-        src/3rdParty/zlib/include/zconf.h
-        src/3rdParty/zlib/include/zlib.h
-        src/3rdParty/zlib/ZLib.hpp
         src/include/core/Core.hpp
         src/include/network/http/Request.hpp
         src/include/network/http/Response.hpp
         src/include/core/HttpServer.hpp
         src/include/helper/LuaScript.hpp
         src/include/helper/EnvironmentBuilder.hpp
-        src/include/helper/Crypto.hpp
-        src/include/helper/ExampleHelper.hpp
         src/include/helper/FileHelper.hpp
-        src/include/helper/FunctionMap.hpp
         src/include/helper/TestHelper.hpp
         src/include/helper/ValidationHelper.hpp
         src/include/helper/UrlRewriter.hpp
