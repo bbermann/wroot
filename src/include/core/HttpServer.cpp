@@ -1,10 +1,10 @@
 #include "HttpServer.hpp"
 #include <signal.h>
 #include <utility>
-#include <thread>
 #include <memory>
+#include <boost/system/error_code.hpp>
 
-using asio::ip::tcp;
+using boost::asio::ip::tcp;
 
 HttpServer::HttpServer(const String &address, size_t port)
         : ioService_(),
@@ -52,7 +52,7 @@ void HttpServer::accept() {
 
     this->acceptor_.async_accept(
             *socket,
-            [this, socket](asio::error_code errorCode) {
+            [this, socket](boost::system::error_code errorCode) {
                 // Check whether the server was stopped by a signal before this
                 // completion handler had a chance to run.
                 if (!this->acceptor_.is_open()) {
@@ -78,7 +78,7 @@ void HttpServer::accept() {
 
 void HttpServer::awaitStop() {
     this->signals_.async_wait(
-            [this](asio::error_code /*ec*/, int /*signo*/) {
+            [this](boost::system::error_code /*ec*/, int /*signo*/) {
                 // The server is stopped by cancelling all outstanding asynchronous
                 // operations. Once all operations have finished the io_service::run()
                 // call will exit.

@@ -39,20 +39,12 @@ apt-get install -y gcc-9 g++-9 libc6-dev gdb gdbserver
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
-# ZLIB
-RUN wget http://zlib.net/zlib-1.2.11.tar.gz && \
-tar -xzf zlib-1.2.11.tar.gz zlib-1.2.11/ && \
-cd zlib-1.2.11/ && \
-./configure && \
-make && \
-make install
-
 # BOOST
 RUN add-apt-repository ppa:mhier/libboost-latest -y && \
 apt-get update && \
 apt-get install -y libboost1.70-dev
 
-# SSH
+# SSH (Doesn't need to be put in install-dev.sh since it is only useful for remote debug on docker)
 RUN apt-get update && apt-get install -y openssh-server rsync
 
 # Sets the actual wroot working directory

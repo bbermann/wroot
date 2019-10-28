@@ -4,16 +4,15 @@
 
 #include "Connection.hpp"
 #include "ConnectionManager.hpp"
-#include "include/network/http/RequestHandler.hpp"
-#include "http/Response.hpp"
+#include <boost/system/error_code.hpp>
+#include <include/network/http/RequestHandler.hpp>
 #include <utility>
-#include <vector>
 
-Connection::Connection(asio::ip::tcp::socket socket, ConnectionManager &manager, RequestHandler &handler)
+Connection::Connection(boost::asio::ip::tcp::socket socket, ConnectionManager &manager, RequestHandler &handler)
         : socket_(std::move(socket)),
           connectionManager_(manager),
           requestHandler_(handler) {
-    this->socket_.set_option(asio::ip::tcp::no_delay(true));
+    this->socket_.set_option(boost::asio::ip::tcp::no_delay(true));
 
     Core::debugLn(
             "Connected to " +
@@ -37,8 +36,8 @@ void Connection::read() {
     auto self(this->shared_from_this());
 
     this->socket_.async_read_some(
-            asio::buffer(this->buffer_),
-            [this, self](asio::error_code error, std::size_t bytes_transferred) {
+            boost::asio::buffer(this->buffer_),
+            [this, self](boost::system::error_code error, std::size_t bytes_transferred) {
                 if (!error) {
                     RequestParser::ResultType result;
 
@@ -59,7 +58,7 @@ void Connection::read() {
                     } else {
                         this->read();
                     }
-                } else if (error != asio::error::operation_aborted) {
+                } else if (error != boost::asio::error::operation_aborted) {
                     this->connectionManager_.stop(this->shared_from_this());
                 }
             }
@@ -71,18 +70,18 @@ void Connection::read() {
 void Connection::write() {
     auto self(this->shared_from_this());
 
-    asio::async_write(
+    boost::asio::async_write(
             this->socket_,
             this->response_.toBuffers(),
-            [this, self](asio::error_code ec, std::size_t) {
+            [this, self](boost::system::error_code ec, std::size_t) {
                 if (!ec) {
                     // Initiate graceful connection closure.
-                    asio::error_code ignored_ec;
+                    boost::system::error_code ignored_ec;
 
-                    this->socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ignored_ec);
+                    this->socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
                 }
 
-                if (ec != asio::error::operation_aborted) {
+                if (ec != boost::asio::error::operation_aborted) {
                     this->connectionManager_.stop(this->shared_from_this());
                 }
             }

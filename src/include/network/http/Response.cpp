@@ -58,42 +58,42 @@ namespace StatusStrings {
     const std::string BadGateway = "HTTP/1.0 502 Bad Gateway\r\n";
     const std::string ServiceUnavailable = "HTTP/1.0 503 Service Unavailable\r\n";
 
-    asio::const_buffer toBuffer(Response::StatusType status) {
+    boost::asio::const_buffer toBuffer(Response::StatusType status) {
         switch (status) {
             case Response::Ok:
-                return asio::buffer(Ok);
+                return boost::asio::buffer(Ok);
             case Response::Created:
-                return asio::buffer(Created);
+                return boost::asio::buffer(Created);
             case Response::Accepted:
-                return asio::buffer(Accepted);
+                return boost::asio::buffer(Accepted);
             case Response::NoContent:
-                return asio::buffer(NoContent);
+                return boost::asio::buffer(NoContent);
             case Response::MultipleChoices:
-                return asio::buffer(MultipleChoices);
+                return boost::asio::buffer(MultipleChoices);
             case Response::MovedPermanently:
-                return asio::buffer(MovedPermanently);
+                return boost::asio::buffer(MovedPermanently);
             case Response::MovedTemporarily:
-                return asio::buffer(MovedTemporarily);
+                return boost::asio::buffer(MovedTemporarily);
             case Response::NotModified:
-                return asio::buffer(NotModified);
+                return boost::asio::buffer(NotModified);
             case Response::BadRequest:
-                return asio::buffer(BadRequest);
+                return boost::asio::buffer(BadRequest);
             case Response::Unauthorized:
-                return asio::buffer(Unauthorized);
+                return boost::asio::buffer(Unauthorized);
             case Response::Forbidden:
-                return asio::buffer(Forbidden);
+                return boost::asio::buffer(Forbidden);
             case Response::NotFound:
-                return asio::buffer(NotFound);
+                return boost::asio::buffer(NotFound);
             case Response::InternalServerError:
-                return asio::buffer(InternalServerError);
+                return boost::asio::buffer(InternalServerError);
             case Response::NotImplemented:
-                return asio::buffer(NotImplemented);
+                return boost::asio::buffer(NotImplemented);
             case Response::BadGateway:
-                return asio::buffer(BadGateway);
+                return boost::asio::buffer(BadGateway);
             case Response::ServiceUnavailable:
-                return asio::buffer(ServiceUnavailable);
+                return boost::asio::buffer(ServiceUnavailable);
             default:
-                return asio::buffer(InternalServerError);
+                return boost::asio::buffer(InternalServerError);
         }
     }
 } // namespace StatusStrings
@@ -103,8 +103,8 @@ namespace MiscStrings {
     const char CRLF[] = {'\r', '\n'};
 } // namespace MiscStrings
 
-std::vector<asio::const_buffer> Response::toBuffers() {
-    std::vector<asio::const_buffer> buffers;
+std::vector<boost::asio::const_buffer> Response::toBuffers() {
+    std::vector<boost::asio::const_buffer> buffers;
 
     buffers.push_back(StatusStrings::toBuffer(status));
 
@@ -112,14 +112,14 @@ std::vector<asio::const_buffer> Response::toBuffers() {
         Header &header = headers[i];
 
         // key:value\r\n
-        buffers.push_back(asio::buffer(header.name));
-        buffers.push_back(asio::buffer(MiscStrings::NameValueSeparator));
-        buffers.push_back(asio::buffer(header.value));
-        buffers.push_back(asio::buffer(MiscStrings::CRLF));
+        buffers.push_back(boost::asio::buffer(header.name));
+        buffers.push_back(boost::asio::buffer(MiscStrings::NameValueSeparator));
+        buffers.push_back(boost::asio::buffer(header.value));
+        buffers.push_back(boost::asio::buffer(MiscStrings::CRLF));
     }
 
-    buffers.push_back(asio::buffer(MiscStrings::CRLF));
-    buffers.push_back(asio::buffer(content));
+    buffers.push_back(boost::asio::buffer(MiscStrings::CRLF));
+    buffers.push_back(boost::asio::buffer(content));
 
     return buffers;
 }

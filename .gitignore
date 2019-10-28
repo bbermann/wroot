@@ -42,6 +42,3 @@ cmake-build-release
 cmake-build-debug-wroot
 cmake-build-release-wroot
 dev/cpplint
-
-# zlib library
-src/3rdParty/zlib/lib

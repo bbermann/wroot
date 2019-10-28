@@ -39,14 +39,6 @@ sudo apt-get install -y gcc-9 g++-9 libc6-dev gdb gdbserver
 
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
-# ZLIB
-sudo wget http://zlib.net/zlib-1.2.11.tar.gz && \
-tar -xzf zlib-1.2.11.tar.gz zlib-1.2.11/ && \
-cd zlib-1.2.11/ && \
-./configure && \
-make && \
-make install
-
 # BOOST
 sudo add-apt-repository ppa:mhier/libboost-latest -y && \
 sudo apt-get update && \
@@ -54,3 +46,5 @@ sudo apt-get install -y libboost1.70-dev
 
 # Change directory to the actual wroot working directory
 cd $wroot_dir
+
+./init-submodules.sh

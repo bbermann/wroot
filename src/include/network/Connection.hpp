@@ -23,7 +23,7 @@ public:
     Connection &operator=(const Connection &) = delete;
 
     /// Construct a connection with the given socket.
-    explicit Connection(asio::ip::tcp::socket socket, ConnectionManager &manager, RequestHandler &handler);
+    explicit Connection(boost::asio::ip::tcp::socket socket, ConnectionManager &manager, RequestHandler &handler);
 
     /// Start the first asynchronous operation for the connection.
     void start();
@@ -39,7 +39,7 @@ private:
     void write();
 
     /// Socket for the connection.
-    asio::ip::tcp::socket socket_;
+    boost::asio::ip::tcp::socket socket_;
 
     /// The manager for this connection.
     ConnectionManager &connectionManager_;
