@@ -29,7 +29,8 @@ set(SOURCES
         src/sample_app/HttpSample.cpp
         src/include/type/Process.cpp
         src/include/type/String.cpp
-        src/include/type/Timer.cpp)
+        src/include/type/Timer.cpp
+        src/include/library/EvoLibrary/RandomNum.cpp)
 
 set(HEADERS
         src/include/core/Core.hpp
@@ -68,7 +69,7 @@ set(HEADERS
         src/include/network/http/MimeTypes.hpp
         src/include/network/http/RequestParser.cpp
         src/include/network/http/RequestParser.hpp
-        src/include/helper/Chronometer.hpp)
+        src/include/helper/Chronometer.hpp src/include/library/EvoLibrary.cpp src/include/library/EvoLibrary.hpp src/include/library/EvoLibrary/Individual.cpp src/include/library/EvoLibrary/Individual.hpp src/include/library/EvoLibrary/RandomNum.hpp)
 
 add_executable(wroot ${SOURCES} ${HEADERS})
 
