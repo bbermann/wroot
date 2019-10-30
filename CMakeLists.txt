@@ -26,7 +26,6 @@ set(SOURCES
         src/include/helper/UrlRewriter.cpp
         src/include/library/CustomLibrary.cpp
         src/include/library/FileLibrary.cpp
-        src/sample_app/HttpSample.cpp
         src/include/type/Process.cpp
         src/include/type/String.cpp
         src/include/type/Timer.cpp)
@@ -47,7 +46,6 @@ set(HEADERS
         src/include/type/Process.hpp
         src/include/type/String.hpp
         src/include/type/Timer.hpp
-        src/sample_app/HttpSample.hpp
         src/include/exceptions/http/response/NotFound.hpp
         src/include/exceptions/http/response/Forbidden.hpp
         src/include/exceptions/http/response/InternalServerError.hpp

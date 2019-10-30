@@ -9,24 +9,17 @@ using std::ios;
 
 StringList FileLibrary::CacheableTypes = {"html", "htm", "js", "css"};
 
-FileLibrary::FileLibrary(const Request &request) : CustomLibrary(request) {
-}
-
-FileLibrary::~FileLibrary() = default;
-
-void FileLibrary::handle(Response &response) {
+Response FileLibrary::handle(const Request &request) {
     // Decode url to path.
     std::string requestPath;
 
     if (!urlDecode(request.uri, requestPath)) {
-        response = Response::stockResponse(Response::BadRequest);
-        return;
+        return Response::stockResponse(Response::BadRequest);
     }
 
     // Request path must be absolute and not contain "..".
     if (requestPath.empty() || requestPath[0] != '/' || requestPath.find("..") != std::string::npos) {
-        response = Response::stockResponse(Response::BadRequest);
-        return;
+        return Response::stockResponse(Response::BadRequest);
     }
 
     // Remove the arguments from request uri if any, since we don't need them for loading files
@@ -39,19 +32,15 @@ void FileLibrary::handle(Response &response) {
         requestPath += "index.html";
     }
 
-    // Determine the file extension.
-    std::size_t lastSlashPos = requestPath.find_last_of('/');
-    std::size_t lastDotPos = requestPath.find_last_of('.');
-    std::string extension;
-    if (lastDotPos != std::string::npos && lastDotPos > lastSlashPos) {
-        extension = requestPath.substr(lastDotPos + 1);
-    }
-
     // Open the file to send back.
     std::string fullPath = Core::DocumentRoot + requestPath;
 
-    if (Core::HasFileCache && this->searchCacheFor(fullPath, response)) {
-        return;
+    if (Core::HasFileCache) {
+        std::optional<Response> response = FileLibrary::searchCacheFor(fullPath);
+
+        if (response) {
+            return *response;
+        }
     }
 
     Core::debugLn("[FileLibrary] Reading file: " + fullPath);
@@ -60,44 +49,61 @@ void FileLibrary::handle(Response &response) {
     file.open(fullPath.c_str(), std::ios::in | std::ios::binary);
 
     if (!file) {
-        response = Response::stockResponse(Response::NotFound);
-        return;
+        return Response::stockResponse(Response::NotFound);
     }
 
     // Fill out the reply to be sent to the client.
-    response.status = Response::Ok;
-    char buf[Core::BufferSize];
+    return std::move(getResponse(fullPath, file));
+}
 
+Response FileLibrary::getResponse(const std::string &fullPath, std::ifstream &file) const {
+    Response response;
+    response.status = Response::Ok;
+
+    char buf[Core::BufferSize];
     while (file.read(buf, sizeof(buf)).gcount() > 0) {
         response.content.append(buf, file.gcount());
     }
 
-    response.headers.resize(2);
-    response.headers[0].key = "Content-Length";
-    response.headers[0].value = std::to_string(response.content.size());
-    response.headers[1].key = "Content-Type";
-    response.headers[1].value = MimeTypes::extensionToType(extension);
+    auto extension = this->getFileExtension(fullPath);
+
+    response.headers.push_back({"Content-Length", std::to_string(response.content.size())});
+    response.headers.push_back({"Content-Type", MimeTypes::extensionToType(extension)});
 
     if (Core::HasFileCache) {
-        FileLibrary::storeCacheFor(fullPath, extension, response);
+        storeCacheFor(fullPath, extension, response);
     }
+
+    return response;
 }
 
-bool FileLibrary::searchCacheFor(const std::string &key, Response &response) {
+std::string FileLibrary::getFileExtension(const std::string &fullPath) const {
+    std::size_t lastSlashPos = fullPath.find_last_of('/');
+    std::size_t lastDotPos = fullPath.find_last_of('.');
+    std::string extension;
+    if (lastDotPos != std::string::npos && lastDotPos > lastSlashPos) {
+        extension = fullPath.substr(lastDotPos + 1);
+    }
+    return extension;
+}
+
+std::optional<Response> FileLibrary::searchCacheFor(const std::string &key) {
+    std::optional<Response> response;
+
     try {
         auto isCached = Core::Cache.find(key);
 
-        if (isCached == Core::Cache.end()) return false;
+        if (isCached == Core::Cache.end()) {
+            return response;
+        }
 
         auto cached = Core::Cache.at(key);
         response = Response::unserialize(cached);
-
-        return true;
     } catch (const nlohmann::json::exception &exception) {
         Core::outLn(String("Failed parsing response cache for key '") + key + "': " + exception.what());
     }
 
-    return false;
+    return response;
 }
 
 void FileLibrary::storeCacheFor(const std::string &key, const std::string &type, const Response &response) {

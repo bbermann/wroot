@@ -6,16 +6,12 @@
 
 class CustomLibrary {
 public:
-    explicit CustomLibrary(const Request &request);
-    virtual ~CustomLibrary();
+    CustomLibrary() = default;
+    virtual ~CustomLibrary() = default;
 
-    virtual void handle(Response &response) = 0;
-
-    const Request& getHttpRequest();
+    virtual Response handle(const Request &request) = 0;
 
 protected:
-    const Request &request;
-
     /// Perform URL-decoding on a string. Returns false if the encoding was invalid.
     static bool urlDecode(const std::string &in, std::string &out);
 };

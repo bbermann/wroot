@@ -17,6 +17,6 @@
 RequestHandler::RequestHandler() = default;
 
 void RequestHandler::handle(const Request &request, Response &response) {
-    std::shared_ptr<CustomLibrary> lib = std::make_shared<FileLibrary>(request);
-    lib->handle(response);
+    std::shared_ptr<CustomLibrary> lib = std::make_shared<FileLibrary>();
+    response = std::move(lib->handle(request));
 }

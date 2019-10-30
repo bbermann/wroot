@@ -1,21 +1,7 @@
 #include <include/library/CustomLibrary.hpp>
 #include <include/exceptions/http/response/NotFound.hpp>
-#include <include/exceptions/http/response/InternalServerError.hpp>
-#include <include/exceptions/http/response/Unauthorized.hpp>
-#include <include/exceptions/http/response/Forbidden.hpp>
 
 using namespace std;
-
-CustomLibrary::CustomLibrary(const Request &request)
-: request(request) {
-
-}
-
-CustomLibrary::~CustomLibrary() = default;
-
-const Request &CustomLibrary::getHttpRequest() {
-    return request;
-}
 
 bool CustomLibrary::urlDecode(const std::string &in, std::string &out) {
     out.clear();

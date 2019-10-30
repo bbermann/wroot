@@ -9,15 +9,20 @@
 
 class FileLibrary : public CustomLibrary {
 public:
-    explicit FileLibrary(const Request &request);
+    FileLibrary() : CustomLibrary() {}
 
-    virtual ~FileLibrary();
+    ~FileLibrary() override = default;
 
-    void handle(Response &response);
+    Response handle(const Request &request);
 
     static StringList CacheableTypes;
 
 private:
-    bool searchCacheFor(const std::string &key, Response &response);
-    void storeCacheFor(const std::string &key, const std::string &type, const Response &response);
+    static std::optional<Response> searchCacheFor(const std::string &key);
+
+    static void storeCacheFor(const std::string &key, const std::string &type, const Response &response);
+
+    Response getResponse(const std::string &fullPath, std::ifstream &file) const;
+
+    std::string getFileExtension(const std::string &fullPath) const;
 };
