@@ -68,9 +68,9 @@ void FileLibrary::handle(Response &response) {
     }
 
     response.headers.resize(2);
-    response.headers[0].name = "Content-Length";
+    response.headers[0].key = "Content-Length";
     response.headers[0].value = std::to_string(response.content.size());
-    response.headers[1].name = "Content-Type";
+    response.headers[1].key = "Content-Type";
     response.headers[1].value = MimeTypes::extensionToType(extension);
 
     if (Core::HasFileCache) {

@@ -6,7 +6,7 @@
 
 #include <string>
 
-struct Header {
-    std::string name;
+struct KeyValuePair {
+    std::string key;
     std::string value;
 };
