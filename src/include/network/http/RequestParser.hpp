@@ -5,6 +5,10 @@
 #pragma once
 
 #include <tuple>
+#include <include/core/Core.hpp>
+#include <include/type/String.hpp>
+#include "KeyValuePair.hpp"
+#include "Request.hpp"
 
 struct Request;
 
@@ -30,12 +34,44 @@ public:
         while (begin != end) {
             ResultType result = consume(request, *begin++);
 
-            if (result == ResultType::Good || result == ResultType::Bad) {
+            if (result == ResultType::Bad) {
+                return std::make_tuple(result, begin);
+            }
+
+            if (result == ResultType::Good) {
+                if (String::contains(request.uri, "?") && !String::endsWith(request.uri, "?")) {
+                    // Parse request.uri arguments into request.body
+                    StringList exploded = String::explode(request.uri, "?");
+                    String args = exploded.back();
+
+                    parseArguments(request, args);
+                }
+
+                if (begin != end) {
+                    // Parse the request body into request.body
+                    parseArguments(request, std::string(begin, end));
+                }
+
                 return std::make_tuple(result, begin);
             }
         }
 
         return std::make_tuple(ResultType::Indeterminate, begin);
+    }
+
+    void parseArguments(Request &request, const std::string &argumentsString) const {
+        try {
+            for (const auto &pair : String::explode(argumentsString, "&")) {
+                StringList keyValue = pair.explode("=");
+
+                // If the value is empty, the key is returned by end() as the value
+                KeyValuePair arg{keyValue.front(), keyValue.back()};
+
+                request.body.push_back(arg);
+            }
+        } catch (const std::exception &exception) {
+            Core::warning(String("Failed parsing request body data: ") + exception.what());
+        }
     }
 
 private:
@@ -75,7 +111,8 @@ private:
         SpaceBeforeHeaderValue,
         HeaderValue,
         ExpectingNewline2,
-        ExpectingNewline3
+        ExpectingNewline3,
+        OptionalBodyData
     } state_;
 };
 

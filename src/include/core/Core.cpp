@@ -93,6 +93,7 @@ void Core::readConfiguration() {
     if (Core::DocumentRoot.endsWith("/")) {
         Core::DocumentRoot = Core::DocumentRoot.substr(0, Core::DocumentRoot.size() - 1);
     }
+    Core::printStartupCheck("Document Root", Core::DocumentRoot);
 
     if (server["request_timeout"].empty()) {
         Core::RequestTimeout = 60;

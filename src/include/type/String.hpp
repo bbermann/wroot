@@ -9,8 +9,10 @@
 #include <memory>
 #include <map>
 
-typedef std::vector <std::string> StringList;
-typedef std::map <std::string, std::string> StringMap;
+class String;
+
+typedef std::vector <String> StringList;
+typedef std::map <String, String> StringMap;
 
 class String : public std::string {
 public:
@@ -20,17 +22,23 @@ public:
 
     ~String();
 
-    bool contains(const String &str) const;
+    bool contains(const String &subStr) const;
 
-    bool endsWith(const String &str) const;
+    static bool contains(const String &str, const String &subStr);
+
+    bool endsWith(const String &end) const;
+
+    static bool endsWith(const String &str, const String &end);
 
     bool startsWith(const String &str) const;
+
+    static bool startsWith(const String &str, const String &begin);
 
     StringList regex_search(const String &regexp);
 
     StringList explode(const String &separator) const;
 
-    static void explode(const String &str, const String &separator, StringList *results);
+    static StringList explode(const String &str, const String &separator);
 
     static String& replace(String &str, const String &from, const String &to);
 

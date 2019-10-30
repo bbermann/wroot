@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>
-#include "Header.hpp"
+#include "KeyValuePair.hpp"
 
 /// A reply to be sent to a client.
 struct Response
@@ -43,7 +43,7 @@ struct Response
     } status;
 
     /// The headers to be included in the response.
-    std::vector<Header> headers;
+    std::vector<KeyValuePair> headers;
 
     /// The content to be sent in the response.
     std::string content;

@@ -109,10 +109,10 @@ std::vector<boost::asio::const_buffer> Response::toBuffers() {
     buffers.push_back(StatusStrings::toBuffer(status));
 
     for (std::size_t i = 0; i < headers.size(); ++i) {
-        Header &header = headers[i];
+        KeyValuePair &header = headers[i];
 
         // key:value\r\n
-        buffers.push_back(boost::asio::buffer(header.name));
+        buffers.push_back(boost::asio::buffer(header.key));
         buffers.push_back(boost::asio::buffer(MiscStrings::NameValueSeparator));
         buffers.push_back(boost::asio::buffer(header.value));
         buffers.push_back(boost::asio::buffer(MiscStrings::CRLF));
@@ -248,9 +248,9 @@ Response Response::stockResponse(Response::StatusType status) {
     response.status = status;
     response.content = StockResponses::toString(status);
     response.headers.resize(2);
-    response.headers[0].name = "Content-Length";
+    response.headers[0].key = "Content-Length";
     response.headers[0].value = std::to_string(response.content.size());
-    response.headers[1].name = "Content-Type";
+    response.headers[1].key = "Content-Type";
     response.headers[1].value = "text/html";
     return response;
 }
@@ -265,7 +265,7 @@ std::string Response::serialize() const {
     serialized["status"] = this->status;
 
     for (auto header : this->headers) {
-        serialized["headers"][header.name] = header.value;
+        serialized["headers"][header.key] = header.value;
     }
 
     return serialized.dump();
@@ -281,8 +281,8 @@ Response Response::unserialize(std::string &serialized) {
 
     if (responseData.find("headers") != responseData.end()) {
         for (auto it = responseData["headers"].begin(); it != responseData["headers"].end(); ++it) {
-            Header header;
-            header.name = it.key();
+            KeyValuePair header;
+            header.key = it.key();
             header.value = it.value();
 
             response.headers.push_back(header);

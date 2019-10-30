@@ -132,8 +132,8 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
             } else if (!isChar(input) || isCtl(input) || isTSpecial(input)) {
                 return ResultType::Bad;
             } else {
-                request.headers.push_back(Header());
-                request.headers.back().name.push_back(input);
+                request.headers.emplace_back();
+                request.headers.back().key.push_back(input);
                 state_ = State::HeaderName;
                 return ResultType::Indeterminate;
             }
@@ -157,7 +157,7 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
             } else if (!isChar(input) || isCtl(input) || isTSpecial(input)) {
                 return ResultType::Bad;
             } else {
-                request.headers.back().name.push_back(input);
+                request.headers.back().key.push_back(input);
                 return ResultType::Indeterminate;
             }
         case State::SpaceBeforeHeaderValue:
@@ -185,7 +185,11 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
                 return ResultType::Bad;
             }
         case State::ExpectingNewline3:
-            return (input == '\n') ? ResultType::Good : ResultType::Bad;
+            if (input == '\n') {
+                return ResultType::Good;
+            }
+
+            return ResultType::Bad;
         default:
             return ResultType::Bad;
     }

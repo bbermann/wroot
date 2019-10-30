@@ -10,11 +10,15 @@ String::String(const string &val) noexcept : string(val) {
 
 String::~String() = default;
 
-bool String::contains(const String &str) const {
-    for (size_t it_this = 0; it_this < this->length(); it_this++) {
-        string test_string = this->substr(it_this, str.length());
+bool String::contains(const String &subStr) const {
+    return String::contains(*this, subStr);
+}
 
-        if (test_string == str) {
+bool String::contains(const String &str, const String &subString) {
+    for (size_t it_this = 0; it_this < str.length(); it_this++) {
+        string test_string = str.substr(it_this, subString.length());
+
+        if (test_string == subString) {
             return true;
         }
     }
@@ -22,38 +26,45 @@ bool String::contains(const String &str) const {
     return false;
 }
 
-bool String::endsWith(const String &str) const {
-    if (str.length() > this->length()) {
-        return false;
-    }
-
-    string this_end = this->substr(this->length() - str.length(), this->length());
-    return (this_end == str);
+bool String::endsWith(const String &end) const {
+    return String::endsWith(*this, end);
 }
 
-bool String::startsWith(const String &str) const {
-    if (str.length() > this->length()) {
+bool String::endsWith(const String &str, const String &end) {
+    if (end.length() > str.length()) {
         return false;
     }
 
-    string this_begin = this->substr(0, str.length());
-    return (this_begin == str);
+    string this_end = str.substr(str.length() - end.length(), str.length());
+    return (this_end == end);
+}
+
+bool String::startsWith(const String &begin) const {
+    return String::startsWith(*this, begin);
+}
+
+bool String::startsWith(const String &str, const String &begin) {
+    if (begin.length() > str.length()) {
+        return false;
+    }
+
+    string this_begin = str.substr(0, begin.length());
+    return (this_begin == begin);
 }
 
 StringList String::explode(const String &separator) const {
-    StringList string_list;
-    String::explode(*this, separator, &string_list);
-    return string_list;
+    return String::explode(*this, separator);
 }
 
-void String::explode(const String &str, const String &separator, StringList *results) {
+StringList String::explode(const String &str, const String &separator) {
+    StringList results;
     string work_copy = str;
     size_t found;
     found = work_copy.find_first_of(separator);
 
     while (found != string::npos) {
         if (found > 0) {
-            results->push_back(work_copy.substr(0, found));
+            results.push_back(work_copy.substr(0, found));
         }
 
         work_copy = work_copy.substr(found + 1);
@@ -61,8 +72,10 @@ void String::explode(const String &str, const String &separator, StringList *res
     }
 
     if (!work_copy.empty()) {
-        results->push_back(work_copy);
+        results.push_back(work_copy);
     }
+
+    return results;
 }
 
 String &String::replace(String &str, const String &from, const String &to) {

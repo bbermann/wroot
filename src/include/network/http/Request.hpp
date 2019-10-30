@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include "Header.hpp"
+#include "KeyValuePair.hpp"
 
 /// A request received from a client.
 struct Request {
@@ -10,5 +10,6 @@ struct Request {
     std::string uri;
     int httpVersionMajor;
     int httpVersionMinor;
-    std::vector <Header> headers;
+    std::vector<KeyValuePair> headers;
+    std::vector<KeyValuePair> body;
 };
