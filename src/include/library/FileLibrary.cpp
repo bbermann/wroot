@@ -29,6 +29,11 @@ void FileLibrary::handle(Response &response) {
         return;
     }
 
+    // Remove the arguments from request uri if any, since we don't need them for loading files
+    if (requestPath.find_first_of('?') != std::string::npos) {
+        requestPath = requestPath.substr(0, requestPath.find_first_of('?'));
+    }
+
     // If path ends in slash (i.e. is a directory) then add "index.html".
     if (requestPath[requestPath.size() - 1] == '/') {
         requestPath += "index.html";
@@ -68,9 +73,9 @@ void FileLibrary::handle(Response &response) {
     }
 
     response.headers.resize(2);
-    response.headers[0].name = "Content-Length";
+    response.headers[0].key = "Content-Length";
     response.headers[0].value = std::to_string(response.content.size());
-    response.headers[1].name = "Content-Type";
+    response.headers[1].key = "Content-Type";
     response.headers[1].value = MimeTypes::extensionToType(extension);
 
     if (Core::HasFileCache) {

@@ -62,9 +62,7 @@ set(HEADERS
         src/include/network/ConnectionManager.hpp
         src/include/network/http/RequestHandler.cpp
         src/include/network/http/RequestHandler.hpp
-        src/include/network/http/Header.hpp
-        src/include/network/http/Header.hpp
-        src/include/network/http/Header.hpp
+        src/include/network/http/KeyValuePair.hpp
         src/include/network/http/MimeTypes.cpp
         src/include/network/http/MimeTypes.hpp
         src/include/network/http/RequestParser.cpp
