@@ -1,6 +1,4 @@
 #include "FileLibrary.hpp"
-#include <include/exceptions/http/response/NotFound.hpp>
-#include <include/network/http/MimeTypes.hpp>
 #include <fstream>
 #include <stdexcept>
 
@@ -67,8 +65,8 @@ Response FileLibrary::getResponse(const std::string &fullPath, std::ifstream &fi
 
     auto extension = this->getFileExtension(fullPath);
 
-    response.headers.push_back({"Content-Length", std::to_string(response.content.size())});
-    response.headers.push_back({"Content-Type", MimeTypes::extensionToType(extension)});
+    response.headers["Content-Type"] = MimeTypes::extensionToType(extension);
+    response.headers["Content-Length"] = std::to_string(response.content.size());
 
     if (Core::HasFileCache) {
         storeCacheFor(fullPath, extension, response);

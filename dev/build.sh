@@ -52,7 +52,7 @@ then
     cmake -DCMAKE_BUILD_TYPE=Release ../
 else
     echo "Using \"Debug\" build configuration..."
-    cmakze -DCMAKE_BUILD_TYPE=Debug ../
+    cmake -DCMAKE_BUILD_TYPE=Debug ../
 fi
 
 make

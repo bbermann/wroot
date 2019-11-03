@@ -1,62 +1,26 @@
-/*
-String Response::toString() {
-    String returnString;
-
-    returnString.append(Core::ServerProtocol + " " + this->getStatusString() + ENDL);
-    returnString.append("Host: " + Core::ServerAddress + ENDL);
-    returnString.append("Server: " + Core::ServerName + ENDL);
-    returnString.append("X-Powered-By: " + Core::ServerName + ENDL);
-    returnString.append("Connection: close" + ENDL);
-    returnString.append("Content-Type: " + this->type + "; charset=UTF-8" + ENDL);
-    returnString.append("Content-Length: " + std::to_string(this->content.size()) + ENDL);
-
-    // Insert the extra headers from external sources.
-    for (const auto &item : this->data_) {
-        returnString.append(item.first + ": " + item.second + ENDL);
-    }
-
-    if (this->compressOutput) {
-        //returnString.append("Transfer-Encoding: gzip" + ENDL);
-
-        this->content = ZLib::compress_string(this->content);
-        returnString.append("Content-Encoding: deflate" + ENDL);
-    }
-
-    returnString.append(ENDL);
-    returnString.append(this->content);
-
-    //returnString.append("Vary: Accept-Encoding, Cookie, User-Agent" + ENDL);
-    //returnString.append("Date: Thu, 08 Oct 2015 16:42:10 GMT" + ENDL);
-    //returnString.append("Pragma: public" + ENDL);
-    //returnString.append("Expires: Sat, 28 Nov 2009 05:36:25 GMT" + ENDL);
-    //returnString.append("Last-Modified: Sat, 28 Nov 2009 03:50:37 GMT" + ENDL);
-    //returnString.append("X-Pingback: http://net.tutsplus.com/xmlrpc.php" + ENDL);
-
-    return returnString;
-}
- */
-
 #include "Response.hpp"
+#include <iostream>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <include/core/Core.hpp>
 
 namespace StatusStrings {
-    const std::string Ok = "HTTP/1.0 200 OK\r\n";
-    const std::string Created = "HTTP/1.0 201 Created\r\n";
-    const std::string Accepted = "HTTP/1.0 202 Accepted\r\n";
-    const std::string NoContent = "HTTP/1.0 204 No Content\r\n";
-    const std::string MultipleChoices = "HTTP/1.0 300 Multiple Choices\r\n";
-    const std::string MovedPermanently = "HTTP/1.0 301 Moved Permanently\r\n";
-    const std::string MovedTemporarily = "HTTP/1.0 302 Moved Temporarily\r\n";
-    const std::string NotModified = "HTTP/1.0 304 Not Modified\r\n";
-    const std::string BadRequest = "HTTP/1.0 400 Bad Request\r\n";
-    const std::string Unauthorized = "HTTP/1.0 401 Unauthorized\r\n";
-    const std::string Forbidden = "HTTP/1.0 403 Forbidden\r\n";
-    const std::string NotFound = "HTTP/1.0 404 Not Found\r\n";
-    const std::string InternalServerError = "HTTP/1.0 500 Internal Server Error\r\n";
-    const std::string NotImplemented = "HTTP/1.0 501 Not Implemented\r\n";
-    const std::string BadGateway = "HTTP/1.0 502 Bad Gateway\r\n";
-    const std::string ServiceUnavailable = "HTTP/1.0 503 Service Unavailable\r\n";
+    const std::string Ok = "HTTP/1.1 200 OK\r\n";
+    const std::string Created = "HTTP/1.1 201 Created\r\n";
+    const std::string Accepted = "HTTP/1.1 202 Accepted\r\n";
+    const std::string NoContent = "HTTP/1.1 204 No Content\r\n";
+    const std::string MultipleChoices = "HTTP/1.1 300 Multiple Choices\r\n";
+    const std::string MovedPermanently = "HTTP/1.1 301 Moved Permanently\r\n";
+    const std::string MovedTemporarily = "HTTP/1.1 302 Moved Temporarily\r\n";
+    const std::string NotModified = "HTTP/1.1 304 Not Modified\r\n";
+    const std::string BadRequest = "HTTP/1.1 400 Bad Request\r\n";
+    const std::string Unauthorized = "HTTP/1.1 401 Unauthorized\r\n";
+    const std::string Forbidden = "HTTP/1.1 403 Forbidden\r\n";
+    const std::string NotFound = "HTTP/1.1 404 Not Found\r\n";
+    const std::string InternalServerError = "HTTP/1.1 500 Internal Server Error\r\n";
+    const std::string NotImplemented = "HTTP/1.1 501 Not Implemented\r\n";
+    const std::string BadGateway = "HTTP/1.1 502 Bad Gateway\r\n";
+    const std::string ServiceUnavailable = "HTTP/1.1 503 Service Unavailable\r\n";
 
     boost::asio::const_buffer toBuffer(Response::StatusType status) {
         switch (status) {
@@ -108,13 +72,10 @@ std::vector<boost::asio::const_buffer> Response::toBuffers() {
 
     buffers.push_back(StatusStrings::toBuffer(status));
 
-    for (std::size_t i = 0; i < headers.size(); ++i) {
-        KeyValuePair &header = headers[i];
-
-        // key:value\r\n
-        buffers.push_back(boost::asio::buffer(header.key));
+    for (const auto &[key, value] : headers) {
+        buffers.push_back(boost::asio::buffer(key));
         buffers.push_back(boost::asio::buffer(MiscStrings::NameValueSeparator));
-        buffers.push_back(boost::asio::buffer(header.value));
+        buffers.push_back(boost::asio::buffer(value));
         buffers.push_back(boost::asio::buffer(MiscStrings::CRLF));
     }
 
@@ -247,15 +208,10 @@ Response Response::stockResponse(Response::StatusType status) {
     Response response;
     response.status = status;
     response.content = StockResponses::toString(status);
-    response.headers.resize(2);
-    response.headers[0].key = "Content-Length";
-    response.headers[0].value = std::to_string(response.content.size());
-    response.headers[1].key = "Content-Type";
-    response.headers[1].value = "text/html";
+    response.headers["Content-Length"] = std::to_string(response.content.size());
+    response.headers["Content-Type"] = "text/html";
     return response;
 }
-
-#include <iostream>
 
 std::string Response::serialize() const {
     using json = nlohmann::json;
@@ -264,8 +220,8 @@ std::string Response::serialize() const {
     serialized["content"] = this->content;
     serialized["status"] = this->status;
 
-    for (auto header : this->headers) {
-        serialized["headers"][header.key] = header.value;
+    for (auto [key, value] : this->headers) {
+        serialized["headers"][key] = value;
     }
 
     return serialized.dump();
@@ -281,11 +237,7 @@ Response Response::unserialize(std::string &serialized) {
 
     if (responseData.find("headers") != responseData.end()) {
         for (auto it = responseData["headers"].begin(); it != responseData["headers"].end(); ++it) {
-            KeyValuePair header;
-            header.key = it.key();
-            header.value = it.value();
-
-            response.headers.push_back(header);
+            response.headers[it.key()] = it.value();
         }
     }
 

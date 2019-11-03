@@ -1,38 +1,39 @@
 local fileReader = require "scripts.lua.FileReader"
 
 routes = {
-    PageNotFound = "/404"
+    PageNotFound = "/404",
+    SampleRoute = "/sample-route"
 }
 
 local router = {
-    [routes.PageNotFound] = function ()
+    [routes.PageNotFound] = function(queryString)
         response.status = 404
-        print(fileReader.readAll("plugins/Router/404.html"))
+        response.content = fileReader.readAll("plugins/Router/404.html")
+    end,
+    [routes.SampleRoute] = function(queryString)
+        response.status = 200
+        response.content = "This is a sample route from Lua Router. :)"
     end
 }
 
 function test()
-
 end
 
 function handle()
-    local url = request:get("REQUEST_URI")
+    local url = request:getUrl()
+    local queryString = request:getQueryString()
 
-    setResponseDefaults()
+    response:setHeader("Content-Type", "text/html; charset=UTF-8")
 
-    if router[url] ~= nil then
-        router[url]()
+    if router[url] == nil then
+        redirectTo(routes.PageNotFound .. "?uri=" .. url)
         return
     end
 
-    redirectTo(routes.PageNotFound);
-end
-
-function setResponseDefaults()
-    response.type = "text/html"
+    router[url](queryString)
 end
 
 function redirectTo(url)
-    response.status = 307;
-    response:set("Location", url);
+    response.status = 302
+    response:setHeader("Location", url)
 end

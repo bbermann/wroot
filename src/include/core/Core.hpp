@@ -74,7 +74,7 @@ public:
     static String DocumentRoot;
     static StringList Parameters;
     static StringList Plugins;
-    static bool IsDebugging;
+    static const bool IsDebugging;
     static bool HasFileCache;
     static size_t ServerPort;
     static size_t RequestTimeout;

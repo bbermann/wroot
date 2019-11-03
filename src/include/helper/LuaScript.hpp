@@ -17,6 +17,7 @@
 #include <3rdParty/luawrapper/include/LuaContext.hpp>
 #include <include/type/String.hpp>
 #include <fstream>
+#include <include/exceptions/lua/LuaScriptException.hpp>
 
 class LuaScript {
 public:
@@ -28,14 +29,28 @@ public:
 
     template<typename T = void>
     T executeScript() {
-        auto reader = std::ifstream{this->script_path_.c_str()};
+        try {
+            auto reader = std::ifstream{this->script_path_.c_str()};
 
-        return this->context.executeCode<T>(reader);
+            return this->context.executeCode<T>(reader);
+        } catch (const std::exception &exception) {
+            throw LuaScriptException(
+                    "LuaScript: failed executing the script '" + this->script_path_ + "', aborting.",
+                    exception
+            );
+        }
     }
 
     template<typename T = void>
     T execute(const String &code) {
-        return this->context.executeCode<T>(code.c_str());
+        try {
+            return this->context.executeCode<T>(code.c_str());
+        } catch (const std::exception &exception) {
+            throw LuaScriptException(
+                    "LuaScript: failed executing arbitrary lua code: '" + code + "', aborting.",
+                    exception
+            );
+        }
     }
 
     LuaContext context;

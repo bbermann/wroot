@@ -9,6 +9,12 @@
 
 using json = nlohmann::json;
 
+#if defined(NDEBUG)
+const bool Core::IsDebugging = false;
+#else
+const bool Core::IsDebugging = true;
+#endif
+
 String Core::ApplicationRoot;
 String Core::PathSeparator;
 String Core::ServerAddress;
@@ -18,7 +24,6 @@ String Core::ServerListenAddress;
 String Core::DocumentRoot;
 StringList Core::Parameters;
 StringList Core::Plugins;
-bool Core::IsDebugging;
 bool Core::HasFileCache;
 size_t Core::ServerPort;
 size_t Core::RequestTimeout;
@@ -38,7 +43,7 @@ void Core::error(const std::string &text, int code) {
         tmp.append(" " + std::to_string(code));
     }
 
-    tmp.append(ENDL + TAB + text);
+    tmp.append(ENDL + text);
 
     outLn(tmp);
     exit(code);
@@ -52,7 +57,7 @@ void Core::error(const std::string &text, const std::string &function) {
         tmp.append(function);
     }
 
-    tmp.append(ENDL + TAB + text);
+    tmp.append(ENDL + text);
 
     outLn(tmp);
     exit(-1);
@@ -130,7 +135,7 @@ void Core::loadPlugins() {
 
     for (auto &file: std::filesystem::recursive_directory_iterator(pluginsRoot.c_str())) {
         if (file.path().extension() == ".lua") {
-            String pluginPath = (String)file.path();
+            String pluginPath = (String) file.path();
             String status = "OK";
 
             try {
@@ -153,11 +158,6 @@ void Core::loadPlugins() {
 void Core::setEnvironment(int argc, const char *argv[]) {
     Core::outLn("Loading wRoot, please wait a second...");
 
-#ifndef NDEBUG
-    Core::IsDebugging = true;
-#else
-    Core::IsDebugging = false;
-#endif
     Core::printStartupCheck("Debug Mode", Core::IsDebugging ? "Enabled" : "Disabled");
 
 #ifdef WINDOWS
@@ -197,7 +197,7 @@ void Core::warning(const std::string &text, const std::string &function) {
         tmp.append(function);
     }
 
-    tmp.append(ENDL + TAB + text);
+    tmp.append(ENDL + text);
     outLn(tmp);
 }
 

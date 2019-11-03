@@ -70,6 +70,14 @@ void Connection::read() {
 void Connection::write() {
     auto self(this->shared_from_this());
 
+//    if (Core::IsDebugging) {
+//        for (const auto &buffer : this->response_.toBuffers()) {
+//            const char *output = (const char *) buffer.data();
+//
+//            Core::debug(output);
+//        }
+//    }
+
     boost::asio::async_write(
             this->socket_,
             this->response_.toBuffers(),

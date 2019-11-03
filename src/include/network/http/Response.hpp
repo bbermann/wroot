@@ -16,11 +16,15 @@
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>
-#include "KeyValuePair.hpp"
+#include <include/type/String.hpp>
+#include <include/network/http/KeyValuePair.hpp>
 
 /// A reply to be sent to a client.
 struct Response
 {
+    int httpVersionMajor = 1;
+    int httpVersionMinor = 1;
+
     /// The status of the response.
     enum StatusType
     {
@@ -43,7 +47,15 @@ struct Response
     } status;
 
     /// The headers to be included in the response.
-    std::vector<KeyValuePair> headers;
+    StringMap headers;
+
+    std::string getHeader(const std::string &key) {
+        return headers[key];
+    }
+
+    void setHeader(const std::string &key, const std::string &value) {
+        headers[key] = value;
+    }
 
     /// The content to be sent in the response.
     std::string content;

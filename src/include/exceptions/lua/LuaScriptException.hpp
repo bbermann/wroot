@@ -7,16 +7,18 @@
 #include <exception>
 #include "../../type/String.hpp"
 
-class LuaScriptException : public std::exception {
+class LuaScriptException : public std::runtime_error {
 public:
-    explicit LuaScriptException(const String &message): std::exception(), errorMessage(message) {
+    explicit LuaScriptException(const std::string &message)
+            : std::runtime_error(message), errorMessage(message) {
 
     }
 
-    virtual char const *what() const noexcept override {
-        return this->errorMessage.c_str();
+    explicit LuaScriptException(const std::string &message, const std::exception &exception)
+            : std::runtime_error(message + "\n" + exception.what()), errorMessage(message) {
+
     }
 
 private:
-    String errorMessage;
+    std::string errorMessage;
 };

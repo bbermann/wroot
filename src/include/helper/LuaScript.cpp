@@ -25,10 +25,13 @@ String LuaScript::getOutput() {
 }
 
 void LuaScript::registerFunctions() {
-    this->context.writeFunction(
-        "print",
-        [this](const std::string &msg) {
-            this->lua_output_.append(msg);
-        }
-    );
-}
+    try {
+        this->context.writeFunction(
+                "print",
+                [this](const std::string &msg) {
+                    this->lua_output_.append(msg);
+                }
+        );
+    } catch (const std::exception &exception) {
+        throw LuaScriptException("LuaScript: failed registering functions, aborting.", exception);
+    }}

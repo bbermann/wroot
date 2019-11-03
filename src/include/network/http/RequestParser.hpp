@@ -62,7 +62,7 @@ public:
     void parseArguments(Request &request, const std::string &argumentsString) const {
         try {
             for (const auto &pair : String::explode(argumentsString, "&")) {
-                StringList keyValue = pair.explode("=");
+                StringList keyValue = String::explode(pair, "=");
 
                 // If the value is empty, the key is returned by end() as the value
                 KeyValuePair arg{keyValue.front(), keyValue.back()};

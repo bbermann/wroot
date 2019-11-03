@@ -20,4 +20,6 @@ public:
 
     /// Handle a request and produce a reply.
     void handle(const Request &request, Response &response);
+
+    void finishResponse(const Request &request, Response &response);
 };

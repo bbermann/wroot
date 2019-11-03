@@ -1,8 +1,10 @@
 #pragma once
 
-#include "../core/Core.hpp"
-#include "include/network/http/Response.hpp"
-#include "include/network/http/Request.hpp"
+#include <include/core/Core.hpp>
+#include <include/network/http/Response.hpp>
+#include <include/network/http/Request.hpp>
+#include <include/network/http/MimeTypes.hpp>
+#include <stdexcept>
 
 class CustomLibrary {
 public:

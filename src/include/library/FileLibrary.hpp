@@ -13,7 +13,7 @@ public:
 
     ~FileLibrary() override = default;
 
-    Response handle(const Request &request);
+    Response handle(const Request &request) override;
 
     static StringList CacheableTypes;
 

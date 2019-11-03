@@ -26,6 +26,7 @@ set(SOURCES
         src/include/helper/UrlRewriter.cpp
         src/include/library/CustomLibrary.cpp
         src/include/library/FileLibrary.cpp
+        src/include/library/RouterLibrary.cpp
         src/include/type/Process.cpp
         src/include/type/String.cpp
         src/include/type/Timer.cpp)
@@ -43,13 +44,10 @@ set(HEADERS
         src/include/helper/UrlRewriter.hpp
         src/include/library/CustomLibrary.hpp
         src/include/library/FileLibrary.hpp
+        src/include/library/RouterLibrary.hpp
         src/include/type/Process.hpp
         src/include/type/String.hpp
         src/include/type/Timer.hpp
-        src/include/exceptions/http/response/NotFound.hpp
-        src/include/exceptions/http/response/Forbidden.hpp
-        src/include/exceptions/http/response/InternalServerError.hpp
-        src/include/exceptions/http/response/Unauthorized.hpp
         src/include/exceptions/http/request/KeyNotFound.hpp
         src/include/exceptions/http/request/FailedReceivingData.hpp
         src/include/exceptions/lua/LuaScriptException.hpp
