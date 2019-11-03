@@ -4,12 +4,7 @@ Http Server Implementation:
 - Better support for HTTP requests and responses headers;
 - Implement access control for files and directories (.htaccess or similar);
 - Support response http major/minor version pairing with request's version
-- Check why Chrome doesn't accept our responses as valid.
 
 Build Process
 - Clean up and separate in log files the build process, being verbose only when the build crashes;
 - Try to unify docker.ps1 and docker.sh since the .sh version is currently outdated;
-
-RouterLibrary
-- Fix it
-- Verificar pq LuaScriptException não exibe texto no what().
