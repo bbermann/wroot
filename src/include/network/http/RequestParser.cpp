@@ -132,8 +132,7 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
             } else if (!isChar(input) || isCtl(input) || isTSpecial(input)) {
                 return ResultType::Bad;
             } else {
-                request.headers.emplace_back();
-                request.headers.back().key.push_back(input);
+                request.keyBuffer.push_back(input);
                 state_ = State::HeaderName;
                 return ResultType::Indeterminate;
             }
@@ -147,17 +146,18 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
                 return ResultType::Bad;
             } else {
                 state_ = State::HeaderValue;
-                request.headers.back().value.push_back(input);
+                request.valueBuffer.push_back(input);
                 return ResultType::Indeterminate;
             }
         case State::HeaderName:
             if (input == ':') {
                 state_ = State::SpaceBeforeHeaderValue;
+                request.headers[request.keyBuffer] = "";
                 return ResultType::Indeterminate;
             } else if (!isChar(input) || isCtl(input) || isTSpecial(input)) {
                 return ResultType::Bad;
             } else {
-                request.headers.back().key.push_back(input);
+                request.keyBuffer.push_back(input);
                 return ResultType::Indeterminate;
             }
         case State::SpaceBeforeHeaderValue:
@@ -170,11 +170,14 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
         case State::HeaderValue:
             if (input == '\r') {
                 state_ = State::ExpectingNewline2;
+                // We clear this here since we may have or no another header
+                request.keyBuffer.clear();
+                request.valueBuffer.clear();
                 return ResultType::Indeterminate;
             } else if (isCtl(input)) {
                 return ResultType::Bad;
             } else {
-                request.headers.back().value.push_back(input);
+                request.valueBuffer.push_back(input);
                 return ResultType::Indeterminate;
             }
         case State::ExpectingNewline2:

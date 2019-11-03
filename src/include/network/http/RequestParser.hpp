@@ -65,9 +65,7 @@ public:
                 StringList keyValue = String::explode(pair, "=");
 
                 // If the value is empty, the key is returned by end() as the value
-                KeyValuePair arg{keyValue.front(), keyValue.back()};
-
-                request.body.push_back(arg);
+                request.body[keyValue.front()] = keyValue.back();
             }
         } catch (const std::exception &exception) {
             Core::warning(String("Failed parsing request body data: ") + exception.what());

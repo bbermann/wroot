@@ -10,8 +10,19 @@ struct Request {
     std::string uri;
     int httpVersionMajor;
     int httpVersionMinor;
-    std::vector<KeyValuePair> headers;
-    std::vector<KeyValuePair> body;
+    StringMap headers;
+    StringMap body;
+
+    std::string keyBuffer;
+    std::string valueBuffer;
+
+    std::string getHeader(const std::string &key) {
+        return headers[key];
+    }
+
+    std::string getBody(const std::string &key) {
+        return body[key];
+    }
 
     std::string getUrl() {
         return String::explode(uri, "?").at(0);

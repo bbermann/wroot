@@ -17,6 +17,8 @@ Response RouterLibrary::handle(const Request &request) {
         router.context.registerMember("body", &Request::body);
         router.context.registerFunction("getUrl", &Request::getUrl);
         router.context.registerFunction("getQueryString", &Request::getQueryString);
+        router.context.registerFunction("getHeader", &Request::getHeader);
+        router.context.registerFunction("getBody", &Request::getBody);
         router.context.writeVariable("request", request);
 
         // Registering response struct
