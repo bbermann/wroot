@@ -16,6 +16,5 @@ if ($args[0] -eq "build") {
 } else {
     echo "Running wroot container"
     docker-compose up -d wroot-dev
-    sleep 5 # seconds
     ssh root@localhost
 }
