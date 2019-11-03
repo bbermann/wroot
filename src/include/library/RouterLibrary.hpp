@@ -7,7 +7,6 @@
 class RouterLibrary : public CustomLibrary {
 public:
     RouterLibrary() : CustomLibrary() {}
-
     ~RouterLibrary() override = default;
 
     Response handle(const Request &request) override;

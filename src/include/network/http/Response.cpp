@@ -3,24 +3,25 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include <include/core/Core.hpp>
+#include <memory>
 
 namespace StatusStrings {
-    const std::string Ok = "HTTP/1.1 200 OK\r\n";
-    const std::string Created = "HTTP/1.1 201 Created\r\n";
-    const std::string Accepted = "HTTP/1.1 202 Accepted\r\n";
-    const std::string NoContent = "HTTP/1.1 204 No Content\r\n";
-    const std::string MultipleChoices = "HTTP/1.1 300 Multiple Choices\r\n";
-    const std::string MovedPermanently = "HTTP/1.1 301 Moved Permanently\r\n";
-    const std::string MovedTemporarily = "HTTP/1.1 302 Moved Temporarily\r\n";
-    const std::string NotModified = "HTTP/1.1 304 Not Modified\r\n";
-    const std::string BadRequest = "HTTP/1.1 400 Bad Request\r\n";
-    const std::string Unauthorized = "HTTP/1.1 401 Unauthorized\r\n";
-    const std::string Forbidden = "HTTP/1.1 403 Forbidden\r\n";
-    const std::string NotFound = "HTTP/1.1 404 Not Found\r\n";
-    const std::string InternalServerError = "HTTP/1.1 500 Internal Server Error\r\n";
-    const std::string NotImplemented = "HTTP/1.1 501 Not Implemented\r\n";
-    const std::string BadGateway = "HTTP/1.1 502 Bad Gateway\r\n";
-    const std::string ServiceUnavailable = "HTTP/1.1 503 Service Unavailable\r\n";
+    const std::string Ok = "200 OK";
+    const std::string Created = "201 Created";
+    const std::string Accepted = "202 Accepted";
+    const std::string NoContent = "204 No Content";
+    const std::string MultipleChoices = "300 Multiple Choices";
+    const std::string MovedPermanently = "301 Moved Permanently";
+    const std::string MovedTemporarily = "302 Moved Temporarily";
+    const std::string NotModified = "304 Not Modified";
+    const std::string BadRequest = "400 Bad Request";
+    const std::string Unauthorized = "401 Unauthorized";
+    const std::string Forbidden = "403 Forbidden";
+    const std::string NotFound = "404 Not Found";
+    const std::string InternalServerError = "500 Internal Server Error";
+    const std::string NotImplemented = "501 Not Implemented";
+    const std::string BadGateway = "502 Bad Gateway";
+    const std::string ServiceUnavailable = "503 Service Unavailable";
 
     boost::asio::const_buffer toBuffer(Response::StatusType status) {
         switch (status) {
@@ -70,7 +71,18 @@ namespace MiscStrings {
 std::vector<boost::asio::const_buffer> Response::toBuffers() {
     std::vector<boost::asio::const_buffer> buffers;
 
+    using namespace std;
+
+    const shared_ptr<string> version = make_shared<string>("HTTP/");
+    version->append(to_string(httpVersionMajor));
+    version->append(".");
+    version->append(std::to_string(httpVersionMinor));
+    version->append(" ");
+
+    buffers.emplace_back(boost::asio::buffer(*version));
+
     buffers.push_back(StatusStrings::toBuffer(status));
+    buffers.push_back(boost::asio::buffer(MiscStrings::CRLF));
 
     for (const auto &[key, value] : headers) {
         buffers.push_back(boost::asio::buffer(key));
@@ -80,7 +92,8 @@ std::vector<boost::asio::const_buffer> Response::toBuffers() {
     }
 
     buffers.push_back(boost::asio::buffer(MiscStrings::CRLF));
-    buffers.push_back(boost::asio::buffer(content));
+
+    buffers.emplace_back(boost::asio::buffer(content));
 
     return buffers;
 }
@@ -220,7 +233,7 @@ std::string Response::serialize() const {
     serialized["content"] = this->content;
     serialized["status"] = this->status;
 
-    for (auto [key, value] : this->headers) {
+    for (auto[key, value] : this->headers) {
         serialized["headers"][key] = value;
     }
 

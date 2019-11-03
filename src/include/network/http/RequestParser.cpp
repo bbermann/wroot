@@ -170,6 +170,7 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
         case State::HeaderValue:
             if (input == '\r') {
                 state_ = State::ExpectingNewline2;
+                request.headers[request.keyBuffer] = request.valueBuffer;
                 // We clear this here since we may have or no another header
                 request.keyBuffer.clear();
                 request.valueBuffer.clear();

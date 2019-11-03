@@ -10,7 +10,6 @@
 class FileLibrary : public CustomLibrary {
 public:
     FileLibrary() : CustomLibrary() {}
-
     ~FileLibrary() override = default;
 
     Response handle(const Request &request) override;

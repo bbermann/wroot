@@ -8,9 +8,25 @@
 #include <include/library/FileLibrary.hpp>
 #include <include/library/RouterLibrary.hpp>
 
+std::atomic<unsigned long long> RequestHandler::RequestCount = 0;
+std::atomic<unsigned long long> RequestHandler::ResponseCount = 0;
+
 RequestHandler::RequestHandler() = default;
 
 void RequestHandler::handle(const Request &request, Response &response) {
+    if (Core::IsDebugging && ++RequestHandler::RequestCount % 1000 == 0) {
+        Core::outLn("Received " + std::to_string(RequestHandler::RequestCount) + " requests.");
+    }
+
+    this->processResponse(request, response);
+    this->finishResponse(request, response);
+
+    if (Core::IsDebugging && ++RequestHandler::ResponseCount % 1000 == 0) {
+        Core::outLn("Done with " + std::to_string(RequestHandler::ResponseCount) + " responses.");
+    }
+}
+
+void RequestHandler::processResponse(const Request &request, Response &response) const {
     static FileLibrary fileLibrary;
     static RouterLibrary routerLibrary;
 
@@ -19,11 +35,11 @@ void RequestHandler::handle(const Request &request, Response &response) {
     if (response.status == Response::NotFound) {
         response = std::move(routerLibrary.handle(request));
     }
-
-    this->finishResponse(request, response);
 }
 
 void RequestHandler::finishResponse(const Request &request, Response &response) {
+    response.bind(request);
+
     if (response.headers.find("X-Powered-By") == response.headers.end()) {
         response.headers["X-Powered-By"] = "wRoot";
     }
@@ -47,8 +63,6 @@ void RequestHandler::finishResponse(const Request &request, Response &response) 
     if (response.headers.find("Date") == response.headers.end()) {
         response.headers["Date"] = "Thu, 08 Oct 2015 16:42:10 GMT";
     }
-
-//    response.headers["Connection"] = request.headers["Connection"] ?? "close";
 
 //    if (this->compressOutput) {
 //        //returnString.append("Transfer-Encoding: gzip" + ENDL);

@@ -16,18 +16,20 @@
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>
+#include <include/core/Core.hpp>
 #include <include/type/String.hpp>
 #include <include/network/http/KeyValuePair.hpp>
+#include "Request.hpp"
+
+struct Request;
 
 /// A reply to be sent to a client.
-struct Response
-{
+struct Response {
     int httpVersionMajor = 1;
     int httpVersionMinor = 1;
 
     /// The status of the response.
-    enum StatusType
-    {
+    enum StatusType {
         Ok = 200,
         Created = 201,
         Accepted = 202,
@@ -49,14 +51,6 @@ struct Response
     /// The headers to be included in the response.
     StringMap headers;
 
-    std::string getHeader(const std::string &key) {
-        return headers[key];
-    }
-
-    void setHeader(const std::string &key, const std::string &value) {
-        headers[key] = value;
-    }
-
     /// The content to be sent in the response.
     std::string content;
 
@@ -65,10 +59,36 @@ struct Response
     /// not be changed until the write operation has completed.
     std::vector<boost::asio::const_buffer> toBuffers();
 
+    std::string getHeader(const std::string &key) {
+        return this->headers[key];
+    }
+
+    void setHeader(const std::string &key, const std::string &value) {
+        this->headers[key] = value;
+    }
+
+    void bind(const Request &request) {
+        this->httpVersionMajor = request.httpVersionMajor;
+        this->httpVersionMinor = request.httpVersionMinor;
+
+        // If there's no Connection header set
+        if (this->headers.find("Connection") == this->headers.end()) {
+            // If Connection header is set on request
+            if (request.headers.find("Connection") != request.headers.end() &&
+                !request.headers.at("Connection").empty()) {
+                // Reply as requested
+                this->headers["Connection"] = request.headers.at("Connection");
+            } else {
+                // Otherwise, set close as default
+                this->headers["Connection"] = "close";
+            }
+        }
+    }
+
     std::string serialize() const;
+
+    static Response unserialize(std::string &serialized);
 
     /// Get a stock response.
     static Response stockResponse(StatusType status);
-
-    static Response unserialize(std::string &serialized);
 };
