@@ -3,7 +3,15 @@ TODO MVP:
 Http Server Implementation:
 - Better support for HTTP requests and responses headers;
 - Implement access control for files and directories (.htaccess or similar);
-- Support response http major/minor version pairing with request's version
+- Add HTTP Client for usage within sidecar project;
+- In order to allow the HTTP Client implementation:
+    1.1 Request::fromString
+        - Replace the boost::asio char by char method for something better if possible (there's a good example
+            in the incomplete implementation of HttpClient)
+        - Move the implementation to the Request class (static method)
+    1.2 Request::toString
+    2.1 Response::fromString
+    2.2 Response::toString
 
 Build Process
 - Clean up and separate in log files the build process, being verbose only when the build crashes;
