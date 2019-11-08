@@ -11,8 +11,8 @@
 
 class String;
 
-typedef std::vector <std::string> StringList;
-typedef std::map <std::string, std::string> StringMap;
+typedef std::vector<std::string> StringList;
+typedef std::map<std::string, std::string> StringMap;
 
 class String : public std::string {
 public:
