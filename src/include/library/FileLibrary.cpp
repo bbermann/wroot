@@ -65,8 +65,7 @@ Response FileLibrary::getResponse(const std::string &fullPath, std::ifstream &fi
 
     auto extension = this->getFileExtension(fullPath);
 
-    response.headers["Content-Type"] = MimeTypes::extensionToType(extension);
-    response.headers["Content-Length"] = std::to_string(response.content.size());
+    response.headers.insert({"Content-Type", MimeTypes::extensionToType(extension)});
 
     if (Core::HasFileCache) {
         storeCacheFor(fullPath, extension, response);
