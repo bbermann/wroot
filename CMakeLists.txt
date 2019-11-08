@@ -29,7 +29,13 @@ set(SOURCES
         src/include/library/RouterLibrary.cpp
         src/include/type/Process.cpp
         src/include/type/String.cpp
-        src/include/type/Timer.cpp)
+        src/include/type/Timer.cpp
+        src/include/network/Connection.cpp
+        src/include/network/ConnectionManager.cpp
+        src/include/network/http/RequestHandler.cpp
+        src/include/network/http/MimeTypes.cpp
+        src/include/network/http/RequestParser.cpp
+)
 
 set(HEADERS
         src/include/core/Core.hpp
@@ -51,18 +57,14 @@ set(HEADERS
         src/include/exceptions/http/request/KeyNotFound.hpp
         src/include/exceptions/http/request/FailedReceivingData.hpp
         src/include/exceptions/lua/LuaScriptException.hpp
-        src/include/network/Connection.cpp
         src/include/network/Connection.hpp
-        src/include/network/ConnectionManager.cpp
         src/include/network/ConnectionManager.hpp
-        src/include/network/http/RequestHandler.cpp
         src/include/network/http/RequestHandler.hpp
         src/include/network/http/KeyValuePair.hpp
-        src/include/network/http/MimeTypes.cpp
         src/include/network/http/MimeTypes.hpp
-        src/include/network/http/RequestParser.cpp
         src/include/network/http/RequestParser.hpp
-        src/include/helper/Chronometer.hpp)
+        src/include/helper/Chronometer.hpp
+        src/include/network/http/ResponseParser.hpp)
 
 add_executable(wroot ${SOURCES} ${HEADERS})
 

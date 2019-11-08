@@ -1,0 +1,8 @@
+//
+// Created by bbermann on 07/11/2019.
+//
+
+#ifndef WROOT_RESPONSEPARSER_HPP
+#define WROOT_RESPONSEPARSER_HPP
+
+#endif //WROOT_RESPONSEPARSER_HPP
