@@ -152,7 +152,6 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
         case State::HeaderName:
             if (input == ':') {
                 state_ = State::SpaceBeforeHeaderValue;
-                request.headers[request.keyBuffer] = "";
                 return ResultType::Indeterminate;
             } else if (!isChar(input) || isCtl(input) || isTSpecial(input)) {
                 return ResultType::Bad;
@@ -170,7 +169,7 @@ RequestParser::ResultType RequestParser::consume(Request &request, char input) {
         case State::HeaderValue:
             if (input == '\r') {
                 state_ = State::ExpectingNewline2;
-                request.headers[request.keyBuffer] = request.valueBuffer;
+                request.headers.insert({request.keyBuffer, request.valueBuffer});
                 // We clear this here since we may have or no another header
                 request.keyBuffer.clear();
                 request.valueBuffer.clear();

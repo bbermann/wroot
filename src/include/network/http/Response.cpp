@@ -221,8 +221,7 @@ Response Response::stockResponse(Response::StatusType status) {
     Response response;
     response.status = status;
     response.content = StockResponses::toString(status);
-    response.headers["Content-Length"] = std::to_string(response.content.size());
-    response.headers["Content-Type"] = "text/html";
+    response.headers.insert({"Content-Type", "text/html"});
     return response;
 }
 
@@ -250,7 +249,7 @@ Response Response::unserialize(std::string &serialized) {
 
     if (responseData.find("headers") != responseData.end()) {
         for (auto it = responseData["headers"].begin(); it != responseData["headers"].end(); ++it) {
-            response.headers[it.key()] = it.value();
+            response.headers.insert({it.key(), it.value()});
         }
     }
 

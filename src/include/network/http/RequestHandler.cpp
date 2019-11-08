@@ -41,27 +41,27 @@ void RequestHandler::finishResponse(const Request &request, Response &response) 
     response.bind(request);
 
     if (response.headers.find("X-Powered-By") == response.headers.end()) {
-        response.headers["X-Powered-By"] = "wRoot";
+        response.headers.insert({"X-Powered-By", "wRoot"});
     }
 
     if (response.headers.find("Host") == response.headers.end()) {
-        response.headers["Host"] = Core::ServerAddress;
+        response.headers.insert({"Host", Core::ServerAddress});
     }
 
     if (response.headers.find("Server") == response.headers.end()) {
-        response.headers["Server"] = Core::ServerName;
+        response.headers.insert({"Server", Core::ServerName});
     }
 
     if (response.headers.find("Content-Type") == response.headers.end()) {
-        response.headers["Content-Type"] = "application/octet-stream";
+        response.headers.insert({"Content-Type", "application/octet-stream"});
     }
 
     if (response.headers.find("Content-Length") == response.headers.end()) {
-        response.headers["Content-Length"] = std::to_string(response.content.length());
+        response.headers.insert({"Content-Length", std::to_string(response.content.length())});
     }
 
     if (response.headers.find("Date") == response.headers.end()) {
-        response.headers["Date"] = "Thu, 08 Oct 2015 16:42:10 GMT";
+        response.headers.insert({"Date", "Thu, 08 Oct 2015 16:42:10 GMT"});
     }
 
 //    if (this->compressOutput) {

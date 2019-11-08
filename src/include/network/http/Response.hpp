@@ -13,8 +13,10 @@
 
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
+#include <tuple>
 #include <boost/asio.hpp>
 #include <include/core/Core.hpp>
 #include <include/type/String.hpp>
@@ -49,7 +51,7 @@ struct Response {
     } status;
 
     /// The headers to be included in the response.
-    StringMap headers;
+    std::multimap<std::string, std::string> headers;
 
     /// The content to be sent in the response.
     std::string content;
@@ -60,11 +62,35 @@ struct Response {
     std::vector<boost::asio::const_buffer> toBuffers();
 
     std::string getHeader(const std::string &key) {
-        return this->headers[key];
+        auto found = this->headers.find(key);
+
+        if (found == this->headers.end()) {
+            return "";
+        }
+
+        return found->second;
+    }
+
+    std::vector<std::string> getHeaders(const std::string &key) {
+        auto found = this->headers.find(key);
+
+        if (found == this->headers.end()) {
+            return {};
+        }
+
+        std::vector<std::string> vec;
+
+        do {
+            vec.push_back(found->second);
+
+            found++;
+        } while (found != this->headers.end());
+
+        return vec;
     }
 
     void setHeader(const std::string &key, const std::string &value) {
-        this->headers[key] = value;
+        this->headers.insert({key, value});
     }
 
     void bind(const Request &request) {
@@ -75,12 +101,12 @@ struct Response {
         if (this->headers.find("Connection") == this->headers.end()) {
             // If Connection header is set on request
             if (request.headers.find("Connection") != request.headers.end() &&
-                !request.headers.at("Connection").empty()) {
+                !request.headers.find("Connection")->second.empty()) {
                 // Reply as requested
-                this->headers["Connection"] = request.headers.at("Connection");
+                this->headers.insert({"Connection", request.getHeader("Connection")});
             } else {
                 // Otherwise, set close as default
-                this->headers["Connection"] = "close";
+                this->headers.insert({"Connection", "close"});
             }
         }
     }

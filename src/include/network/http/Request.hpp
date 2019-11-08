@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <map>
 #include "KeyValuePair.hpp"
 
 /// A request received from a client.
@@ -10,18 +10,30 @@ struct Request {
     std::string uri;
     int httpVersionMajor;
     int httpVersionMinor;
-    StringMap headers;
-    StringMap body;
+    std::multimap<std::string, std::string> headers;
+    std::multimap<std::string, std::string> body;
 
     std::string keyBuffer;
     std::string valueBuffer;
 
-    std::string getHeader(const std::string &key) {
-        return headers[key];
+    std::string getHeader(const std::string &key) const {
+        auto found = this->headers.find(key);
+
+        if (found == this->headers.end()) {
+            return "";
+        }
+
+        return found->second;
     }
 
-    std::string getBody(const std::string &key) {
-        return body[key];
+    std::string getBody(const std::string &key) const {
+        auto found = this->body.find(key);
+
+        if (found == this->body.end()) {
+            return "";
+        }
+
+        return found->second;
     }
 
     std::string getUrl() {
