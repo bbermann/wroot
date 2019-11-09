@@ -2,8 +2,8 @@ local mongo = require 'mongo'
 local client = mongo.Client('mongodb://127.0.0.1:33017')
 
 local Sidecar = {
-    middlewares = {
-        requestLog = function(request, _)
+    beforeProxy = {
+        requestLog = function(request)
             local requestBson = mongo.BSON {
                 _id = mongo.ObjectID(),
                 method = request.method,
@@ -13,7 +13,20 @@ local Sidecar = {
             }
 
             client:getCollection('sidecar', 'request_log'):insert(requestBson)
-        end
+        end,
+    },
+    afterProxy = {
+        responseLog = function(response)
+            local responseBson = mongo.BSON {
+                _id = mongo.ObjectID(),
+                status = response.status,
+                content = response.content,
+                httpVersionMajor = response.httpVersionMajor,
+                httpVersionMinor = response.httpVersionMinor,
+            }
+
+            client:getCollection('sidecar', 'response_log'):insert(responseBson)
+        end,
     }
 }
 
@@ -25,8 +38,9 @@ function Sidecar:handle(request, response)
         return
     end
 
-    self:runMiddlewares(request, response)
+    self:runBeforeProxy(request)
     self:redirect(response, redirectUri)
+    self:runAfterProxy(response)
 end
 
 function Sidecar:badRequest(response)
@@ -39,9 +53,15 @@ function Sidecar:getRedirectUri(request)
     return request:getQueryString():match("redirect=([^&]+)")
 end
 
-function Sidecar:runMiddlewares(request, response)
-    for _, handler in next, self.middlewares, nil do
-        handler(request, response)
+function Sidecar:runBeforeProxy(request)
+    for _, handler in next, self.beforeProxy, nil do
+        handler(request)
+    end
+end
+
+function Sidecar:runAfterProxy(response)
+    for _, handler in next, self.afterProxy, nil do
+        handler(response)
     end
 end
 
