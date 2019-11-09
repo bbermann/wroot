@@ -44,6 +44,18 @@ RUN add-apt-repository ppa:mhier/libboost-latest -y && \
 apt-get update && \
 apt-get install -y libboost1.70-dev
 
+# Lua
+apt-get update && \
+apt-get install -y luarocks
+
+# Lua Mongo
+wget https://github.com/mongodb/mongo-c-driver/releases/download/1.15.2/mongo-c-driver-1.15.2.tar.gz && \
+tar -xvzf mongo-c-driver-1.15.2.tar.gz && \
+cd mongo-c-driver-1.15.2/ && \
+cmake . && \
+make install && \
+luarocks install lua-mongo
+
 # SSH (Doesn't need to be put in install-dev.sh since it is only useful for remote debug on docker)
 RUN apt-get update && apt-get install -y openssh-server rsync
 

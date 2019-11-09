@@ -44,6 +44,18 @@ sudo add-apt-repository ppa:mhier/libboost-latest -y && \
 sudo apt-get update && \
 sudo apt-get install -y libboost1.70-dev
 
+# Lua
+sudo apt-get update && \
+sudo apt-get install -y luarocks
+
+# Lua Mongo
+wget https://github.com/mongodb/mongo-c-driver/releases/download/1.15.2/mongo-c-driver-1.15.2.tar.gz && \
+tar -xvzf mongo-c-driver-1.15.2.tar.gz && \
+cd mongo-c-driver-1.15.2/ && \
+cmake . && \
+sudo make install && \
+sudo luarocks install lua-mongo
+
 # Change directory to the actual wroot working directory
 cd $wroot_dir
 
