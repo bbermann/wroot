@@ -2,7 +2,7 @@ require "io"
 
 local FileReader = {}
 
-function FileReader.readAll(path)
+function FileReader:readAll(path)
     -- Opens a file in read
     local file = io.open(path, "r")
 
