@@ -1,10 +1,18 @@
-local requestCounter = 0
+local mongo = require 'mongo'
+local client = mongo.Client('mongodb://127.0.0.1:33017')
 
 local Sidecar = {
-    requestCounter = 0,
     middlewares = {
-        requestCount = function(_, _)
-            requestCounter = requestCounter + 1
+        requestLog = function(request, _)
+            local requestBson = mongo.BSON {
+                _id = mongo.ObjectID(),
+                method = request.method,
+                uri = request.uri,
+                httpVersionMajor = request.httpVersionMajor,
+                httpVersionMinor = request.httpVersionMinor,
+            }
+
+            client:getCollection('sidecar', 'request_log'):insert(requestBson)
         end
     }
 }

@@ -32,8 +32,6 @@ Response RouterLibrary::handle(const Request &request) {
 
         router.executeScript();
         router.execute("handle()");
-
-        //response = router.context.readVariable<Response>("response");
     } catch (const LuaScriptException &exception) {
         Core::warning(
                 exception.what(),
