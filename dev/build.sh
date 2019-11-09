@@ -15,7 +15,7 @@ echo Creating wroot directory...
 echo Creating wroot document root...
 (
     doc_root="$wroot_dir/bin/file"
-    cp -R -p $wroot_dir/dist/file $doc_root && \
+    mkdir $doc_root > /dev/null 2>&1
     sed -i "s@WROOT_DOCUMENT_ROOT@$doc_root@g" $wroot_dir/bin/wroot.json
 )
 
