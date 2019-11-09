@@ -41,14 +41,14 @@ Response FileLibrary::handle(const Request &request) {
         }
     }
 
-    Core::debugLn("[FileLibrary] Reading file: " + fullPath);
-
     std::ifstream file;
     file.open(fullPath.c_str(), std::ios::in | std::ios::binary);
 
     if (!file) {
         return Response::stockResponse(Response::NotFound);
     }
+
+    Core::debugLn("[FileLibrary] Reading file: " + fullPath);
 
     // Fill out the reply to be sent to the client.
     return std::move(getResponse(fullPath, file));

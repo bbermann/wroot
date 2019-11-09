@@ -53,17 +53,13 @@ public:
                     // Content-Type: text/html; charset=UTF-8
                 case State::HeaderRow: {
                     if (row.empty() || row == "\r") {
-                        std::cout << "indo p BodyRow" << std::endl;
                         state = State::BodyRow;
                         break;
                     }
 
-                    std::cout << "headerrow" << std::endl;
-
                     auto parts = String::explode(row, ":");
 
                     if (parts.size() < 2) {
-                        std::cout << "invalid: " << row << std::endl;
                         state = State::Invalid;
                         break;
                     }
@@ -92,8 +88,6 @@ public:
         if (state == State::Invalid) {
             throw std::runtime_error("ResponseParser could not parse response from stream.");
         }
-
-        std::cout << state << std::endl;
 
         return response;
     }
