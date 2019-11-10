@@ -45,11 +45,11 @@ apt-get update && \
 apt-get install -y libboost1.70-dev
 
 # Lua
-apt-get update && \
+RUN apt-get update && \
 apt-get install -y luarocks
 
 # Lua Mongo
-wget https://github.com/mongodb/mongo-c-driver/releases/download/1.15.2/mongo-c-driver-1.15.2.tar.gz && \
+RUN wget https://github.com/mongodb/mongo-c-driver/releases/download/1.15.2/mongo-c-driver-1.15.2.tar.gz && \
 tar -xvzf mongo-c-driver-1.15.2.tar.gz && \
 cd mongo-c-driver-1.15.2/ && \
 cmake . && \
