@@ -60,7 +60,6 @@ set(HEADERS
         src/include/network/Connection.hpp
         src/include/network/ConnectionManager.hpp
         src/include/network/http/RequestHandler.hpp
-        src/include/network/http/KeyValuePair.hpp
         src/include/network/http/MimeTypes.hpp
         src/include/network/http/RequestParser.hpp
         src/include/helper/Chronometer.hpp
@@ -69,4 +68,4 @@ set(HEADERS
 add_executable(wroot ${SOURCES} ${HEADERS})
 
 ## Link libraries
-target_link_libraries(wroot stdc++ stdc++fs pthread z luajit ${CMAKE_DL_LIBS})
+target_link_libraries(wroot stdc++ stdc++fs pthread luajit ${CMAKE_DL_LIBS})

@@ -20,7 +20,6 @@
 #include <boost/asio.hpp>
 #include <include/core/Core.hpp>
 #include <include/type/String.hpp>
-#include <include/network/http/KeyValuePair.hpp>
 #include "Request.hpp"
 
 struct Request;

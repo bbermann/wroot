@@ -7,7 +7,6 @@
 #include <tuple>
 #include <include/core/Core.hpp>
 #include <include/type/String.hpp>
-#include "KeyValuePair.hpp"
 #include "Request.hpp"
 
 struct Request;

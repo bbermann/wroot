@@ -2,7 +2,6 @@
 
 #include <string>
 #include <map>
-#include "KeyValuePair.hpp"
 
 /// A request received from a client.
 struct Request {
