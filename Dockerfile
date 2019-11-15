@@ -59,6 +59,16 @@ luarocks install lua-mongo
 # SSH (Doesn't need to be put in install-dev.sh since it is only useful for remote debug on docker)
 RUN apt-get update && apt-get install -y openssh-server rsync
 
+RUN mkdir /var/run/sshd
+RUN echo 'root:wroot' | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+RUN apt-get update && apt-get install -y python3 python3-pip
+RUN pip3 install cpplint
+
+RUN apt-get update && \
+apt-get install -y php7.2-fpm php7.2-mbstring php7.2-xml php7.2-zip zip unzip
+
 # Sets the actual wroot working directory
 WORKDIR /wroot
 
@@ -69,12 +79,5 @@ EXPOSE 666
 EXPOSE 22
 # GDB Server
 EXPOSE 7777
-
-RUN mkdir /var/run/sshd
-RUN echo 'root:wroot' | chpasswd
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-
-RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install cpplint
 
 CMD /usr/sbin/sshd -D && bash

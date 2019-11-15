@@ -13,3 +13,6 @@
 [submodule "src/3rdParty/LuaJIT"]
 	path = src/3rdParty/LuaJIT
 	url = https://github.com/LuaJIT/LuaJIT.git
+[submodule "src/3rdParty/curl"]
+	path = src/3rdParty/curl
+	url = https://github.com/curl/curl.git

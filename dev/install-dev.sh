@@ -56,6 +56,9 @@ cmake . && \
 sudo make install && \
 sudo luarocks install lua-mongo
 
+sudo apt-get update && \
+sudo apt-get install -y php7.2-fpm php7.2-mbstring php7.2-xml php7.2-zip zip unzip
+
 # Change directory to the actual wroot working directory
 cd $wroot_dir
 
